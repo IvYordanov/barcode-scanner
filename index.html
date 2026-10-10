@@ -35,11 +35,29 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .brand { display: flex; align-items: center; gap: 12px; }
-        .brand i { font-size: 32px; }
+        .brand img { width: 38px; height: 38px; border-radius: 8px; }
         .brand h1 { font-size: 24px; font-weight: 700; }
+
+        .btn-help {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .btn-help:hover { background: rgba(255, 255, 255, 0.35); }
 
         .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
         @media (min-width: 850px) { .grid { grid-template-columns: 360px 1fr; } }
@@ -97,10 +115,9 @@
             justify-content: center;
             gap: 8px;
             transition: all 0.2s;
-            opacity: 0.55; /* Полупрозрачни, когато не са маркирани */
+            opacity: 0.55;
         }
 
-        /* МАРКИРАН (АКТИВЕН) РЕЖИМ */
         .btn.active-mode {
             opacity: 1;
             box-shadow: 0 0 0 3px rgba(0,0,0,0.2), inset 0 0 0 2px #fff;
@@ -181,15 +198,19 @@
 </head>
 <body>
 
-   <header>
-    <div class="brand">
-        <img src="favicon.png" alt="БГ-СКЕНЕР Иконка" style="width: 36px; height: 36px; border-radius: 8px;">
-        <div>
-            <h1>БАРКОД-СКЕНЕР</h1>
-            <p style="font-size: 13px; opacity: 0.9;">Система за контрол на наличностите HITSHOP BG LTD</p>
+    <header>
+        <div class="brand">
+            <img src="favicon.png" alt="БГ-СКЕНЕР Иконка" style="width: 36px; height: 36px; border-radius: 8px;">
+            <div>
+                <h1>БАРКОД-СКЕНЕР</h1>
+                <p style="font-size: 13px; opacity: 0.9;">Система за контрол на наличностите HITSHOP BG LTD</p>
+            </div>
         </div>
-    </div>
-</header>
+        <!-- ЛИНК КЪМ ИНСТРУКЦИИТЕ -->
+        <a href="instructions.html" class="btn-help" title="Виж ръководството">
+            <i class="fa-solid fa-book"></i> Инструкции
+        </a>
+    </header>
 
     <div class="grid">
         <!-- ЛЯВ ПАНЕЛ -->
@@ -208,7 +229,6 @@
                     <div class="scan-overlay"></div>
                 </div>
 
-                <!-- БУТОНИ ЗА ИЗБОР НА РЕЖИМ -->
                 <div class="btn-group" style="margin-bottom: 15px; margin-top: 0;">
                     <button type="button" id="btnAddMode" class="btn btn-success active-mode" onclick="setMode('ADD')">
                         <i class="fa-solid fa-plus"></i> ПРИБАВИ <span id="checkAdd">✓</span>
@@ -338,7 +358,7 @@
         let videoStream = null;
         let barcodeDetector = null;
         let isScanning = false;
-        let currentMode = 'ADD'; // Текущ активен режим: 'ADD' или 'SUB'
+        let currentMode = 'ADD';
         let scanCooldown = false;
 
         function saveData() {
@@ -349,7 +369,6 @@
 
         function setQty(val) { document.getElementById('qtyInput').value = val; }
 
-        // ПРЕВКЛЮЧВАНЕ НА РЕЖИМА (ПРИБАВИ / ИЗВАДИ)
         function setMode(mode) {
             currentMode = mode;
             const btnAdd = document.getElementById('btnAddMode');
@@ -375,7 +394,6 @@
             processStock(currentMode);
         }
 
-        // ДИРЕКТЕН СКЕНЕР С КАМЕРА
         async function toggleCamera() {
             const container = document.getElementById('cameraContainer');
             const btn = document.getElementById('cameraBtn');
@@ -426,7 +444,6 @@
                         scanCooldown = true;
                         playBeep();
                         
-                        // АВТОМАТИЧНО ИЗПЪЛНЕНИЕ СПРЯМО МАРКИРАНИЯ РЕЖИМ
                         processStock(currentMode);
 
                         setTimeout(() => {
