@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>БГ-СКЕНЕР</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Библиотека за сканиране с камера -->
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
         :root {
             --primary: #4f46e5;
@@ -143,14 +141,32 @@
         .action-icon:hover { color: var(--primary); }
         .action-icon.delete:hover { color: var(--danger); }
 
-        /* Стил за камера скенера */
-        #reader {
+        /* Контейнер за Видео от Камерата */
+        #cameraContainer {
+            display: none;
+            position: relative;
             width: 100%;
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
             margin-bottom: 15px;
             background: #000;
-            display: none;
+        }
+        #webcamVideo {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+        .scan-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 40%;
+            border: 2px dashed #10b981;
+            box-shadow: 0 0 0 1000px rgba(0,0,0,0.4);
+            border-radius: 8px;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -174,13 +190,14 @@
                     <i class="fa-solid fa-cart-plus"></i> Операция с код
                 </div>
                 
-                <!-- БУТОН ЗА СКЕНЕР С КАМЕРА -->
-                <button type="button" class="btn btn-outline" id="cameraToggleBtn" onclick="toggleCamera()" style="width: 100%; margin-bottom: 15px; border-color: var(--primary); color: var(--primary);">
-                    <i class="fa-solid fa-camera"></i> Сканирай с Камера
+                <button type="button" class="btn btn-outline" id="cameraBtn" onclick="toggleCamera()" style="width: 100%; margin-bottom: 15px; border-color: var(--primary); color: var(--primary);">
+                    <i class="fa-solid fa-camera"></i> Пусни Камерата
                 </button>
 
-                <!-- ПРЕДУПРЕЖДЕНИЕ / МОДУЛ ЗА КАМЕРАТА -->
-                <div id="reader"></div>
+                <div id="cameraContainer">
+                    <video id="webcamVideo" playsinline autoplay muted></video>
+                    <div class="scan-overlay"></div>
+                </div>
 
                 <form id="scanForm" onsubmit="event.preventDefault();">
                     <div class="form-group">
@@ -304,7 +321,9 @@
     <script>
         let inventory = JSON.parse(localStorage.getItem('bg_scanner_inventory')) || {};
         let logs = JSON.parse(localStorage.getItem('bg_scanner_logs')) || [];
-        let html5QrcodeScanner = null;
+        let videoStream = null;
+        let barcodeDetector = null;
+        let isScanning = false;
 
         function saveData() {
             localStorage.setItem('bg_scanner_inventory', JSON.stringify(inventory));
@@ -314,70 +333,91 @@
 
         function setQty(val) { document.getElementById('qtyInput').value = val; }
 
-        // СКЕНЕР С КАМЕРА
-        function toggleCamera() {
-            const readerDiv = document.getElementById('reader');
-            const btn = document.getElementById('cameraToggleBtn');
+        // ДИРЕКТЕН СКЕНЕР С КАМЕРА
+        async function toggleCamera() {
+            const container = document.getElementById('cameraContainer');
+            const btn = document.getElementById('cameraBtn');
+            const video = document.getElementById('webcamVideo');
 
-            if (readerDiv.style.display === 'block') {
+            if (isScanning) {
                 stopCamera();
-            } else {
-                readerDiv.style.display = 'block';
-                btn.innerHTML = '<i class="fa-solid fa-camera-rotate"></i> Спри камерата';
+                return;
+            }
+
+            try {
+                // Искане на достъп директно до задната камера
+                videoStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { exact: "environment" } }
+                }).catch(() => {
+                    // Резервен вариант за компютър / предна камера
+                    return navigator.mediaDevices.getUserMedia({ video: true });
+                });
+
+                video.srcObject = videoStream;
+                await video.play();
+
+                container.style.display = 'block';
+                btn.innerHTML = '<i class="fa-solid fa-stop"></i> Спри Камерата';
                 btn.style.backgroundColor = '#fee2e2';
                 btn.style.color = '#b91c1c';
+                isScanning = true;
 
-                html5QrcodeScanner = new Html5Qrcode("reader");
-                const config = { fps: 10, qrbox: { width: 250, height: 150 } };
+                // Инициализиране на Chrome BarcodeDetector
+                if ('BarcodeDetector' in window) {
+                    barcodeDetector = new BarcodeDetector({ formats: ['code_128', 'ean_13', 'ean_8', 'qr_code', 'upc_a'] });
+                }
 
-                html5QrcodeScanner.start(
-                    { facingMode: "environment" }, 
-                    config,
-                    (decodedText) => {
-                        document.getElementById('barcodeInput').value = decodedText;
-                        stopCamera();
-                        
-                        // Звуков сигнал при успешно сканиране
-                        try {
-                            let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                            let osc = audioCtx.createOscillator();
-                            osc.type = "sine";
-                            osc.frequency.value = 800;
-                            osc.connect(audioCtx.destination);
-                            osc.start();
-                            osc.stop(audioCtx.currentTime + 0.1);
-                        } catch(e){}
-                    },
-                    (errorMessage) => { /* сканиране в ход */ }
-                ).catch(err => {
-                    alert('Грешка при пускане на камерата (уверете се, че сте дали разрешение): ' + err);
-                    stopCamera();
-                });
+                scanFrame();
+            } catch (err) {
+                alert('Не може да се пусне камерата. Уверете се, че сте потвърдили съобщението за достъп в браузъра!');
             }
         }
 
-        function stopCamera() {
-            const readerDiv = document.getElementById('reader');
-            const btn = document.getElementById('cameraToggleBtn');
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.stop().then(() => {
-                    html5QrcodeScanner.clear();
-                    readerDiv.style.display = 'none';
-                    btn.innerHTML = '<i class="fa-solid fa-camera"></i> Сканирай с Камера';
-                    btn.style.backgroundColor = 'white';
-                    btn.style.color = 'var(--primary)';
-                }).catch(() => {
-                    readerDiv.style.display = 'none';
-                    btn.innerHTML = '<i class="fa-solid fa-camera"></i> Сканирай с Камера';
-                    btn.style.backgroundColor = 'white';
-                    btn.style.color = 'var(--primary)';
-                });
-            } else {
-                readerDiv.style.display = 'none';
-                btn.innerHTML = '<i class="fa-solid fa-camera"></i> Сканирай с Камера';
-                btn.style.backgroundColor = 'white';
-                btn.style.color = 'var(--primary)';
+        async function scanFrame() {
+            if (!isScanning) return;
+            const video = document.getElementById('webcamVideo');
+
+            if (barcodeDetector && video.readyState === video.HAVE_ENOUGH_DATA) {
+                try {
+                    const barcodes = await barcodeDetector.detect(video);
+                    if (barcodes.length > 0) {
+                        const code = barcodes[0].rawValue;
+                        document.getElementById('barcodeInput').value = code;
+                        playBeep();
+                        // Кратка пауза след откриване, за да не чете 10 пъти в секунда
+                        await new Promise(r => setTimeout(r, 1200));
+                    }
+                } catch (e) {}
             }
+            requestAnimationFrame(scanFrame);
+        }
+
+        function stopCamera() {
+            const container = document.getElementById('cameraContainer');
+            const btn = document.getElementById('cameraBtn');
+            const video = document.getElementById('webcamVideo');
+
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+            video.srcObject = null;
+            container.style.display = 'none';
+            btn.innerHTML = '<i class="fa-solid fa-camera"></i> Пусни Камерата';
+            btn.style.backgroundColor = 'white';
+            btn.style.color = 'var(--primary)';
+            isScanning = false;
+        }
+
+        function playBeep() {
+            try {
+                let ctx = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = ctx.createOscillator();
+                osc.frequency.value = 1000;
+                osc.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.08);
+            } catch(e){}
         }
 
         function processStock(action) {
@@ -416,7 +456,6 @@
             document.getElementById('barcodeInput').value = '';
             document.getElementById('itemNameInput').value = '';
             document.getElementById('qtyInput').value = '1';
-            document.getElementById('barcodeInput').focus();
 
             saveData();
         }
@@ -546,4 +585,14 @@
         }
 
         function clearAllData() {
-            if (confirm('ВНИМАНИЕ! Сигурни ли сте
+            if (confirm('ВНИМАНИЕ! Сигурни ли сте, че искате да изтриете ВСИЧКИ наличности и история?')) {
+                inventory = {};
+                logs = [];
+                saveData();
+            }
+        }
+
+        renderTables();
+    </script>
+</body>
+</html>
