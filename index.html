@@ -97,9 +97,17 @@
             justify-content: center;
             gap: 8px;
             transition: all 0.2s;
+            opacity: 0.55; /* Полупрозрачни, когато не са маркирани */
         }
 
-        .btn-primary { background: var(--primary); color: white; }
+        /* МАРКИРАН (АКТИВЕН) РЕЖИМ */
+        .btn.active-mode {
+            opacity: 1;
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.2), inset 0 0 0 2px #fff;
+            transform: scale(1.02);
+        }
+
+        .btn-primary { background: var(--primary); color: white; opacity: 1; }
         .btn-primary:hover { background: var(--primary-hover); }
 
         .btn-success { background: var(--success); color: white; }
@@ -108,7 +116,7 @@
         .btn-danger { background: var(--danger); color: white; }
         .btn-danger:hover { background: var(--danger-hover); }
 
-        .btn-outline { background: white; border: 1px solid var(--border); color: var(--text); }
+        .btn-outline { background: white; border: 1px solid var(--border); color: var(--text); opacity: 1; }
         .btn-outline:hover { background: #f9fafb; }
 
         .quick-qty { display: flex; gap: 6px; margin-top: 8px; }
@@ -143,7 +151,6 @@
         .action-icon:hover { color: var(--primary); }
         .action-icon.delete:hover { color: var(--danger); }
 
-        /* Контейнер за Видео от Камерата */
         #cameraContainer {
             display: none;
             position: relative;
@@ -179,7 +186,7 @@
         <img src="favicon.png" alt="БГ-СКЕНЕР Иконка" style="width: 36px; height: 36px; border-radius: 8px;">
         <div>
             <h1>БАРКОД-СКЕНЕР</h1>
-            <p style="font-size: 13px; opacity: 0.9;">Система за контрол на наличностите  HITSHOP BG LTD</p>
+            <p style="font-size: 13px; opacity: 0.9;">Система за контрол на наличностите HITSHOP BG LTD</p>
         </div>
     </div>
 </header>
@@ -189,7 +196,7 @@
         <div>
             <div class="card">
                 <div class="card-title">
-                    <i class="fa-solid fa-cart-plus"></i> Операция с код
+                    <i class="fa-solid fa-cart-plus"></i> Избор на режим & Сканиране
                 </div>
                 
                 <button type="button" class="btn btn-outline" id="cameraBtn" onclick="toggleCamera()" style="width: 100%; margin-bottom: 15px; border-color: var(--primary); color: var(--primary);">
@@ -201,7 +208,17 @@
                     <div class="scan-overlay"></div>
                 </div>
 
-                <form id="scanForm" onsubmit="event.preventDefault();">
+                <!-- БУТОНИ ЗА ИЗБОР НА РЕЖИМ -->
+                <div class="btn-group" style="margin-bottom: 15px; margin-top: 0;">
+                    <button type="button" id="btnAddMode" class="btn btn-success active-mode" onclick="setMode('ADD')">
+                        <i class="fa-solid fa-plus"></i> ПРИБАВИ <span id="checkAdd">✓</span>
+                    </button>
+                    <button type="button" id="btnSubMode" class="btn btn-danger" onclick="setMode('SUB')">
+                        <i class="fa-solid fa-minus"></i> ИЗВАДИ <span id="checkSub" style="display:none;">✓</span>
+                    </button>
+                </div>
+
+                <form id="scanForm" onsubmit="handleFormSubmit(event)">
                     <div class="form-group">
                         <label for="barcodeInput">Баркод / Код на артикул</label>
                         <input type="text" id="barcodeInput" class="input-control" placeholder="Сканирайте или въведете..." autofocus required>
@@ -223,14 +240,9 @@
                         </div>
                     </div>
 
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-success" onclick="processStock('ADD')">
-                            <i class="fa-solid fa-plus"></i> ПРИБАВИ
-                        </button>
-                        <button type="button" class="btn btn-danger" onclick="processStock('SUB')">
-                            <i class="fa-solid fa-minus"></i> ИЗВАДИ
-                        </button>
-                    </div>
+                    <button type="submit" id="btnExecute" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                        <i class="fa-solid fa-check"></i> Потвърди операцията
+                    </button>
                 </form>
             </div>
 
@@ -326,6 +338,8 @@
         let videoStream = null;
         let barcodeDetector = null;
         let isScanning = false;
+        let currentMode = 'ADD'; // Текущ активен режим: 'ADD' или 'SUB'
+        let scanCooldown = false;
 
         function saveData() {
             localStorage.setItem('bg_scanner_inventory', JSON.stringify(inventory));
@@ -334,6 +348,32 @@
         }
 
         function setQty(val) { document.getElementById('qtyInput').value = val; }
+
+        // ПРЕВКЛЮЧВАНЕ НА РЕЖИМА (ПРИБАВИ / ИЗВАДИ)
+        function setMode(mode) {
+            currentMode = mode;
+            const btnAdd = document.getElementById('btnAddMode');
+            const btnSub = document.getElementById('btnSubMode');
+            const checkAdd = document.getElementById('checkAdd');
+            const checkSub = document.getElementById('checkSub');
+
+            if (mode === 'ADD') {
+                btnAdd.classList.add('active-mode');
+                btnSub.classList.remove('active-mode');
+                checkAdd.style.display = 'inline';
+                checkSub.style.display = 'none';
+            } else {
+                btnSub.classList.add('active-mode');
+                btnAdd.classList.remove('active-mode');
+                checkSub.style.display = 'inline';
+                checkAdd.style.display = 'none';
+            }
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            processStock(currentMode);
+        }
 
         // ДИРЕКТЕН СКЕНЕР С КАМЕРА
         async function toggleCamera() {
@@ -347,11 +387,9 @@
             }
 
             try {
-                // Искане на достъп директно до задната камера
                 videoStream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: { exact: "environment" } }
                 }).catch(() => {
-                    // Резервен вариант за компютър / предна камера
                     return navigator.mediaDevices.getUserMedia({ video: true });
                 });
 
@@ -364,7 +402,6 @@
                 btn.style.color = '#b91c1c';
                 isScanning = true;
 
-                // Инициализиране на Chrome BarcodeDetector
                 if ('BarcodeDetector' in window) {
                     barcodeDetector = new BarcodeDetector({ formats: ['code_128', 'ean_13', 'ean_8', 'qr_code', 'upc_a'] });
                 }
@@ -379,15 +416,22 @@
             if (!isScanning) return;
             const video = document.getElementById('webcamVideo');
 
-            if (barcodeDetector && video.readyState === video.HAVE_ENOUGH_DATA) {
+            if (barcodeDetector && video.readyState === video.HAVE_ENOUGH_DATA && !scanCooldown) {
                 try {
                     const barcodes = await barcodeDetector.detect(video);
                     if (barcodes.length > 0) {
                         const code = barcodes[0].rawValue;
                         document.getElementById('barcodeInput').value = code;
+                        
+                        scanCooldown = true;
                         playBeep();
-                        // Кратка пауза след откриване, за да не чете 10 пъти в секунда
-                        await new Promise(r => setTimeout(r, 1200));
+                        
+                        // АВТОМАТИЧНО ИЗПЪЛНЕНИЕ СПРЯМО МАРКИРАНИЯ РЕЖИМ
+                        processStock(currentMode);
+
+                        setTimeout(() => {
+                            scanCooldown = false;
+                        }, 1500);
                     }
                 } catch (e) {}
             }
