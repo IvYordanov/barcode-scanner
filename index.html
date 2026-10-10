@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>БГ-СКЕНЕР</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Библиотека за сканиране с камера -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --success-hover: #059669;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 15px; max-width: 1200px; margin: 0 auto; }
+
+        header {
+            background: linear-gradient(135deg, #4f46e5, #3b82f6);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand i { font-size: 32px; }
+        .brand h1 { font-size: 24px; font-weight: 700; }
+
+        .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 850px) { .grid { grid-template-columns: 360px 1fr; } }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-light); }
+
+        .input-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+
+        .btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: var(--success-hover); }
+
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: var(--danger-hover); }
+
+        .btn-outline { background: white; border: 1px solid var(--border); color: var(--text); }
+        .btn-outline:hover { background: #f9fafb; }
+
+        .quick-qty { display: flex; gap: 6px; margin-top: 8px; }
+        .btn-sm-qty {
+            flex: 1;
+            padding: 8px;
+            font-size: 13px;
+            background: #f3f4f6;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-sm-qty:hover { background: #e5e7eb; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 15px; border-radius: 10px; border: 1px solid var(--border); text-align: center; }
+        .stat-value { font-size: 22px; font-weight: 700; color: var(--primary); }
+        .stat-label { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+
+        .table-wrapper { overflow-x: auto; max-height: 380px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th { background: #f9fafb; padding: 10px 12px; font-weight: 600; color: var(--text-light); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 5; }
+        td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+        tr:hover { background: #f9fafb; }
+
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .badge-add { background: #d1fae5; color: #065f46; }
+        .badge-sub { background: #fee2e2; color: #991b1b; }
+
+        .action-icon { cursor: pointer; padding: 5px; color: var(--text-light); border: none; background: none; font-size: 16px; }
+        .action-icon:hover { color: var(--primary); }
+        .action-icon.delete:hover { color: var(--danger); }
+
+        /* Стил за камера скенера */
+        #reader {
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            background: #000;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <i class="fa-solid fa-barcode"></i>
+            <div>
+                <h1>БГ-СКЕНЕР</h1>
+                <p style="font-size: 13px; opacity: 0.9;">Система за контрол на наличностите</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="grid">
+        <!-- ЛЯВ ПАНЕЛ -->
+        <div>
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-cart-plus"></i> Операция с код
+                </div>
+                
+                <!-- БУТОН ЗА СКЕНЕР С КАМЕРА -->
+                <button type="button" class="btn btn-outline" id="cameraToggleBtn" onclick="toggleCamera()" style="width: 100%; margin-bottom: 15px; border-color: var(--primary); color: var(--primary);">
+                    <i class="fa-solid fa-camera"></i> Сканирай с Камера
+                </button>
+
+                <!-- ПРЕДУПРЕЖДЕНИЕ / МОДУЛ ЗА КАМЕРАТА -->
+                <div id="reader"></div>
+
+                <form id="scanForm" onsubmit="event.preventDefault();">
+                    <div class="form-group">
+                        <label for="barcodeInput">Баркод / Код на артикул</label>
+                        <input type="text" id="barcodeInput" class="input-control" placeholder="Сканирайте или въведете..." autofocus required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="itemNameInput">Наименование (незадължително)</label>
+                        <input type="text" id="itemNameInput" class="input-control" placeholder="Име на продукта...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="qtyInput">Количество</label>
+                        <input type="number" id="qtyInput" class="input-control" value="1" min="1" required>
+                        <div class="quick-qty">
+                            <button type="button" class="btn-sm-qty" onclick="setQty(1)">1</button>
+                            <button type="button" class="btn-sm-qty" onclick="setQty(5)">5</button>
+                            <button type="button" class="btn-sm-qty" onclick="setQty(10)">10</button>
+                            <button type="button" class="btn-sm-qty" onclick="setQty(50)">50</button>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-success" onclick="processStock('ADD')">
+                            <i class="fa-solid fa-plus"></i> ПРИБАВИ
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="processStock('SUB')">
+                            <i class="fa-solid fa-minus"></i> ИЗВАДИ
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-box-archive"></i> Архивиране и данни
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn btn-primary" onclick="exportExcel()" style="width: 100%;">
+                        <i class="fa-solid fa-file-excel"></i> Експорт в Excel (.csv)
+                    </button>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-outline" onclick="exportBackup()" style="flex: 1;">
+                            <i class="fa-solid fa-download"></i> Запази архив
+                        </button>
+                        <button class="btn btn-outline" onclick="document.getElementById('importFile').click()" style="flex: 1;">
+                            <i class="fa-solid fa-upload"></i> Възстанови
+                        </button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importBackup(event)">
+                    </div>
+                    <button class="btn btn-outline" onclick="clearAllData()" style="width: 100%; color: var(--danger); margin-top: 5px;">
+                        <i class="fa-solid fa-trash"></i> Занули всички данни
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ДЕСЕН ПАНЕЛ -->
+        <div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="statTotalItems">0</div>
+                    <div class="stat-label">Уникални кода</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statTotalQty">0</div>
+                    <div class="stat-label">Общо количество</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statLogsCount">0</div>
+                    <div class="stat-label">Движения</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-list-check"></i> Текущ инвентар
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <input type="text" id="searchInput" class="input-control" placeholder="🔍 Търсене по код или име..." onkeyup="renderTables()">
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Код</th>
+                                <th>Наименование</th>
+                                <th style="text-align: center;">Наличност</th>
+                                <th style="text-align: right;">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-history"></i> Последна история
+                </div>
+                <div class="table-wrapper" style="max-height: 220px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Час</th>
+                                <th>Код</th>
+                                <th>Действие</th>
+                                <th style="text-align: right;">Количество</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let inventory = JSON.parse(localStorage.getItem('bg_scanner_inventory')) || {};
+        let logs = JSON.parse(localStorage.getItem('bg_scanner_logs')) || [];
+        let html5QrcodeScanner = null;
+
+        function saveData() {
+            localStorage.setItem('bg_scanner_inventory', JSON.stringify(inventory));
+            localStorage.setItem('bg_scanner_logs', JSON.stringify(logs));
+            renderTables();
+        }
+
+        function setQty(val) { document.getElementById('qtyInput').value = val; }
+
+        // СКЕНЕР С КАМЕРА
+        function toggleCamera() {
+            const readerDiv = document.getElementById('reader');
+            const btn = document.getElementById('cameraToggleBtn');
+
+            if (readerDiv.style.display === 'block') {
+                stopCamera();
+            } else {
+                readerDiv.style.display = 'block';
+                btn.innerHTML = '<i class="fa-solid fa-camera-rotate"></i> Спри камерата';
+                btn.style.backgroundColor = '#fee2e2';
+                btn.style.color = '#b91c1c';
+
+                html5QrcodeScanner = new Html5Qrcode("reader");
+                const config = { fps: 10, qrbox: { width: 250, height: 150 } };
+
+                html5QrcodeScanner.start(
+                    { facingMode: "environment" }, 
+                    config,
+                    (decodedText) => {
+                        document.getElementById('barcodeInput').value = decodedText;
+                        stopCamera();
+                        
+                        // Звуков сигнал при успешно сканиране
+                        try {
+                            let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                            let osc = audioCtx.createOscillator();
+                            osc.type = "sine";
+                            osc.frequency.value = 800;
+                            osc.connect(audioCtx.destination);
+                            osc.start();
+                            osc.stop(audioCtx.currentTime + 0.1);
+                        } catch(e){}
+                    },
+                    (errorMessage) => { /* сканиране в ход */ }
+                ).catch(err => {
+                    alert('Грешка при пускане на камерата (уверете се, че сте дали разрешение): ' + err);
+                    stopCamera();
+                });
+            }
+        }
+
+        function stopCamera() {
+            const readerDiv = document.getElementById('reader');
+            const btn = document.getElementById('cameraToggleBtn');
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    html5QrcodeScanner.clear();
+                    readerDiv.style.display = 'none';
+                    btn.innerHTML = '<i class="fa-solid fa-camera"></i> Сканирай с Камера';
+                    btn.style.backgroundColor = 'white';
+                    btn.style.color = 'var(--primary)';
+                }).catch(() => {
+                    readerDiv.style.display = 'none';
+                    btn.innerHTML = '<i class="fa-solid fa-camera"></i> Сканирай с Камера';
+                    btn.style.backgroundColor = 'white';
+                    btn.style.color = 'var(--primary)';
+                });
+            } else {
+                readerDiv.style.display = 'none';
+                btn.innerHTML = '<i class="fa-solid fa-camera"></i> Сканирай с Камера';
+                btn.style.backgroundColor = 'white';
+                btn.style.color = 'var(--primary)';
+            }
+        }
+
+        function processStock(action) {
+            const barcode = document.getElementById('barcodeInput').value.trim();
+            const name = document.getElementById('itemNameInput').value.trim();
+            let qty = parseInt(document.getElementById('qtyInput').value);
+
+            if (!barcode) {
+                alert('Моля, въведете или сканирайте баркод!');
+                document.getElementById('barcodeInput').focus();
+                return;
+            }
+
+            if (isNaN(qty) || qty <= 0) {
+                alert('Моля, въведете валидно количество!');
+                return;
+            }
+
+            if (!inventory[barcode]) {
+                inventory[barcode] = { name: name || 'Артикул ' + barcode, qty: 0 };
+            } else if (name) {
+                inventory[barcode].name = name;
+            }
+
+            if (action === 'ADD') inventory[barcode].qty += qty;
+            else if (action === 'SUB') inventory[barcode].qty -= qty;
+
+            logs.unshift({
+                timestamp: new Date().toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                barcode: barcode,
+                name: inventory[barcode].name,
+                action: action,
+                qty: qty
+            });
+
+            document.getElementById('barcodeInput').value = '';
+            document.getElementById('itemNameInput').value = '';
+            document.getElementById('qtyInput').value = '1';
+            document.getElementById('barcodeInput').focus();
+
+            saveData();
+        }
+
+        function quickChange(barcode, delta) {
+            if (!inventory[barcode]) return;
+            inventory[barcode].qty += delta;
+            logs.unshift({
+                timestamp: new Date().toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                barcode: barcode,
+                name: inventory[barcode].name,
+                action: delta > 0 ? 'ADD' : 'SUB',
+                qty: Math.abs(delta)
+            });
+            saveData();
+        }
+
+        function deleteItem(barcode) {
+            if (confirm(`Сигурни ли сте, че искате да изтриете код ${barcode}?`)) {
+                delete inventory[barcode];
+                saveData();
+            }
+        }
+
+        function renderTables() {
+            const invBody = document.getElementById('inventoryTableBody');
+            const logsBody = document.getElementById('logsTableBody');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+
+            invBody.innerHTML = '';
+            logsBody.innerHTML = '';
+
+            let totalItemsCount = 0;
+            let totalQtySum = 0;
+
+            Object.keys(inventory).forEach(code => {
+                const item = inventory[code];
+                if (code.toLowerCase().includes(search) || item.name.toLowerCase().includes(search)) {
+                    totalItemsCount++;
+                    totalQtySum += item.qty;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${code}</strong></td>
+                        <td>${item.name}</td>
+                        <td style="text-align: center; font-size: 16px; font-weight: bold; color: ${item.qty < 0 ? 'var(--danger)' : 'var(--text)'};">${item.qty}</td>
+                        <td style="text-align: right;">
+                            <button class="action-icon" onclick="quickChange('${code}', 1)" title="Добави 1"><i class="fa-solid fa-circle-plus" style="color: var(--success);"></i></button>
+                            <button class="action-icon" onclick="quickChange('${code}', -1)" title="Извади 1"><i class="fa-solid fa-circle-minus" style="color: var(--danger);"></i></button>
+                            <button class="action-icon delete" onclick="deleteItem('${code}')" title="Изтрий"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    `;
+                    invBody.appendChild(tr);
+                }
+            });
+
+            if (totalItemsCount === 0) {
+                invBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--text-light);">Няма намерени артикули</td></tr>';
+            }
+
+            logs.slice(0, 30).forEach(log => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="color: var(--text-light); font-size: 12px;">${log.timestamp}</td>
+                    <td><strong>${log.barcode}</strong></td>
+                    <td><span class="badge ${log.action === 'ADD' ? 'badge-add' : 'badge-sub'}">${log.action === 'ADD' ? '+ Прибавено' : '- Извадено'}</span></td>
+                    <td style="text-align: right; font-weight: bold;">${log.qty} бр.</td>
+                `;
+                logsBody.appendChild(tr);
+            });
+
+            if (logs.length === 0) {
+                logsBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--text-light);">Няма записани движения</td></tr>';
+            }
+
+            document.getElementById('statTotalItems').innerText = totalItemsCount;
+            document.getElementById('statTotalQty').innerText = totalQtySum;
+            document.getElementById('statLogsCount').innerText = logs.length;
+        }
+
+        function exportExcel() {
+            let csvContent = "\uFEFFКод;Наименование;Количество\n";
+            Object.keys(inventory).forEach(code => {
+                const item = inventory[code];
+                csvContent += `"${code}";"${item.name}";"${item.qty}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `Инвентар_БГ_СКЕНЕР_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportBackup() {
+            const data = { inventory: inventory, logs: logs, exportDate: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `BG_SCANNER_ARCHIVE_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function importBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.inventory) {
+                        if (confirm('Внимание! Това ще замени текущите данни с данните от архива. Желаете ли продължение?')) {
+                            inventory = data.inventory || {};
+                            logs = data.logs || [];
+                            saveData();
+                            alert('Данните са възстановени успешно!');
+                        }
+                    } else { alert('Невалиден формат на файла.'); }
+                } catch (err) { alert('Грешка при четене на файла.'); }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            if (confirm('ВНИМАНИЕ! Сигурни ли сте
