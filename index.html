@@ -429,15 +429,7 @@
     </div>
 
     <script>
-        let inventory = JSON.parse(localStorage.getItem('bg_scanner_inventory')) || {};
-        let logs = JSON.parse(localStorage.getItem('bg_scanner_logs')) || [];
-        let videoStream = null;
-        let barcodeDetector = null;
-        let isScanning = false;
-        let currentMode = 'ADD';
-        let scanCooldown = false;
-
-        // ПРОВЕРКА НА ЛИЦЕНЗНИЯ КОД
+        // 1. ЛОГИКА ЗА ПРОВЕРКА НА ЛИЦЕНЗА
         async function verifyKeyWithGitHub(key) {
             try {
                 const response = await fetch(`keys.json?nocache=${Date.now()}`);
@@ -502,6 +494,15 @@
                 document.getElementById('licenseOverlay').style.display = 'flex';
             }
         }
+
+        // 2. ОСНОВНА ЛОГИКА НА ПРИЛОЖЕНИЕТО
+        let inventory = JSON.parse(localStorage.getItem('bg_scanner_inventory')) || {};
+        let logs = JSON.parse(localStorage.getItem('bg_scanner_logs')) || [];
+        let videoStream = null;
+        let barcodeDetector = null;
+        let isScanning = false;
+        let currentMode = 'ADD';
+        let scanCooldown = false;
 
         function saveData() {
             localStorage.setItem('bg_scanner_inventory', JSON.stringify(inventory));
@@ -710,3 +711,96 @@
                         <td style="text-align: right;">
                             <button class="action-icon" onclick="quickChange('${code}', 1)" title="Добави 1"><i class="fa-solid fa-circle-plus" style="color: var(--success);"></i></button>
                             <button class="action-icon" onclick="quickChange('${code}', -1)" title="Извади 1"><i class="fa-solid fa-circle-minus" style="color: var(--danger);"></i></button>
+                            <button class="action-icon delete" onclick="deleteItem('${code}')" title="Изтрий"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    `;
+                    invBody.appendChild(tr);
+                }
+            });
+
+            if (totalItemsCount === 0) {
+                invBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--text-light);">Няма намерени артикули</td></tr>';
+            }
+
+            logs.slice(0, 30).forEach(log => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="color: var(--text-light); font-size: 12px;">${log.timestamp}</td>
+                    <td><strong>${log.barcode}</strong></td>
+                    <td><span class="badge ${log.action === 'ADD' ? 'badge-add' : 'badge-sub'}">${log.action === 'ADD' ? '+ Прибавено' : '- Извадено'}</span></td>
+                    <td style="text-align: right; font-weight: bold;">${log.qty} бр.</td>
+                `;
+                logsBody.appendChild(tr);
+            });
+
+            if (logs.length === 0) {
+                logsBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--text-light);">Няма записани движения</td></tr>';
+            }
+
+            document.getElementById('statTotalItems').innerText = totalItemsCount;
+            document.getElementById('statTotalQty').innerText = totalQtySum;
+            document.getElementById('statLogsCount').innerText = logs.length;
+        }
+
+        function exportExcel() {
+            let csvContent = "\uFEFFКод;Наименование;Количество\n";
+            Object.keys(inventory).forEach(code => {
+                const item = inventory[code];
+                csvContent += `"${code}";"${item.name}";"${item.qty}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `BARCODE_SCANNER_INVENTORY_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportBackup() {
+            const data = { inventory: inventory, logs: logs, exportDate: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `BARCODE_SCANNER_ARCHIVE_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function importBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.inventory) {
+                        if (confirm('Внимание! Това ще замени текущите данни с данните от архива. Желаете ли продължение?')) {
+                            inventory = data.inventory || {};
+                            logs = data.logs || [];
+                            saveData();
+                            alert('Данните са възстановени успешно!');
+                        }
+                    } else { alert('Невалиден формат на файла.'); }
+                } catch (err) { alert('Грешка при четене на файла.'); }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            if (confirm('ВНИМАНИЕ! Сигурни ли сте, че искате да изтриете ВСИЧКИ наличности и история?')) {
+                inventory = {};
+                logs = [];
+                saveData();
+            }
+        }
+
+        // СТАРТИРАНЕ НА ПРОВЕРКАТА ЗА ЛИЦЕНЗ И ТАБЛИЦИТЕ
+        checkLicenseOnStart();
+        renderTables();
+    </script>
+</body>
+</html>
