@@ -2,32 +2,61 @@
 <html lang="bg">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>БАРКОД-СКЕНЕР — Инвентарен Контрол</title>
+    
+    <!-- PWA Настройки -->
     <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
     <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Външни библиотеки -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://unpkg.com/@zxing/library@latest"></script>
+
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
             --success: #10b981;
             --danger: #ef4444;
-            --bg: #f3f4f6;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
             --card-bg: #ffffff;
-            --text: #1f2937;
-            --border: #e5e7eb;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 15px; max-width: 900px; margin: 0 auto; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* Лицензен екран (Lock screen) */
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            padding: 12px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding-bottom: 40px;
+        }
+
+        /* ЕКРАН ЗА ЛИЦЕНЗЕН КОД */
         #licenseOverlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -37,147 +66,432 @@
 
         .license-card {
             background: white;
-            padding: 30px 25px;
-            border-radius: 16px;
-            max-width: 400px;
+            padding: 32px 24px;
+            border-radius: 20px;
+            max-width: 380px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .license-card i.lock-icon { font-size: 48px; color: var(--primary); margin-bottom: 15px; }
-        .license-card h2 { font-size: 20px; margin-bottom: 8px; color: var(--text); }
-        .license-card p { font-size: 13px; color: #6b7280; margin-bottom: 20px; }
+        @keyframes popIn {
+            from { transform: scale(0.85); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .license-card .icon-box {
+            width: 64px;
+            height: 64px;
+            background: #eff6ff;
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 16px;
+        }
+
+        .license-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
+        .license-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.4; }
 
         .license-input {
             width: 100%;
-            padding: 12px;
-            font-size: 22px;
-            letter-spacing: 6px;
+            padding: 14px;
+            font-size: 24px;
+            letter-spacing: 8px;
             text-align: center;
             border: 2px solid var(--border);
-            border-radius: 10px;
-            margin-bottom: 15px;
+            border-radius: 12px;
+            margin-bottom: 16px;
             outline: none;
-            font-weight: bold;
+            font-weight: 700;
+            color: var(--primary);
+            transition: all 0.2s;
         }
-        .license-input:focus { border-color: var(--primary); }
+        .license-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
 
         .license-btn {
             width: 100%;
             background: var(--primary);
             color: white;
             border: none;
-            padding: 12px;
+            padding: 14px;
             font-size: 15px;
             font-weight: 600;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .license-btn:hover { background: var(--primary-hover); }
-        .license-error { color: var(--danger); font-size: 13px; margin-top: 10px; display: none; }
+        .license-btn:active { background: var(--primary-dark); }
+        .license-error { color: var(--danger); font-size: 13px; font-weight: 600; margin-top: 12px; display: none; }
 
-        /* Основен интерфейс */
+        /* ОРИГИНАЛЕН ШАБЛОН И СТИЛОВЕ */
         header {
-            background: linear-gradient(135deg, #4f46e5, #3b82f6);
+            background: linear-gradient(135deg, #1e40af, #2563eb);
             color: white;
-            padding: 18px 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
-        .brand { display: flex; align-items: center; gap: 12px; }
-        .brand img { width: 36px; height: 36px; border-radius: 8px; }
-        .brand h1 { font-size: 20px; font-weight: 700; }
+        .brand-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-        .btn-instructions {
-            background: rgba(255, 255, 255, 0.2);
+        .brand-title img {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: white;
+            padding: 2px;
+        }
+
+        .brand-title h1 {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-header {
+            background: rgba(255, 255, 255, 0.15);
             color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 8px 12px;
             border-radius: 8px;
-            text-decoration: none;
             font-size: 13px;
             font-weight: 600;
+            text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-header:hover {
+            background: rgba(255, 255, 255, 0.25);
         }
 
         .card {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
             border: 1px solid var(--border);
-            margin-bottom: 15px;
+            box-shadow: var(--shadow);
         }
 
-        .mode-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .mode-btn {
+        .mode-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .btn-mode {
             padding: 12px;
             border: 2px solid var(--border);
             border-radius: 10px;
             background: white;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-mode.active-add {
+            background: #f0fdf4;
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .btn-mode.active-sub {
+            background: #fef2f2;
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .scanner-container {
+            position: relative;
+            width: 100%;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+            margin-bottom: 16px;
+        }
+
+        #interactive {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .scanner-laser {
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            right: 5%;
+            height: 2px;
+            background: var(--danger);
+            box-shadow: 0 0 8px var(--danger);
+            animation: scan 2s infinite ease-in-out;
+        }
+
+        @keyframes scan {
+            0%, 100% { top: 15%; }
+            50% { top: 85%; }
+        }
+
+        .btn-camera {
+            width: 100%;
+            padding: 12px;
+            background: #eff6ff;
+            color: var(--primary);
+            border: 1px dashed var(--primary);
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            transition: all 0.2s;
+        }
+
+        .btn-camera:hover {
+            background: #dbeafe;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .input-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .input-control:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            color: #6b7280;
-            transition: all 0.2s;
+            transition: background 0.2s;
+            margin-top: 8px;
         }
-        .mode-btn.active-add { background: #ecfdf5; border-color: var(--success); color: var(--success); }
-        .mode-btn.active-sub { background: #fef2f2; border-color: var(--danger); color: var(--danger); }
 
-        .form-group { margin-bottom: 12px; }
-        .form-group label { font-size: 12px; font-weight: 600; color: #4b5563; margin-bottom: 4px; display: block; }
-        .input-field {
-            width: 100%;
-            padding: 10px 12px;
+        .btn-submit:hover {
+            background: var(--primary-dark);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: #f8fafc;
             border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 15px;
-            outline: none;
-        }
-
-        .action-btn {
-            width: 100%;
             padding: 12px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 5px;
+            border-radius: 10px;
+            text-align: center;
         }
 
-        #interactive { width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; display: none; margin-top: 10px; }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+        }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid var(--border); }
-        th { background: #f9fafb; color: #4b5563; font-weight: 600; }
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
 
-        .table-actions { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
-        .btn-sm {
-            padding: 8px 12px;
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        th {
+            background: #f1f5f9;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 12px;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .badge-qty {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 4px 8px;
             border-radius: 6px;
-            border: 1px solid var(--border);
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .actions-toolbar {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            flex: 1;
+            min-width: 130px;
+            padding: 10px;
             background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
             font-size: 12px;
             font-weight: 600;
+            color: var(--text-main);
             cursor: pointer;
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 5px;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
         }
+
+        .btn-action:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-danger {
+            color: var(--danger);
+            border-color: #fecaca;
+        }
+
+        .btn-danger:hover {
+            background: #fef2f2;
+        }
+
+        /* Модален прозорец за история */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 16px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .log-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border);
+            font-size: 13px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .dot-online { background: var(--success); }
+        .dot-offline { background: var(--warning); }
     </style>
 </head>
 <body>
@@ -185,76 +499,135 @@
     <!-- МОДАЛЕН ЕКРАН ЗА ЛИЦЕНЗЕН КОД -->
     <div id="licenseOverlay">
         <div class="license-card">
-            <i class="fa-solid fa-key lock-icon"></i>
-            <h2>Въведете Код за Достъп</h2>
-            <p>За да използвате приложението, въведете вашия 4-цифрен лицензен код.</p>
-            <input type="text" id="licenseInput" class="license-input" maxlength="4" placeholder="0000">
-            <button class="license-btn" onclick="validateLicense()">Активирай</button>
+            <div class="icon-box">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h2>Достъп до Приложението</h2>
+            <p>Моля, въведете вашия 4-цифрен лицензен код, за да отключите инвентарната система.</p>
+            <input type="text" id="licenseInput" class="license-input" maxlength="4" placeholder="0000" pattern="[0-9]*" inputmode="numeric">
+            <button class="license-btn" onclick="validateLicense()">
+                <i class="fa-solid fa-lock-open"></i> Активирай Достъпа
+            </button>
             <div id="licenseError" class="license-error">Невалиден или деактивиран код!</div>
         </div>
     </div>
 
-    <!-- ОСНОВНО ПРИЛОЖЕНИЕ -->
+    <!-- ШАПКА / HEADER -->
     <header>
-        <div class="brand">
+        <div class="brand-title">
             <img src="favicon.png" alt="Лого">
-            <h1>БАРКОД-СКЕНЕР</h1>
+            <div>
+                <h1>БАРКОД-СКЕНЕР</h1>
+                <div style="font-size: 11px; opacity: 0.85;">
+                    <span id="connectionStatus"><span class="status-dot dot-online"></span> Готов за работа</span>
+                </div>
+            </div>
         </div>
-        <a href="instructions.html" class="btn-instructions"><i class="fa-solid fa-book"></i> Инструкции</a>
+        <div class="header-actions">
+            <a href="instructions.html" class="btn-header">
+                <i class="fa-solid fa-circle-info"></i> Помощ
+            </a>
+        </div>
     </header>
 
+    <!-- СЕКЦИЯ ЗА СКАНИРАНЕ I ВЪВЕЖДАНЕ -->
     <div class="card">
-        <div class="mode-toggle">
-            <button id="btnAddMode" class="mode-btn active-add" onclick="setMode('add')">
-                <i class="fa-solid fa-plus-circle"></i> ПРИБАВИ
+        <div class="mode-selector">
+            <button id="btnAddMode" class="btn-mode active-add" onclick="setMode('add')">
+                <i class="fa-solid fa-plus-circle"></i> ПРИБАВИ (+1)
             </button>
-            <button id="btnSubMode" class="mode-btn" onclick="setMode('sub')">
-                <i class="fa-solid fa-minus-circle"></i> ИЗВАДИ
+            <button id="btnSubMode" class="btn-mode" onclick="setMode('sub')">
+                <i class="fa-solid fa-minus-circle"></i> ИЗВАДИ (-1)
             </button>
         </div>
 
-        <div style="text-align: center; margin-bottom: 10px;">
-            <button class="btn-sm" style="width:100%; padding:10px; background:#e0e7ff; color:var(--primary); border:none;" onclick="toggleCamera()">
-                <i class="fa-solid fa-camera"></i> Пусни / Спри Камерата
-            </button>
+        <button class="btn-camera" onclick="toggleCamera()">
+            <i class="fa-solid fa-camera"></i> <span id="cameraBtnText">Включи Камерата за Сканиране</span>
+        </button>
+
+        <div id="scannerContainer" class="scanner-container">
             <video id="interactive"></video>
+            <div class="scanner-laser"></div>
         </div>
 
         <div class="form-group">
-            <label>Баркод / Код на артикул:</label>
-            <input type="text" id="barcodeInput" class="input-field" placeholder="Сканирайте или въведете..." onkeydown="if(event.key === 'Enter') processScan()">
+            <label>Баркод / Код на артикул</label>
+            <input type="text" id="barcodeInput" class="input-control" placeholder="Сканирайте или въведете..." autocomplete="off" onkeydown="if(event.key === 'Enter') processScan()">
         </div>
 
         <div class="form-group">
-            <label>Наименование (Опционално):</label>
-            <input type="text" id="nameInput" class="input-field" placeholder="Име на продукта...">
+            <label>Име на продукт (Опционално)</label>
+            <input type="text" id="nameInput" class="input-control" placeholder="напр. Чорапи Size 48-49...">
         </div>
 
-        <button class="action-btn" onclick="processScan()"><i class="fa-solid fa-check"></i> Потвърди операцията</button>
+        <button class="btn-submit" onclick="processScan()">
+            <i class="fa-solid fa-check"></i> Запиши Операцията
+        </button>
     </div>
 
+    <!-- ТАБЛО И ТАБЛИЦА С ИНВЕНТАР -->
     <div class="card">
-        <h3 style="font-size:16px; margin-bottom:10px;"><i class="fa-solid fa-boxes-stacked"></i> Текущ Инвентар</h3>
-        <div style="overflow-x:auto;">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div id="totalItems" class="stat-value">0</div>
+                <div class="stat-label">Уникални Артикула</div>
+            </div>
+            <div class="stat-card">
+                <div id="totalQty" class="stat-value">0</div>
+                <div class="stat-label">Общо Бройки</div>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h3 style="font-size: 15px; font-weight: 700;"><i class="fa-solid fa-list-check"></i> Наличен Инвентар</h3>
+            <button class="btn-action" style="min-width: auto; padding: 4px 8px;" onclick="openLogModal()">
+                <i class="fa-solid fa-clock-rotate-left"></i> История
+            </button>
+        </div>
+
+        <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
-                        <th>Код</th>
+                        <th>Баркод</th>
                         <th>Наименование</th>
                         <th>Количество</th>
+                        <th style="text-align: right;">Действие</th>
                     </tr>
                 </thead>
                 <tbody id="inventoryTable">
-                    <!-- Данните се зареждат диначично -->
+                    <!-- Зарежда се динамично -->
                 </tbody>
             </table>
         </div>
 
-        <div class="table-actions">
-            <button class="btn-sm" onclick="exportExcel()"><i class="fa-solid fa-file-excel"></i> Експорт Excel (.CSV)</button>
-            <button class="btn-sm" onclick="exportBackup()"><i class="fa-solid fa-download"></i> Запази архив (.JSON)</button>
-            <button class="btn-sm" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload"></i> Възстанови</button>
-            <input type="file" id="importFile" style="display:none" onchange="importBackup(event)">
+        <div class="actions-toolbar">
+            <button class="btn-action" onclick="exportExcel()">
+                <i class="fa-solid fa-file-excel" style="color: #10b981;"></i> Свали Excel (.CSV)
+            </button>
+            <button class="btn-action" onclick="exportBackup()">
+                <i class="fa-solid fa-download" style="color: #2563eb;"></i> Архив (.JSON)
+            </button>
+            <button class="btn-action" onclick="document.getElementById('importFile').click()">
+                <i class="fa-solid fa-upload" style="color: #f59e0b;"></i> Възстанови
+            </button>
+            <input type="file" id="importFile" style="display:none" onchange="importBackup(event)" accept=".json">
+            <button class="btn-action btn-danger" onclick="clearInventory()">
+                <i class="fa-solid fa-trash-can"></i> Изчисти
+            </button>
+        </div>
+    </div>
+
+    <!-- МОДАЛЕН ПРОЗОРЕЦ ЗА ИСТОРИЯ НА ОПЕРАЦИИТЕ -->
+    <div id="logModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="font-size: 16px;"><i class="fa-solid fa-history"></i> История на Сканиранията</h3>
+                <button class="btn-action" style="min-width:auto; padding:4px 8px;" onclick="closeLogModal()">✕</button>
+            </div>
+            <div id="logList" class="modal-body">
+                <!-- Историята се зарежда тук -->
+            </div>
         </div>
     </div>
 
@@ -265,7 +638,7 @@
         let codeReader = null;
         let isCameraOn = false;
 
-        // ПРОВЕРКА НА ЛИЦЕНЗНИЯ КОД
+        // ПРОВЕРКА НА ЛИЦЕНЗИРАНЕТО
         async function checkLicenseOnStart() {
             const savedKey = localStorage.getItem('licenseKey');
             if (savedKey) {
@@ -300,135 +673,28 @@
             }
         }
 
-  async function verifyKeyWithGitHub(key) {
-    try {
-        const response = await fetch(`keys.json?t=${new Date().getTime()}`);
-        if (!response.ok) return false;
-        const keysData = await response.json();
-        // Проверява дали кодът съществува и дали "active" е true
-        return keysData[key] && keysData[key].active === true;
-    } catch (err) {
-        console.error("Грешка при проверка на лиценза:", err);
-        return false;
-    }
-}
+        async function verifyKeyWithGitHub(key) {
+            try {
+                const response = await fetch(`keys.json?t=${new Date().getTime()}`);
+                if (!response.ok) return false;
+                const keysData = await response.json();
+                return keysData[key] && keysData[key].active === true;
+            } catch (err) {
+                console.error("Грешка при проверка на лиценза:", err);
+                return false;
+            }
+        }
 
-        // ЛОГИКА НА СКЕНЕРА
+        // ЛОГИКА НА СКЕНЕРА И ИНВЕНТАРА
         function setMode(mode) {
             currentMode = mode;
-            document.getElementById('btnAddMode').className = mode === 'add' ? 'mode-btn active-add' : 'mode-btn';
-            document.getElementById('btnSubMode').className = mode === 'sub' ? 'mode-btn active-sub' : 'mode-btn';
+            document.getElementById('btnAddMode').className = mode === 'add' ? 'btn-mode active-add' : 'btn-mode';
+            document.getElementById('btnSubMode').className = mode === 'sub' ? 'btn-mode active-sub' : 'btn-mode';
         }
 
         function renderTable() {
             const tbody = document.getElementById('inventoryTable');
             tbody.innerHTML = '';
-            Object.keys(inventory).forEach(code => {
-                const item = inventory[code];
-                const row = `<tr>
-                    <td><strong>${code}</strong></td>
-                    <td>${item.name || '-'}</td>
-                    <td><span style="font-weight:bold; color:${item.qty < 0 ? 'red' : 'inherit'}">${item.qty}</span></td>
-                </tr>`;
-                tbody.innerHTML += row;
-            });
-        }
-
-        function processScan() {
-            const barcode = document.getElementById('barcodeInput').value.trim();
-            const name = document.getElementById('nameInput').value.trim();
-
-            if (!barcode) return;
-
-            if (!inventory[barcode]) {
-                inventory[barcode] = { name: name, qty: 0 };
-            } else if (name) {
-                inventory[barcode].name = name;
-            }
-
-            if (currentMode === 'add') {
-                inventory[barcode].qty += 1;
-            } else {
-                inventory[barcode].qty -= 1;
-            }
-
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            document.getElementById('barcodeInput').value = '';
-            document.getElementById('nameInput').value = '';
-            document.getElementById('barcodeInput').focus();
-            renderTable();
-        }
-
-        function exportExcel() {
-            let csvContent = "\uFEFFКод;Наименование;Количество\n";
-            Object.keys(inventory).forEach(code => {
-                const item = inventory[code];
-                csvContent += `"${code}";"${item.name}";"${item.qty}"\n`;
-            });
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", `BARCODE_SCANNER_INVENTORY_${new Date().toISOString().slice(0,10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function exportBackup() {
-            const data = { inventory: inventory, logs: logs, exportDate: new Date().toISOString() };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", `BARCODE_SCANNER_ARCHIVE_${new Date().toISOString().slice(0,10)}.json`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function importBackup(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (data.inventory) {
-                        inventory = data.inventory;
-                        localStorage.setItem('inventory', JSON.stringify(inventory));
-                        renderTable();
-                        alert("Архивът е възстановен успешно!");
-                    }
-                } catch (err) {
-                    alert("Грешка при зареждане на архива!");
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function toggleCamera() {
-            const videoElem = document.getElementById('interactive');
-            if (isCameraOn) {
-                if (codeReader) codeReader.reset();
-                videoElem.style.display = 'none';
-                isCameraOn = false;
-            } else {
-                videoElem.style.display = 'block';
-                codeReader = new ZXing.BrowserMultiFormatReader();
-                codeReader.decodeFromVideoDevice(null, 'interactive', (result, err) => {
-                    if (result) {
-                        document.getElementById('barcodeInput').value = result.text;
-                        processScan();
-                    }
-                });
-                isCameraOn = true;
-            }
-        }
-
-        // ПЪРВОНАЧАЛНО ЗАРЕЖДАНЕ
-        checkLicenseOnStart();
-        renderTable();
-    </script>
-</body>
-</html>
+            
+            let uniqueCount = 0;
+            let totalQuantity = 0;
