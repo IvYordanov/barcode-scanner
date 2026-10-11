@@ -2,52 +2,36 @@
 <html lang="bg">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>БАРКОД-СКЕНЕР — Инвентарен Контрол</title>
-    
-    <!-- PWA Настройки -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
+    
+    <!-- PWA Настройки за скриване на адресната лента -->
+    <link rel="manifest" href="manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#4f46e5">
 
-    <!-- Външни библиотеки -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>БАРКОД-СКЕНЕР</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/@zxing/library@latest"></script>
-
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
             --success: #10b981;
+            --success-hover: #059669;
             --danger: #ef4444;
-            --warning: #f59e0b;
-            --bg: #f8fafc;
+            --danger-hover: #dc2626;
+            --bg: #f3f4f6;
             --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --radius: 12px;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            padding: 12px;
-            max-width: 800px;
-            margin: 0 auto;
-            padding-bottom: 40px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 15px; max-width: 1200px; margin: 0 auto; }
 
         /* ЕКРАН ЗА ЛИЦЕНЗЕН КОД */
         #licenseOverlay {
@@ -66,135 +50,213 @@
         .license-card {
             background: white;
             padding: 32px 24px;
-            border-radius: 20px;
+            border-radius: 16px;
             max-width: 380px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
         .license-card .icon-box {
-            width: 64px; height: 64px;
-            background: #eff6ff; color: var(--primary);
+            width: 60px; height: 60px;
+            background: #e0e7ff; color: var(--primary);
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 28px; margin: 0 auto 16px;
+            font-size: 26px; margin: 0 auto 16px;
         }
 
-        .license-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
-        .license-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.4; }
+        .license-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+        .license-card p { font-size: 13px; color: var(--text-light); margin-bottom: 20px; line-height: 1.4; }
 
         .license-input {
-            width: 100%; padding: 14px;
+            width: 100%; padding: 12px;
             font-size: 24px; letter-spacing: 8px; text-align: center;
-            border: 2px solid var(--border); border-radius: 12px;
-            margin-bottom: 16px; outline: none; font-weight: 700;
+            border: 2px solid var(--border); border-radius: 10px;
+            margin-bottom: 15px; outline: none; font-weight: 700;
             color: var(--primary); transition: all 0.2s;
         }
+        .license-input:focus { border-color: var(--primary); }
 
         .license-btn {
             width: 100%; background: var(--primary); color: white;
-            border: none; padding: 14px; font-size: 15px; font-weight: 600;
-            border-radius: 12px; cursor: pointer; transition: background 0.2s;
+            border: none; padding: 12px; font-size: 15px; font-weight: 600;
+            border-radius: 10px; cursor: pointer; transition: background 0.2s;
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
+        .license-btn:hover { background: var(--primary-hover); }
 
         .license-error { color: var(--danger); font-size: 13px; font-weight: 600; margin-top: 12px; display: none; }
 
-        /* ОРИГИНАЛЕН ШАБЛОН И СТИЛОВЕ */
+        /* ОРИГИНАЛНИ СТИЛОВЕ */
         header {
-            background: linear-gradient(135deg, #1e40af, #2563eb);
-            color: white; padding: 16px 20px;
-            border-radius: var(--radius); box-shadow: var(--shadow);
-            margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;
+            background: linear-gradient(135deg, #4f46e5, #3b82f6);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .brand-title { display: flex; align-items: center; gap: 12px; }
-        .brand-title img { width: 38px; height: 38px; border-radius: 10px; background: white; padding: 2px; }
-        .brand-title h1 { font-size: 18px; font-weight: 700; }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand img { width: 38px; height: 38px; border-radius: 8px; }
+        .brand h1 { font-size: 24px; font-weight: 700; }
 
-        .btn-header {
-            background: rgba(255, 255, 255, 0.15); color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 600;
-            text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+        .btn-help {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
+        .btn-help:hover { background: rgba(255, 255, 255, 0.35); }
+
+        .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 850px) { .grid { grid-template-columns: 360px 1fr; } }
 
         .card {
-            background: var(--card-bg); border-radius: var(--radius);
-            padding: 16px; margin-bottom: 16px; border: 1px solid var(--border); box-shadow: var(--shadow);
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
         }
 
-        .mode-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-
-        .btn-mode {
-            padding: 12px; border: 2px solid var(--border); border-radius: 10px;
-            background: white; font-size: 14px; font-weight: 700; color: var(--text-muted);
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
         }
 
-        .btn-mode.active-add { background: #f0fdf4; border-color: var(--success); color: var(--success); }
-        .btn-mode.active-sub { background: #fef2f2; border-color: var(--danger); color: var(--danger); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-light); }
 
-        .scanner-container {
-            position: relative; width: 100%; background: #000;
-            border-radius: 10px; overflow: hidden; display: none; margin-bottom: 16px;
+        .input-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s;
         }
 
-        #interactive { width: 100%; height: 220px; object-fit: cover; }
-
-        .btn-camera {
-            width: 100%; padding: 12px; background: #eff6ff; color: var(--primary);
-            border: 1px dashed var(--primary); border-radius: 10px; font-weight: 600; font-size: 14px;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px;
+        .input-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
 
-        .input-control { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; outline: none; }
-
-        .btn-submit {
-            width: 100%; padding: 14px; background: var(--primary); color: white;
-            border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px;
+        .btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+            opacity: 0.55;
         }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-        .stat-card { background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: 10px; text-align: center; }
-        .stat-value { font-size: 20px; font-weight: 800; color: var(--primary); }
-        .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-
-        .table-wrapper { overflow-x: auto; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
-        th { background: #f1f5f9; color: var(--text-muted); font-weight: 700; font-size: 12px; padding: 10px 12px; border-bottom: 1px solid var(--border); text-transform: uppercase; }
-        td { padding: 12px; border-bottom: 1px solid var(--border); }
-
-        .badge-qty { background: #e0e7ff; color: #3730a3; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 13px; }
-
-        .actions-toolbar { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
-        .btn-action {
-            flex: 1; min-width: 130px; padding: 10px; background: white; border: 1px solid var(--border);
-            border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--text-main); cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
+        .btn.active-mode {
+            opacity: 1;
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.2), inset 0 0 0 2px #fff;
+            transform: scale(1.02);
         }
-        .btn-danger { color: var(--danger); border-color: #fecaca; }
 
-        .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);
-            display: none; align-items: center; justify-content: center; z-index: 1000; padding: 15px;
-        }
-        .modal-content {
-            background: white; border-radius: var(--radius); max-width: 600px; width: 100%;
-            max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-        .modal-header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .modal-body { padding: 16px; overflow-y: auto; flex: 1; }
-        .log-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 13px; }
+        .btn-primary { background: var(--primary); color: white; opacity: 1; }
+        .btn-primary:hover { background: var(--primary-hover); }
 
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
-        .dot-online { background: var(--success); }
-        .dot-offline { background: var(--warning); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: var(--success-hover); }
+
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: var(--danger-hover); }
+
+        .btn-outline { background: white; border: 1px solid var(--border); color: var(--text); opacity: 1; }
+        .btn-outline:hover { background: #f9fafb; }
+
+        .quick-qty { display: flex; gap: 6px; margin-top: 8px; }
+        .btn-sm-qty {
+            flex: 1;
+            padding: 8px;
+            font-size: 13px;
+            background: #f3f4f6;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-sm-qty:hover { background: #e5e7eb; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 15px; border-radius: 10px; border: 1px solid var(--border); text-align: center; }
+        .stat-value { font-size: 22px; font-weight: 700; color: var(--primary); }
+        .stat-label { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+
+        .table-wrapper { overflow-x: auto; max-height: 380px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th { background: #f9fafb; padding: 10px 12px; font-weight: 600; color: var(--text-light); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 5; }
+        td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+        tr:hover { background: #f9fafb; }
+
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .badge-add { background: #d1fae5; color: #065f46; }
+        .badge-sub { background: #fee2e2; color: #991b1b; }
+
+        .action-icon { cursor: pointer; padding: 5px; color: var(--text-light); border: none; background: none; font-size: 16px; }
+        .action-icon:hover { color: var(--primary); }
+        .action-icon.delete:hover { color: var(--danger); }
+
+        #cameraContainer {
+            display: none;
+            position: relative;
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            background: #000;
+        }
+        #webcamVideo {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+        .scan-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 40%;
+            border: 2px dashed #10b981;
+            box-shadow: 0 0 0 1000px rgba(0,0,0,0.4);
+            border-radius: 8px;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -213,117 +275,169 @@
         </div>
     </div>
 
-    <!-- ШАПКА / HEADER -->
     <header>
-        <div class="brand-title">
-            <img src="favicon.png" alt="Лого">
+        <div class="brand">
+            <img src="favicon.png" alt="БГ-СКЕНЕР Иконка" style="width: 36px; height: 36px; border-radius: 8px;">
             <div>
                 <h1>БАРКОД-СКЕНЕР</h1>
-                <div style="font-size: 11px; opacity: 0.85;">
-                    <span id="connectionStatus"><span class="status-dot dot-online"></span> Готов за работа</span>
+                <p style="font-size: 13px; opacity: 0.9;">Система за контрол на наличностите HITSHOP BG LTD</p>
+            </div>
+        </div>
+        <a href="instructions.html" class="btn-help" title="Виж ръководството">
+            <i class="fa-solid fa-book"></i> Инструкции
+        </a>
+    </header>
+
+    <div class="grid">
+        <!-- ЛЯВ ПАНЕЛ -->
+        <div>
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-cart-plus"></i> Избор на режим & Сканиране
+                </div>
+                
+                <button type="button" class="btn btn-outline" id="cameraBtn" onclick="toggleCamera()" style="width: 100%; margin-bottom: 15px; border-color: var(--primary); color: var(--primary);">
+                    <i class="fa-solid fa-camera"></i> Пусни Камерата
+                </button>
+
+                <div id="cameraContainer">
+                    <video id="webcamVideo" playsinline autoplay muted></video>
+                    <div class="scan-overlay"></div>
+                </div>
+
+                <div class="btn-group" style="margin-bottom: 15px; margin-top: 0;">
+                    <button type="button" id="btnAddMode" class="btn btn-success active-mode" onclick="setMode('ADD')">
+                        <i class="fa-solid fa-plus"></i> ПРИБАВИ <span id="checkAdd">✓</span>
+                    </button>
+                    <button type="button" id="btnSubMode" class="btn btn-danger" onclick="setMode('SUB')">
+                        <i class="fa-solid fa-minus"></i> ИЗВАДИ <span id="checkSub" style="display:none;">✓</span>
+                    </button>
+                </div>
+
+                <form id="scanForm" onsubmit="handleFormSubmit(event)">
+                    <div class="form-group">
+                        <label for="barcodeInput">Баркод / Код на артикул</label>
+                        <input type="text" id="barcodeInput" class="input-control" placeholder="Сканирайте или въведете..." autofocus required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="itemNameInput">Наименование (незадължително)</label>
+                        <input type="text" id="itemNameInput" class="input-control" placeholder="Име на продукта...">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="qtyInput">Количество</label>
+                        <input type="number" id="qtyInput" class="input-control" value="1" min="1" required>
+                        <div class="quick-qty">
+                            <button type="button" class="btn-sm-qty" onclick="setQty(1)">1</button>
+                            <button type="button" class="btn-sm-qty" onclick="setQty(5)">5</button>
+                            <button type="button" class="btn-sm-qty" onclick="setQty(10)">10</button>
+                            <button type="button" class="btn-sm-qty" onclick="setQty(50)">50</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btnExecute" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                        <i class="fa-solid fa-check"></i> Потвърди операцията
+                    </button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-box-archive"></i> Архивиране и данни
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn btn-primary" onclick="exportExcel()" style="width: 100%;">
+                        <i class="fa-solid fa-file-excel"></i> Експорт в Excel (.csv)
+                    </button>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-outline" onclick="exportBackup()" style="flex: 1;">
+                            <i class="fa-solid fa-download"></i> Запази архив
+                        </button>
+                        <button class="btn btn-outline" onclick="document.getElementById('importFile').click()" style="flex: 1;">
+                            <i class="fa-solid fa-upload"></i> Възстанови
+                        </button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importBackup(event)">
+                    </div>
+                    <button class="btn btn-outline" onclick="clearAllData()" style="width: 100%; color: var(--danger); margin-top: 5px;">
+                        <i class="fa-solid fa-trash"></i> Занули всички данни
+                    </button>
                 </div>
             </div>
         </div>
-        <div class="header-actions">
-            <a href="instructions.html" class="btn-header"><i class="fa-solid fa-circle-info"></i> Помощ</a>
-        </div>
-    </header>
 
-    <!-- СЕКЦИЯ ЗА СКАНИРАНЕ -->
-    <div class="card">
-        <div class="mode-selector">
-            <button id="btnAddMode" class="btn-mode active-add" onclick="setMode('add')">
-                <i class="fa-solid fa-plus-circle"></i> ПРИБАВИ (+1)
-            </button>
-            <button id="btnSubMode" class="btn-mode" onclick="setMode('sub')">
-                <i class="fa-solid fa-minus-circle"></i> ИЗВАДИ (-1)
-            </button>
-        </div>
-
-        <button class="btn-camera" onclick="toggleCamera()">
-            <i class="fa-solid fa-camera"></i> <span id="cameraBtnText">Включи Камерата за Сканиране</span>
-        </button>
-
-        <div id="scannerContainer" class="scanner-container">
-            <video id="interactive"></video>
-        </div>
-
-        <div class="form-group">
-            <label>Баркод / Код на артикул</label>
-            <input type="text" id="barcodeInput" class="input-control" placeholder="Сканирайте или въведете..." autocomplete="off" onkeydown="if(event.key === 'Enter') processScan()">
-        </div>
-
-        <div class="form-group">
-            <label>Име на продукт (Опционално)</label>
-            <input type="text" id="nameInput" class="input-control" placeholder="напр. Чорапи Size 48-49...">
-        </div>
-
-        <button class="btn-submit" onclick="processScan()">
-            <i class="fa-solid fa-check"></i> Запиши Операцията
-        </button>
-    </div>
-
-    <!-- ТАБЛИЦА С ИНВЕНТАР -->
-    <div class="card">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div id="totalItems" class="stat-value">0</div>
-                <div class="stat-label">Уникални Артикула</div>
+        <!-- ДЕСЕН ПАНЕЛ -->
+        <div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="statTotalItems">0</div>
+                    <div class="stat-label">Уникални кода</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statTotalQty">0</div>
+                    <div class="stat-label">Общо количество</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statLogsCount">0</div>
+                    <div class="stat-label">Движения</div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div id="totalQty" class="stat-value">0</div>
-                <div class="stat-label">Общо Бройки</div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-list-check"></i> Текущ инвентар
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <input type="text" id="searchInput" class="input-control" placeholder="🔍 Търсене по код или име..." onkeyup="renderTables()">
+                </div>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Код</th>
+                                <th>Наименование</th>
+                                <th style="text-align: center;">Наличност</th>
+                                <th style="text-align: right;">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody"></tbody>
+                    </table>
+                </div>
             </div>
-        </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <h3 style="font-size: 15px; font-weight: 700;"><i class="fa-solid fa-list-check"></i> Наличен Инвентар</h3>
-            <button class="btn-action" style="min-width: auto; padding: 4px 8px;" onclick="openLogModal()">
-                <i class="fa-solid fa-clock-rotate-left"></i> История
-            </button>
-        </div>
-
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Баркод</th>
-                        <th>Наименование</th>
-                        <th>Количество</th>
-                        <th style="text-align: right;">Действие</th>
-                    </tr>
-                </thead>
-                <tbody id="inventoryTable"></tbody>
-            </table>
-        </div>
-
-        <div class="actions-toolbar">
-            <button class="btn-action" onclick="exportExcel()"><i class="fa-solid fa-file-excel" style="color: #10b981;"></i> Свали CSV</button>
-            <button class="btn-action" onclick="exportBackup()"><i class="fa-solid fa-download" style="color: #2563eb;"></i> Архив JSON</button>
-            <button class="btn-action" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload" style="color: #f59e0b;"></i> Възстанови</button>
-            <input type="file" id="importFile" style="display:none" onchange="importBackup(event)" accept=".json">
-            <button class="btn-action btn-danger" onclick="clearInventory()"><i class="fa-solid fa-trash-can"></i> Изчисти</button>
-        </div>
-    </div>
-
-    <!-- МОДАЛЕН ПРОЗОРЕЦ ЗА ИСТОРИЯ -->
-    <div id="logModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 style="font-size: 16px;"><i class="fa-solid fa-history"></i> История на Сканиранията</h3>
-                <button class="btn-action" style="min-width:auto; padding:4px 8px;" onclick="closeLogModal()">✕</button>
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-history"></i> Последна история
+                </div>
+                <div class="table-wrapper" style="max-height: 220px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Час</th>
+                                <th>Код</th>
+                                <th>Действие</th>
+                                <th style="text-align: right;">Количество</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTableBody"></tbody>
+                    </table>
+                </div>
             </div>
-            <div id="logList" class="modal-body"></div>
         </div>
     </div>
 
     <script>
-        let currentMode = 'add';
-        let inventory = JSON.parse(localStorage.getItem('inventory')) || {};
-        let logs = JSON.parse(localStorage.getItem('logs')) || [];
-        let codeReader = null;
-        let isCameraOn = false;
+        let inventory = JSON.parse(localStorage.getItem('bg_scanner_inventory')) || {};
+        let logs = JSON.parse(localStorage.getItem('bg_scanner_logs')) || [];
+        let videoStream = null;
+        let barcodeDetector = null;
+        let isScanning = false;
+        let currentMode = 'ADD';
+        let scanCooldown = false;
 
+        // ПРОВЕРКА НА ЛИЦЕНЗНИЯ КОД
         async function verifyKeyWithGitHub(key) {
             try {
                 const response = await fetch(`keys.json?nocache=${Date.now()}`);
@@ -389,200 +503,210 @@
             }
         }
 
+        function saveData() {
+            localStorage.setItem('bg_scanner_inventory', JSON.stringify(inventory));
+            localStorage.setItem('bg_scanner_logs', JSON.stringify(logs));
+            renderTables();
+        }
+
+        function setQty(val) { document.getElementById('qtyInput').value = val; }
+
         function setMode(mode) {
             currentMode = mode;
-            document.getElementById('btnAddMode').className = mode === 'add' ? 'btn-mode active-add' : 'btn-mode';
-            document.getElementById('btnSubMode').className = mode === 'sub' ? 'btn-mode active-sub' : 'btn-mode';
+            const btnAdd = document.getElementById('btnAddMode');
+            const btnSub = document.getElementById('btnSubMode');
+            const checkAdd = document.getElementById('checkAdd');
+            const checkSub = document.getElementById('checkSub');
+
+            if (mode === 'ADD') {
+                btnAdd.classList.add('active-mode');
+                btnSub.classList.remove('active-mode');
+                checkAdd.style.display = 'inline';
+                checkSub.style.display = 'none';
+            } else {
+                btnSub.classList.add('active-mode');
+                btnAdd.classList.remove('active-mode');
+                checkSub.style.display = 'inline';
+                checkAdd.style.display = 'none';
+            }
         }
 
-        function renderTable() {
-            const tbody = document.getElementById('inventoryTable');
-            tbody.innerHTML = '';
-            let uniqueCount = 0;
-            let totalQuantity = 0;
-            const keys = Object.keys(inventory);
-            uniqueCount = keys.length;
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            processStock(currentMode);
+        }
 
-            if (uniqueCount === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">Няма намерени артикули. Сканирайте баркод!</td></tr>`;
-            } else {
-                keys.forEach(code => {
-                    const item = inventory[code];
-                    totalQuantity += item.qty;
-                    const row = `<tr>
-                        <td><strong>${code}</strong></td>
-                        <td>${item.name || '<span style="color:#94a3b8;">—</span>'}</td>
-                        <td><span class="badge-qty" style="${item.qty < 0 ? 'background:#fef2f2; color:#dc2626;' : ''}">${item.qty} бр.</span></td>
-                        <td style="text-align: right;">
-                            <button class="btn-action" style="min-width:auto; padding:4px 8px; color:var(--danger); border-color:#fecaca;" onclick="deleteItem('${code}')">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-                        </td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                });
+        async function toggleCamera() {
+            const container = document.getElementById('cameraContainer');
+            const btn = document.getElementById('cameraBtn');
+            const video = document.getElementById('webcamVideo');
+
+            if (isScanning) {
+                stopCamera();
+                return;
             }
 
-            document.getElementById('totalItems').innerText = uniqueCount;
-            document.getElementById('totalQty').innerText = totalQuantity;
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { exact: "environment" } }
+                }).catch(() => {
+                    return navigator.mediaDevices.getUserMedia({ video: true });
+                });
+
+                video.srcObject = videoStream;
+                await video.play();
+
+                container.style.display = 'block';
+                btn.innerHTML = '<i class="fa-solid fa-stop"></i> Спри Камерата';
+                btn.style.backgroundColor = '#fee2e2';
+                btn.style.color = '#b91c1c';
+                isScanning = true;
+
+                if ('BarcodeDetector' in window) {
+                    barcodeDetector = new BarcodeDetector({ formats: ['code_128', 'ean_13', 'ean_8', 'qr_code', 'upc_a'] });
+                }
+
+                scanFrame();
+            } catch (err) {
+                alert('Не може да се пусне камерата. Уверете се, че сте потвърдили съобщението за достъп в браузъра!');
+            }
         }
 
-        function processScan() {
+        async function scanFrame() {
+            if (!isScanning) return;
+            const video = document.getElementById('webcamVideo');
+
+            if (barcodeDetector && video.readyState === video.HAVE_ENOUGH_DATA && !scanCooldown) {
+                try {
+                    const barcodes = await barcodeDetector.detect(video);
+                    if (barcodes.length > 0) {
+                        const code = barcodes[0].rawValue;
+                        document.getElementById('barcodeInput').value = code;
+                        
+                        scanCooldown = true;
+                        playBeep();
+                        
+                        processStock(currentMode);
+
+                        setTimeout(() => {
+                            scanCooldown = false;
+                        }, 1500);
+                    }
+                } catch (e) {}
+            }
+            requestAnimationFrame(scanFrame);
+        }
+
+        function stopCamera() {
+            const container = document.getElementById('cameraContainer');
+            const btn = document.getElementById('cameraBtn');
+            const video = document.getElementById('webcamVideo');
+
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+            video.srcObject = null;
+            container.style.display = 'none';
+            btn.innerHTML = '<i class="fa-solid fa-camera"></i> Пусни Камерата';
+            btn.style.backgroundColor = 'white';
+            btn.style.color = 'var(--primary)';
+            isScanning = false;
+        }
+
+        function playBeep() {
+            try {
+                let ctx = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = ctx.createOscillator();
+                osc.frequency.value = 1000;
+                osc.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.08);
+            } catch(e){}
+        }
+
+        function processStock(action) {
             const barcode = document.getElementById('barcodeInput').value.trim();
-            const name = document.getElementById('nameInput').value.trim();
-            if (!barcode) return;
+            const name = document.getElementById('itemNameInput').value.trim();
+            let qty = parseInt(document.getElementById('qtyInput').value);
+
+            if (!barcode) {
+                alert('Моля, въведете или сканирайте баркод!');
+                document.getElementById('barcodeInput').focus();
+                return;
+            }
+
+            if (isNaN(qty) || qty <= 0) {
+                alert('Моля, въведете валидно количество!');
+                return;
+            }
 
             if (!inventory[barcode]) {
-                inventory[barcode] = { name: name, qty: 0 };
+                inventory[barcode] = { name: name || 'Артикул ' + barcode, qty: 0 };
             } else if (name) {
                 inventory[barcode].name = name;
             }
 
-            const change = currentMode === 'add' ? 1 : -1;
-            inventory[barcode].qty += change;
+            if (action === 'ADD') inventory[barcode].qty += qty;
+            else if (action === 'SUB') inventory[barcode].qty -= qty;
 
             logs.unshift({
-                time: new Date().toLocaleTimeString('bg-BG'),
-                code: barcode,
+                timestamp: new Date().toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                barcode: barcode,
                 name: inventory[barcode].name,
-                type: currentMode,
-                qty: change
+                action: action,
+                qty: qty
             });
-            if (logs.length > 50) logs.pop();
-
-            localStorage.setItem('inventory', JSON.stringify(inventory));
-            localStorage.setItem('logs', JSON.stringify(logs));
 
             document.getElementById('barcodeInput').value = '';
-            document.getElementById('nameInput').value = '';
-            document.getElementById('barcodeInput').focus();
-            renderTable();
+            document.getElementById('itemNameInput').value = '';
+            document.getElementById('qtyInput').value = '1';
+
+            saveData();
         }
 
-        function deleteItem(code) {
-            if (confirm(`Сигурни ли сте, че искате да изтриете артикул с код ${code}?`)) {
-                delete inventory[code];
-                localStorage.setItem('inventory', JSON.stringify(inventory));
-                renderTable();
+        function quickChange(barcode, delta) {
+            if (!inventory[barcode]) return;
+            inventory[barcode].qty += delta;
+            logs.unshift({
+                timestamp: new Date().toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                barcode: barcode,
+                name: inventory[barcode].name,
+                action: delta > 0 ? 'ADD' : 'SUB',
+                qty: Math.abs(delta)
+            });
+            saveData();
+        }
+
+        function deleteItem(barcode) {
+            if (confirm(`Сигурни ли сте, че искате да изтриете код ${barcode}?`)) {
+                delete inventory[barcode];
+                saveData();
             }
         }
 
-        function clearInventory() {
-            if (confirm("ВНИМАНИЕ: Сигурни ли сте, че искате да изчистите ЦЕЛИЯ инвентар?")) {
-                inventory = {};
-                logs = [];
-                localStorage.removeItem('inventory');
-                localStorage.removeItem('logs');
-                renderTable();
-            }
-        }
+        function renderTables() {
+            const invBody = document.getElementById('inventoryTableBody');
+            const logsBody = document.getElementById('logsTableBody');
+            const search = document.getElementById('searchInput').value.toLowerCase();
 
-        function toggleCamera() {
-            const container = document.getElementById('scannerContainer');
-            const btnText = document.getElementById('cameraBtnText');
-            if (isCameraOn) {
-                if (codeReader) codeReader.reset();
-                container.style.display = 'none';
-                btnText.innerText = "Включи Камерата за Сканиране";
-                isCameraOn = false;
-            } else {
-                container.style.display = 'block';
-                btnText.innerText = "Спри Камерата";
-                codeReader = new ZXing.BrowserMultiFormatReader();
-                codeReader.decodeFromVideoDevice(null, 'interactive', (result, err) => {
-                    if (result) {
-                        document.getElementById('barcodeInput').value = result.text;
-                        processScan();
-                    }
-                });
-                isCameraOn = true;
-            }
-        }
+            invBody.innerHTML = '';
+            logsBody.innerHTML = '';
 
-        function exportExcel() {
-            let csvContent = "\uFEFFКод;Наименование;Количество\n";
+            let totalItemsCount = 0;
+            let totalQtySum = 0;
+
             Object.keys(inventory).forEach(code => {
                 const item = inventory[code];
-                csvContent += `"${code}";"${item.name || ''}";"${item.qty}"\n`;
-            });
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", `INVENTORY_${new Date().toISOString().slice(0,10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+                if (code.toLowerCase().includes(search) || item.name.toLowerCase().includes(search)) {
+                    totalItemsCount++;
+                    totalQtySum += item.qty;
 
-        function exportBackup() {
-            const data = { inventory: inventory, logs: logs, exportDate: new Date().toISOString() };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", `ARCHIVE_${new Date().toISOString().slice(0,10)}.json`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function importBackup(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    if (data.inventory) {
-                        inventory = data.inventory;
-                        logs = data.logs || [];
-                        localStorage.setItem('inventory', JSON.stringify(inventory));
-                        localStorage.setItem('logs', JSON.stringify(logs));
-                        renderTable();
-                        alert("Архивът е възстановен успешно!");
-                    }
-                } catch (err) {
-                    alert("Грешка при зареждане на файла!");
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function openLogModal() {
-            const modal = document.getElementById('logModal');
-            const list = document.getElementById('logList');
-            list.innerHTML = '';
-            if (logs.length === 0) {
-                list.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">Няма записани операции.</div>';
-            } else {
-                logs.forEach(log => {
-                    const color = log.type === 'add' ? 'var(--success)' : 'var(--danger)';
-                    const sign = log.type === 'add' ? '+' : '';
-                    list.innerHTML += `<div class="log-item">
-                        <div>
-                            <strong>${log.code}</strong> ${log.name ? `(${log.name})` : ''}
-                            <div style="font-size:11px; color:var(--text-muted);">${log.time}</div>
-                        </div>
-                        <div style="font-weight:bold; color:${color};">${sign}${log.qty} бр.</div>
-                    </div>`;
-                });
-            }
-            modal.style.display = 'flex';
-        }
-
-        function closeLogModal() {
-            document.getElementById('logModal').style.display = 'none';
-        }
-
-        window.addEventListener('online', () => {
-            document.getElementById('connectionStatus').innerHTML = '<span class="status-dot dot-online"></span> Онлайн';
-        });
-        window.addEventListener('offline', () => {
-            document.getElementById('connectionStatus').innerHTML = '<span class="status-dot dot-offline"></span> Офлайн режим';
-        });
-
-        // ПЪРВОНАЧАЛНО СТАРТИРАНЕ
-        checkLicenseOnStart();
-        renderTable();
-    </script>
-</body>
-</html>
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${code}</strong></td>
+                        <td>${item.name}</td>
+                        <td style="text-align: center; font-size: 16px; font-weight: bold; color: ${item.qty < 0 ? 'var(--danger)' : 'var(--text)'};">${item.qty}</td>
+                        <td style="text-align: right;">
+                            <button class="action-icon" onclick="quickChange('${code}', 1)" title="Добави 1"><i class="fa-solid fa-circle-plus" style="color: var(--success);"></i></button>
+                            <button class="action-icon" onclick="quickChange('${code}', -1)" title="Извади 1"><i class="fa-solid fa-circle-minus" style="color: var(--danger);"></i></button>
