@@ -429,7 +429,7 @@
     </div>
 
     <script>
-        // 1. ЛОГИКА ЗА ПРОВЕРКА НА ЛИЦЕНЗА
+     // 1. ЛОГИКА ЗА ПРОВЕРКА НА ЛИЦЕНЗА
         async function verifyKeyWithGitHub(key) {
             try {
                 const response = await fetch(`keys.json?nocache=${Date.now()}`);
@@ -466,11 +466,11 @@
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-lock-open"></i> Активирай Достъпа';
 
-          if (isValid) {
-    localStorage.setItem('licenseKey', inputKey);
-    document.getElementById('licenseOverlay').style.display = 'none';
-    renderTables(); // <-- Добавяме този ред, за да зареди веднага приложението без рефреш
-} else {
+            if (isValid) {
+                localStorage.setItem('licenseKey', inputKey);
+                document.getElementById('licenseOverlay').style.display = 'none';
+                renderTables(); // АКТУАЛИЗИРА ИЗГЛЕДА ВЕДНАГА СЛЕД ВЛИЗАНЕ
+            } else {
                 localStorage.removeItem('licenseKey');
                 errorDiv.innerText = 'Невалиден или деактивиран код!';
                 errorDiv.style.display = 'block';
@@ -495,7 +495,6 @@
                 document.getElementById('licenseOverlay').style.display = 'flex';
             }
         }
-
         // 2. ОСНОВНА ЛОГИКА НА ПРИЛОЖЕНИЕТО
         let inventory = JSON.parse(localStorage.getItem('bg_scanner_inventory')) || {};
         let logs = JSON.parse(localStorage.getItem('bg_scanner_logs')) || [];
