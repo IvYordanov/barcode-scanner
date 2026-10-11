@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#2563eb">
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <!-- Външни библиотеки -->
@@ -507,7 +507,7 @@
             <button id="licenseBtn" class="license-btn" onclick="validateLicense()">
                 <i class="fa-solid fa-lock-open"></i> Активирай Достъпа
             </button>
-            <div id="licenseError" class="license-error">Невалиден или деактивиран код!</div>
+            <div id="licenseError" class="license-error"></div>
         </div>
     </div>
 
@@ -637,25 +637,25 @@
         let codeReader = null;
         let isCameraOn = false;
 
-        // ПРОВЕРКА НА ЛИЦЕНЗИРАНЕТО
-    async function checkLicenseOnStart() {
-    const savedKey = localStorage.getItem('licenseKey');
-    if (savedKey) {
-        const isValid = await verifyKeyWithGitHub(savedKey);
-        if (isValid) {
-            document.getElementById('licenseOverlay').style.display = 'none';
-        } else {
-            // Ако запазеният код вече не е активен, го премахваме от паметта
-            localStorage.removeItem('licenseKey');
-            document.getElementById('licenseOverlay').style.display = 'flex';
-            document.getElementById('licenseInput').value = '';
-            document.getElementById('licenseError').style.display = 'block';
-            document.getElementById('licenseError').innerText = 'Предишният ви код е деактивиран. Въведете нов код:';
+        // ПРОВЕРКА НА ЛИЦЕНЗИРАНЕТО ПРИ СТАРТИРАНЕ
+        async function checkLicenseOnStart() {
+            const savedKey = localStorage.getItem('licenseKey');
+            if (savedKey) {
+                const isValid = await verifyKeyWithGitHub(savedKey);
+                if (isValid) {
+                    document.getElementById('licenseOverlay').style.display = 'none';
+                } else {
+                    localStorage.removeItem('licenseKey');
+                    document.getElementById('licenseOverlay').style.display = 'flex';
+                    document.getElementById('licenseInput').value = '';
+                    const errorDiv = document.getElementById('licenseError');
+                    errorDiv.innerText = 'Предишният ви код бе деактивиран!';
+                    errorDiv.style.display = 'block';
+                }
+            } else {
+                document.getElementById('licenseOverlay').style.display = 'flex';
+            }
         }
-    } else {
-        document.getElementById('licenseOverlay').style.display = 'flex';
-    }
-}
 
         async function validateLicense() {
             const inputKey = document.getElementById('licenseInput').value.trim();
@@ -681,6 +681,7 @@
                 localStorage.setItem('licenseKey', inputKey);
                 document.getElementById('licenseOverlay').style.display = 'none';
             } else {
+                localStorage.removeItem('licenseKey');
                 errorDiv.innerText = 'Невалиден или деактивиран код!';
                 errorDiv.style.display = 'block';
             }
@@ -688,28 +689,16 @@
 
         async function verifyKeyWithGitHub(key) {
             try {
-                // Пълен формат за избягване на кеш
-                const response = await fetch(`keys.json?v=${new Date().getTime()}`);
-                if (!response.ok) {
-                    console.error("Файлът keys.json не може да бъде зареден.");
-                    return false;
-                }
-                const keysData = await response.json();
+                const response = await fetch(`keys.json?nocache=${Date.now()}`);
+                if (!response.ok) return false;
                 
-                // Търсим записа
+                const keysData = await response.json();
                 const entry = keysData[key] || keysData[String(key)];
                 
                 if (entry === undefined || entry === null) return false;
                 
-                // Вариант 1: Кодът е записан просто като true или false
-                if (typeof entry === 'boolean') {
-                    return entry === true;
-                }
-                
-                // Вариант 2: Кодът е записан като обект { "active": true, ... }
-                if (typeof entry === 'object') {
-                    return entry.active === true;
-                }
+                if (typeof entry === 'boolean') return entry === true;
+                if (typeof entry === 'object') return entry.active === true;
                 
                 return false;
             } catch (err) {
