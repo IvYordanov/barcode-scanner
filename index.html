@@ -5,16 +5,18 @@
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/png" href="favicon.png">
     
-    <!-- PWA Настройки за скриване на адресната лента -->
+    <!-- PWA Настройки -->
     <link rel="manifest" href="manifest.json">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#4f46e5">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Задължителен Viewport за Android Chrome -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>БАРКОД-СКЕНЕР</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
     <style>
         :root {
             --primary: #4f46e5;
@@ -30,8 +32,28 @@
             --border: #e5e7eb;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 15px; max-width: 1200px; margin: 0 auto; }
+        /* Задължително нулиране за мобилен Chrome */
+        *, *::before, *::after { 
+            box-sizing: border-box !important; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        body { 
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            background-color: var(--bg); 
+            color: var(--text); 
+            padding: 10px;
+        }
 
         /* ЕКРАН ЗА ЛИЦЕНЗЕН КОД */
         #licenseOverlay {
@@ -44,218 +66,206 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
-            padding: 20px;
+            padding: 15px;
         }
 
         .license-card {
             background: white;
-            padding: 32px 24px;
+            padding: 24px 18px;
             border-radius: 16px;
-            max-width: 380px;
+            max-width: 360px;
             width: 100%;
             text-align: center;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
         .license-card .icon-box {
-            width: 60px; height: 60px;
+            width: 54px; height: 54px;
             background: #e0e7ff; color: var(--primary);
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 26px; margin: 0 auto 16px;
+            font-size: 24px; margin: 0 auto 14px;
         }
 
-        .license-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
-        .license-card p { font-size: 13px; color: var(--text-light); margin-bottom: 20px; line-height: 1.4; }
+        .license-card h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+        .license-card p { font-size: 12px; color: var(--text-light); margin-bottom: 18px; line-height: 1.4; }
 
         .license-input {
-            width: 100%; padding: 12px;
-            font-size: 24px; letter-spacing: 8px; text-align: center;
+            width: 100%; padding: 10px;
+            font-size: 22px; letter-spacing: 6px; text-align: center;
             border: 2px solid var(--border); border-radius: 10px;
-            margin-bottom: 15px; outline: none; font-weight: 700;
-            color: var(--primary); transition: all 0.2s;
+            margin-bottom: 14px; outline: none; font-weight: 700;
+            color: var(--primary);
         }
-        .license-input:focus { border-color: var(--primary); }
 
         .license-btn {
             width: 100%; background: var(--primary); color: white;
-            border: none; padding: 12px; font-size: 15px; font-weight: 600;
-            border-radius: 10px; cursor: pointer; transition: background 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            border: none; padding: 12px; font-size: 14px; font-weight: 600;
+            border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .license-btn:hover { background: var(--primary-hover); }
 
-        .license-error { color: var(--danger); font-size: 13px; font-weight: 600; margin-top: 12px; display: none; }
+        .license-error { color: var(--danger); font-size: 12px; font-weight: 600; margin-top: 10px; display: none; }
 
-        /* ОРИГИНАЛНИ СТИЛОВЕ */
+        /* МОБИЛЕН ХЕДЪР */
         header {
             background: linear-gradient(135deg, #4f46e5, #3b82f6);
             color: white;
-            padding: 20px;
+            padding: 12px 14px;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
+            width: 100%;
         }
 
-        .brand { display: flex; align-items: center; gap: 12px; }
-        .brand img { width: 38px; height: 38px; border-radius: 8px; }
-        .brand h1 { font-size: 24px; font-weight: 700; }
+        .brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
+        .brand img { width: 30px; height: 30px; border-radius: 6px; flex-shrink: 0; }
+        .brand h1 { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .btn-help {
             background: rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 8px 14px;
-            border-radius: 8px;
+            padding: 6px 10px;
+            border-radius: 6px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 11px;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
+            gap: 4px;
             border: 1px solid rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
         }
-        .btn-help:hover { background: rgba(255, 255, 255, 0.35); }
 
-        .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 850px) { .grid { grid-template-columns: 360px 1fr; } }
+        /* МРЕЖА БЕЗ ТВЪРДИ ШИРИНИ */
+        .grid { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+
+        @media (min-width: 850px) {
+            body { max-width: 1200px; margin: 0 auto; }
+            .grid { display: grid; grid-template-columns: 360px 1fr; }
+        }
 
         .card {
             background: var(--card-bg);
-            padding: 20px;
+            padding: 14px;
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             border: 1px solid var(--border);
-            margin-bottom: 20px;
+            width: 100%;
         }
 
         .card-title {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             color: var(--text);
             border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
 
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-light); }
+        .form-group { margin-bottom: 10px; width: 100%; }
+        .form-group label { display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; color: var(--text-light); }
 
         .input-control {
             width: 100%;
-            padding: 10px 12px;
+            padding: 10px;
             border: 1px solid var(--border);
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14px;
             outline: none;
-            transition: all 0.2s;
         }
 
-        .input-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        .btn-group { 
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 12px; 
+            width: 100%; 
         }
-
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
 
         .btn {
-            padding: 12px 16px;
+            flex: 1;
+            min-width: 0;
+            padding: 10px 4px;
             border: none;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
+            gap: 4px;
             opacity: 0.55;
+            white-space: nowrap;
         }
 
         .btn.active-mode {
             opacity: 1;
-            box-shadow: 0 0 0 3px rgba(0,0,0,0.2), inset 0 0 0 2px #fff;
-            transform: scale(1.02);
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.15), inset 0 0 0 2px #fff;
         }
 
         .btn-primary { background: var(--primary); color: white; opacity: 1; }
-        .btn-primary:hover { background: var(--primary-hover); }
-
         .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { background: var(--success-hover); }
-
         .btn-danger { background: var(--danger); color: white; }
-        .btn-danger:hover { background: var(--danger-hover); }
-
         .btn-outline { background: white; border: 1px solid var(--border); color: var(--text); opacity: 1; }
-        .btn-outline:hover { background: #f9fafb; }
 
-        .quick-qty { display: flex; gap: 6px; margin-top: 8px; }
+        /* БУТОНИ ЗА КОЛИЧЕСТВО */
+        .quick-qty { 
+            display: flex; 
+            gap: 4px; 
+            margin-top: 6px; 
+            width: 100%; 
+        }
         .btn-sm-qty {
             flex: 1;
-            padding: 8px;
-            font-size: 13px;
+            min-width: 0;
+            padding: 8px 0;
+            font-size: 12px;
             background: #f3f4f6;
             border: 1px solid var(--border);
             border-radius: 6px;
-            cursor: pointer;
             font-weight: 600;
+            text-align: center;
         }
-        .btn-sm-qty:hover { background: #e5e7eb; }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 15px; border-radius: 10px; border: 1px solid var(--border); text-align: center; }
-        .stat-value { font-size: 22px; font-weight: 700; color: var(--primary); }
-        .stat-label { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+        .stats-grid { display: flex; gap: 6px; margin-bottom: 12px; width: 100%; }
+        .stat-card { flex: 1; min-width: 0; background: white; padding: 10px 2px; border-radius: 8px; border: 1px solid var(--border); text-align: center; }
+        .stat-value { font-size: 15px; font-weight: 700; color: var(--primary); }
+        .stat-label { font-size: 9px; color: var(--text-light); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .table-wrapper { overflow-x: auto; max-height: 380px; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-        th { background: #f9fafb; padding: 10px 12px; font-weight: 600; color: var(--text-light); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 5; }
-        td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-        tr:hover { background: #f9fafb; }
+        .table-wrapper { overflow-x: auto; max-height: 300px; width: 100%; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
+        th { background: #f9fafb; padding: 6px 8px; font-weight: 600; color: var(--text-light); border-bottom: 2px solid var(--border); }
+        td { padding: 6px 8px; border-bottom: 1px solid var(--border); }
 
-        .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .badge { padding: 3px 5px; border-radius: 8px; font-size: 9px; font-weight: 600; }
         .badge-add { background: #d1fae5; color: #065f46; }
         .badge-sub { background: #fee2e2; color: #991b1b; }
 
-        .action-icon { cursor: pointer; padding: 5px; color: var(--text-light); border: none; background: none; font-size: 16px; }
-        .action-icon:hover { color: var(--primary); }
-        .action-icon.delete:hover { color: var(--danger); }
+        .action-icon { cursor: pointer; padding: 2px; color: var(--text-light); border: none; background: none; font-size: 14px; }
 
         #cameraContainer {
             display: none;
             position: relative;
             width: 100%;
-            border-radius: 10px;
+            border-radius: 8px;
             overflow: hidden;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             background: #000;
         }
-        #webcamVideo {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-        }
+        #webcamVideo { width: 100%; height: 180px; object-fit: cover; }
         .scan-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 70%;
-            height: 40%;
+            width: 70%; height: 40%;
             border: 2px dashed #10b981;
             box-shadow: 0 0 0 1000px rgba(0,0,0,0.4);
-            border-radius: 8px;
-            pointer-events: none;
+            border-radius: 6px; pointer-events: none;
         }
     </style>
 </head>
@@ -277,10 +287,10 @@
 
     <header>
         <div class="brand">
-            <img src="favicon.png" alt="БГ-СКЕНЕР Иконка" style="width: 36px; height: 36px; border-radius: 8px;">
+            <img src="favicon.png" alt="Иконка">
             <div>
                 <h1>БАРКОД-СКЕНЕР</h1>
-                <p style="font-size: 13px; opacity: 0.9;">Система за контрол на наличностите HITSHOP BG LTD</p>
+                <p style="font-size: 10px; opacity: 0.85;">HITSHOP BG LTD</p>
             </div>
         </div>
         <a href="instructions.html" class="btn-help" title="Виж ръководството">
@@ -296,7 +306,7 @@
                     <i class="fa-solid fa-cart-plus"></i> Избор на режим & Сканиране
                 </div>
                 
-                <button type="button" class="btn btn-outline" id="cameraBtn" onclick="toggleCamera()" style="width: 100%; margin-bottom: 15px; border-color: var(--primary); color: var(--primary);">
+                <button type="button" class="btn btn-outline" id="cameraBtn" onclick="toggleCamera()" style="width: 100%; margin-bottom: 10px; border-color: var(--primary); color: var(--primary);">
                     <i class="fa-solid fa-camera"></i> Пусни Камерата
                 </button>
 
@@ -305,7 +315,7 @@
                     <div class="scan-overlay"></div>
                 </div>
 
-                <div class="btn-group" style="margin-bottom: 15px; margin-top: 0;">
+                <div class="btn-group">
                     <button type="button" id="btnAddMode" class="btn btn-success active-mode" onclick="setMode('ADD')">
                         <i class="fa-solid fa-plus"></i> ПРИБАВИ <span id="checkAdd">✓</span>
                     </button>
@@ -336,30 +346,30 @@
                         </div>
                     </div>
 
-                    <button type="submit" id="btnExecute" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                    <button type="submit" id="btnExecute" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
                         <i class="fa-solid fa-check"></i> Потвърди операцията
                     </button>
                 </form>
             </div>
 
-            <div class="card">
+            <div class="card" style="margin-top: 10px;">
                 <div class="card-title">
                     <i class="fa-solid fa-box-archive"></i> Архивиране и данни
                 </div>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
                     <button class="btn btn-primary" onclick="exportExcel()" style="width: 100%;">
                         <i class="fa-solid fa-file-excel"></i> Експорт в Excel (.csv)
                     </button>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-outline" onclick="exportBackup()" style="flex: 1;">
-                            <i class="fa-solid fa-download"></i> Запази архив
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-outline" onclick="exportBackup()" style="flex: 1; padding: 8px; font-size: 11px;">
+                            <i class="fa-solid fa-download"></i> Архив
                         </button>
-                        <button class="btn btn-outline" onclick="document.getElementById('importFile').click()" style="flex: 1;">
+                        <button class="btn btn-outline" onclick="document.getElementById('importFile').click()" style="flex: 1; padding: 8px; font-size: 11px;">
                             <i class="fa-solid fa-upload"></i> Възстанови
                         </button>
                         <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importBackup(event)">
                     </div>
-                    <button class="btn btn-outline" onclick="clearAllData()" style="width: 100%; color: var(--danger); margin-top: 5px;">
+                    <button class="btn btn-outline" onclick="clearAllData()" style="width: 100%; color: var(--danger); margin-top: 2px;">
                         <i class="fa-solid fa-trash"></i> Занули всички данни
                     </button>
                 </div>
@@ -388,7 +398,7 @@
                     <i class="fa-solid fa-list-check"></i> Текущ инвентар
                 </div>
 
-                <div style="margin-bottom: 15px;">
+                <div style="margin-bottom: 10px;">
                     <input type="text" id="searchInput" class="input-control" placeholder="🔍 Търсене по код или име..." onkeyup="renderTables()">
                 </div>
 
@@ -407,11 +417,11 @@
                 </div>
             </div>
 
-            <div class="card">
+            <div class="card" style="margin-top: 10px;">
                 <div class="card-title">
                     <i class="fa-solid fa-history"></i> Последна история
                 </div>
-                <div class="table-wrapper" style="max-height: 220px;">
+                <div class="table-wrapper" style="max-height: 180px;">
                     <table>
                         <thead>
                             <tr>
@@ -429,7 +439,6 @@
     </div>
 
     <script>
-        // 1. ЛОГИКА ЗА ПРОВЕРКА НА ЛИЦЕНЗА
         async function verifyKeyWithGitHub(key) {
             try {
                 const response = await fetch(`keys.json?nocache=${Date.now()}`);
@@ -469,7 +478,7 @@
             if (isValid) {
                 localStorage.setItem('licenseKey', inputKey);
                 document.getElementById('licenseOverlay').style.display = 'none';
-                renderTables(); // Зарежда таблото веднага след отключване
+                renderTables();
             } else {
                 localStorage.removeItem('licenseKey');
                 errorDiv.innerText = 'Невалиден или деактивиран код!';
@@ -496,7 +505,6 @@
             }
         }
 
-        // 2. ОСНОВНА ЛОГИКА НА ПРИЛОЖЕНИЕТО
         let inventory = JSON.parse(localStorage.getItem('bg_scanner_inventory')) || {};
         let logs = JSON.parse(localStorage.getItem('bg_scanner_logs')) || [];
         let videoStream = null;
@@ -708,7 +716,7 @@
                     tr.innerHTML = `
                         <td><strong>${code}</strong></td>
                         <td>${item.name}</td>
-                        <td style="text-align: center; font-size: 16px; font-weight: bold; color: ${item.qty < 0 ? 'var(--danger)' : 'var(--text)'};">${item.qty}</td>
+                        <td style="text-align: center; font-size: 14px; font-weight: bold; color: ${item.qty < 0 ? 'var(--danger)' : 'var(--text)'};">${item.qty}</td>
                         <td style="text-align: right;">
                             <button class="action-icon" onclick="quickChange('${code}', 1)" title="Добави 1"><i class="fa-solid fa-circle-plus" style="color: var(--success);"></i></button>
                             <button class="action-icon" onclick="quickChange('${code}', -1)" title="Извади 1"><i class="fa-solid fa-circle-minus" style="color: var(--danger);"></i></button>
@@ -726,7 +734,7 @@
             logs.slice(0, 30).forEach(log => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="color: var(--text-light); font-size: 12px;">${log.timestamp}</td>
+                    <td style="color: var(--text-light); font-size: 10px;">${log.timestamp}</td>
                     <td><strong>${log.barcode}</strong></td>
                     <td><span class="badge ${log.action === 'ADD' ? 'badge-add' : 'badge-sub'}">${log.action === 'ADD' ? '+ Прибавено' : '- Извадено'}</span></td>
                     <td style="text-align: right; font-weight: bold;">${log.qty} бр.</td>
@@ -799,7 +807,6 @@
             }
         }
 
-        // СТАРТИРАНЕ
         checkLicenseOnStart();
         renderTables();
     </script>
