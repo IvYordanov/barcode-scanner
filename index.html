@@ -300,11 +300,12 @@
             }
         }
 
-    async function verifyKeyWithGitHub(key) {
+  async function verifyKeyWithGitHub(key) {
     try {
         const response = await fetch(`keys.json?t=${new Date().getTime()}`);
         if (!response.ok) return false;
         const keysData = await response.json();
+        // Проверява дали кодът съществува и дали "active" е true
         return keysData[key] && keysData[key].active === true;
     } catch (err) {
         console.error("Грешка при проверка на лиценза:", err);
