@@ -638,21 +638,24 @@
         let isCameraOn = false;
 
         // ПРОВЕРКА НА ЛИЦЕНЗИРАНЕТО
-        async function checkLicenseOnStart() {
-            const savedKey = localStorage.getItem('licenseKey');
-            if (savedKey) {
-                const isValid = await verifyKeyWithGitHub(savedKey);
-                if (isValid) {
-                    document.getElementById('licenseOverlay').style.display = 'none';
-                } else {
-                    document.getElementById('licenseOverlay').style.display = 'flex';
-                    document.getElementById('licenseError').style.display = 'block';
-                    document.getElementById('licenseError').innerText = 'Запазеният лицензен код е деактивиран!';
-                }
-            } else {
-                document.getElementById('licenseOverlay').style.display = 'flex';
-            }
+    async function checkLicenseOnStart() {
+    const savedKey = localStorage.getItem('licenseKey');
+    if (savedKey) {
+        const isValid = await verifyKeyWithGitHub(savedKey);
+        if (isValid) {
+            document.getElementById('licenseOverlay').style.display = 'none';
+        } else {
+            // Ако запазеният код вече не е активен, го премахваме от паметта
+            localStorage.removeItem('licenseKey');
+            document.getElementById('licenseOverlay').style.display = 'flex';
+            document.getElementById('licenseInput').value = '';
+            document.getElementById('licenseError').style.display = 'block';
+            document.getElementById('licenseError').innerText = 'Предишният ви код е деактивиран. Въведете нов код:';
         }
+    } else {
+        document.getElementById('licenseOverlay').style.display = 'flex';
+    }
+}
 
         async function validateLicense() {
             const inputKey = document.getElementById('licenseInput').value.trim();
