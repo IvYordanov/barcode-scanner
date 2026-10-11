@@ -35,8 +35,7 @@
 
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
@@ -72,423 +71,128 @@
             width: 100%;
             text-align: center;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes popIn {
-            from { transform: scale(0.85); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
         }
 
         .license-card .icon-box {
-            width: 64px;
-            height: 64px;
-            background: #eff6ff;
-            color: var(--primary);
+            width: 64px; height: 64px;
+            background: #eff6ff; color: var(--primary);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            margin: 0 auto 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; margin: 0 auto 16px;
         }
 
         .license-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
         .license-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.4; }
 
         .license-input {
-            width: 100%;
-            padding: 14px;
-            font-size: 24px;
-            letter-spacing: 8px;
-            text-align: center;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            margin-bottom: 16px;
-            outline: none;
-            font-weight: 700;
-            color: var(--primary);
-            transition: all 0.2s;
+            width: 100%; padding: 14px;
+            font-size: 24px; letter-spacing: 8px; text-align: center;
+            border: 2px solid var(--border); border-radius: 12px;
+            margin-bottom: 16px; outline: none; font-weight: 700;
+            color: var(--primary); transition: all 0.2s;
         }
-        .license-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
 
         .license-btn {
-            width: 100%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px;
-            font-size: 15px;
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            width: 100%; background: var(--primary); color: white;
+            border: none; padding: 14px; font-size: 15px; font-weight: 600;
+            border-radius: 12px; cursor: pointer; transition: background 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .license-btn:active { background: var(--primary-dark); }
+
         .license-error { color: var(--danger); font-size: 13px; font-weight: 600; margin-top: 12px; display: none; }
 
         /* ОРИГИНАЛЕН ШАБЛОН И СТИЛОВЕ */
         header {
             background: linear-gradient(135deg, #1e40af, #2563eb);
-            color: white;
-            padding: 16px 20px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            color: white; padding: 16px 20px;
+            border-radius: var(--radius); box-shadow: var(--shadow);
+            margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;
         }
 
-        .brand-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-title img {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            background: white;
-            padding: 2px;
-        }
-
-        .brand-title h1 {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .brand-title { display: flex; align-items: center; gap: 12px; }
+        .brand-title img { width: 38px; height: 38px; border-radius: 10px; background: white; padding: 2px; }
+        .brand-title h1 { font-size: 18px; font-weight: 700; }
 
         .btn-header {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
+            background: rgba(255, 255, 255, 0.15); color: white;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-        }
-
-        .btn-header:hover {
-            background: rgba(255, 255, 255, 0.25);
+            padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 600;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
         }
 
         .card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 16px;
-            margin-bottom: 16px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow);
+            background: var(--card-bg); border-radius: var(--radius);
+            padding: 16px; margin-bottom: 16px; border: 1px solid var(--border); box-shadow: var(--shadow);
         }
 
-        .mode-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
+        .mode-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
 
         .btn-mode {
-            padding: 12px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            background: white;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-muted);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
+            padding: 12px; border: 2px solid var(--border); border-radius: 10px;
+            background: white; font-size: 14px; font-weight: 700; color: var(--text-muted);
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
 
-        .btn-mode.active-add {
-            background: #f0fdf4;
-            border-color: var(--success);
-            color: var(--success);
-        }
-
-        .btn-mode.active-sub {
-            background: #fef2f2;
-            border-color: var(--danger);
-            color: var(--danger);
-        }
+        .btn-mode.active-add { background: #f0fdf4; border-color: var(--success); color: var(--success); }
+        .btn-mode.active-sub { background: #fef2f2; border-color: var(--danger); color: var(--danger); }
 
         .scanner-container {
-            position: relative;
-            width: 100%;
-            background: #000;
-            border-radius: 10px;
-            overflow: hidden;
-            display: none;
-            margin-bottom: 16px;
+            position: relative; width: 100%; background: #000;
+            border-radius: 10px; overflow: hidden; display: none; margin-bottom: 16px;
         }
 
-        #interactive {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-        }
-
-        .scanner-laser {
-            position: absolute;
-            top: 50%;
-            left: 5%;
-            right: 5%;
-            height: 2px;
-            background: var(--danger);
-            box-shadow: 0 0 8px var(--danger);
-            animation: scan 2s infinite ease-in-out;
-        }
-
-        @keyframes scan {
-            0%, 100% { top: 15%; }
-            50% { top: 85%; }
-        }
+        #interactive { width: 100%; height: 220px; object-fit: cover; }
 
         .btn-camera {
-            width: 100%;
-            padding: 12px;
-            background: #eff6ff;
-            color: var(--primary);
-            border: 1px dashed var(--primary);
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 16px;
-            transition: all 0.2s;
+            width: 100%; padding: 12px; background: #eff6ff; color: var(--primary);
+            border: 1px dashed var(--primary); border-radius: 10px; font-weight: 600; font-size: 14px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px;
         }
 
-        .btn-camera:hover {
-            background: #dbeafe;
-        }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
 
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-            text-transform: uppercase;
-        }
-
-        .input-control {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 15px;
-            outline: none;
-            transition: border 0.2s;
-        }
-
-        .input-control:focus {
-            border-color: var(--primary);
-        }
+        .input-control { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; outline: none; }
 
         .btn-submit {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: background 0.2s;
-            margin-top: 8px;
+            width: 100%; padding: 14px; background: var(--primary); color: white;
+            border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px;
         }
 
-        .btn-submit:hover {
-            background: var(--primary-dark);
-        }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+        .stat-card { background: #f8fafc; border: 1px solid var(--border); padding: 12px; border-radius: 10px; text-align: center; }
+        .stat-value { font-size: 20px; font-weight: 800; color: var(--primary); }
+        .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
+        .table-wrapper { overflow-x: auto; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
+        th { background: #f1f5f9; color: var(--text-muted); font-weight: 700; font-size: 12px; padding: 10px 12px; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+        td { padding: 12px; border-bottom: 1px solid var(--border); }
 
-        .stat-card {
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-        }
+        .badge-qty { background: #e0e7ff; color: #3730a3; padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 13px; }
 
-        .stat-value {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        .stat-label {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-
-        .table-wrapper {
-            overflow-x: auto;
-            margin-top: 10px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            text-align: left;
-        }
-
-        th {
-            background: #f1f5f9;
-            color: var(--text-muted);
-            font-weight: 700;
-            font-size: 12px;
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--border);
-            text-transform: uppercase;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .badge-qty {
-            background: #e0e7ff;
-            color: #3730a3;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 13px;
-        }
-
-        .actions-toolbar {
-            display: flex;
-            gap: 8px;
-            margin-top: 16px;
-            flex-wrap: wrap;
-        }
-
+        .actions-toolbar { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
         .btn-action {
-            flex: 1;
-            min-width: 130px;
-            padding: 10px;
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-main);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            transition: all 0.2s;
+            flex: 1; min-width: 130px; padding: 10px; background: white; border: 1px solid var(--border);
+            border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--text-main); cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
         }
-
-        .btn-action:hover {
-            background: #f1f5f9;
-        }
-
-        .btn-danger {
-            color: var(--danger);
-            border-color: #fecaca;
-        }
-
-        .btn-danger:hover {
-            background: #fef2f2;
-        }
+        .btn-danger { color: var(--danger); border-color: #fecaca; }
 
         .modal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 15px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+            display: none; align-items: center; justify-content: center; z-index: 1000; padding: 15px;
         }
-
         .modal-content {
-            background: white;
-            border-radius: var(--radius);
-            max-width: 600px;
-            width: 100%;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            background: white; border-radius: var(--radius); max-width: 600px; width: 100%;
+            max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
+        .modal-header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 16px; overflow-y: auto; flex: 1; }
+        .log-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 13px; }
 
-        .modal-header {
-            padding: 16px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-body {
-            padding: 16px;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .log-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px dashed var(--border);
-            font-size: 13px;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 6px;
-        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
         .dot-online { background: var(--success); }
         .dot-offline { background: var(--warning); }
     </style>
@@ -498,9 +202,7 @@
     <!-- МОДАЛЕН ЕКРАН ЗА ЛИЦЕНЗЕН КОД -->
     <div id="licenseOverlay">
         <div class="license-card">
-            <div class="icon-box">
-                <i class="fa-solid fa-shield-halved"></i>
-            </div>
+            <div class="icon-box"><i class="fa-solid fa-shield-halved"></i></div>
             <h2>Достъп до Приложението</h2>
             <p>Моля, въведете вашия 4-цифрен лицензен код, за да отключите инвентарната система.</p>
             <input type="text" id="licenseInput" class="license-input" maxlength="4" placeholder="0000" pattern="[0-9]*" inputmode="numeric" onkeydown="if(event.key === 'Enter') validateLicense()">
@@ -523,13 +225,11 @@
             </div>
         </div>
         <div class="header-actions">
-            <a href="instructions.html" class="btn-header">
-                <i class="fa-solid fa-circle-info"></i> Помощ
-            </a>
+            <a href="instructions.html" class="btn-header"><i class="fa-solid fa-circle-info"></i> Помощ</a>
         </div>
     </header>
 
-    <!-- СЕКЦИЯ ЗА СКАНИРАНЕ I ВЪВЕЖДАНЕ -->
+    <!-- СЕКЦИЯ ЗА СКАНИРАНЕ -->
     <div class="card">
         <div class="mode-selector">
             <button id="btnAddMode" class="btn-mode active-add" onclick="setMode('add')">
@@ -546,7 +246,6 @@
 
         <div id="scannerContainer" class="scanner-container">
             <video id="interactive"></video>
-            <div class="scanner-laser"></div>
         </div>
 
         <div class="form-group">
@@ -564,7 +263,7 @@
         </button>
     </div>
 
-    <!-- ТАБЛО И ТАБЛИЦА С ИНВЕНТАР -->
+    <!-- ТАБЛИЦА С ИНВЕНТАР -->
     <div class="card">
         <div class="stats-grid">
             <div class="stat-card">
@@ -594,39 +293,27 @@
                         <th style="text-align: right;">Действие</th>
                     </tr>
                 </thead>
-                <tbody id="inventoryTable">
-                    <!-- Зарежда се динамично -->
-                </tbody>
+                <tbody id="inventoryTable"></tbody>
             </table>
         </div>
 
         <div class="actions-toolbar">
-            <button class="btn-action" onclick="exportExcel()">
-                <i class="fa-solid fa-file-excel" style="color: #10b981;"></i> Свали Excel (.CSV)
-            </button>
-            <button class="btn-action" onclick="exportBackup()">
-                <i class="fa-solid fa-download" style="color: #2563eb;"></i> Архив (.JSON)
-            </button>
-            <button class="btn-action" onclick="document.getElementById('importFile').click()">
-                <i class="fa-solid fa-upload" style="color: #f59e0b;"></i> Възстанови
-            </button>
+            <button class="btn-action" onclick="exportExcel()"><i class="fa-solid fa-file-excel" style="color: #10b981;"></i> Свали CSV</button>
+            <button class="btn-action" onclick="exportBackup()"><i class="fa-solid fa-download" style="color: #2563eb;"></i> Архив JSON</button>
+            <button class="btn-action" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload" style="color: #f59e0b;"></i> Възстанови</button>
             <input type="file" id="importFile" style="display:none" onchange="importBackup(event)" accept=".json">
-            <button class="btn-action btn-danger" onclick="clearInventory()">
-                <i class="fa-solid fa-trash-can"></i> Изчисти
-            </button>
+            <button class="btn-action btn-danger" onclick="clearInventory()"><i class="fa-solid fa-trash-can"></i> Изчисти</button>
         </div>
     </div>
 
-    <!-- МОДАЛЕН ПРОЗОРЕЦ ЗА ИСТОРИЯ НА ОПЕРАЦИИТЕ -->
+    <!-- МОДАЛЕН ПРОЗОРЕЦ ЗА ИСТОРИЯ -->
     <div id="logModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 style="font-size: 16px;"><i class="fa-solid fa-history"></i> История на Сканиранията</h3>
                 <button class="btn-action" style="min-width:auto; padding:4px 8px;" onclick="closeLogModal()">✕</button>
             </div>
-            <div id="logList" class="modal-body">
-                <!-- Историята се зарежда тук -->
-            </div>
+            <div id="logList" class="modal-body"></div>
         </div>
     </div>
 
@@ -637,23 +324,19 @@
         let codeReader = null;
         let isCameraOn = false;
 
-        // ПРОВЕРКА НА ЛИЦЕНЗИРАНЕТО ПРИ СТАРТИРАНЕ
-        async function checkLicenseOnStart() {
-            const savedKey = localStorage.getItem('licenseKey');
-            if (savedKey) {
-                const isValid = await verifyKeyWithGitHub(savedKey);
-                if (isValid) {
-                    document.getElementById('licenseOverlay').style.display = 'none';
-                } else {
-                    localStorage.removeItem('licenseKey');
-                    document.getElementById('licenseOverlay').style.display = 'flex';
-                    document.getElementById('licenseInput').value = '';
-                    const errorDiv = document.getElementById('licenseError');
-                    errorDiv.innerText = 'Предишният ви код бе деактивиран!';
-                    errorDiv.style.display = 'block';
-                }
-            } else {
-                document.getElementById('licenseOverlay').style.display = 'flex';
+        async function verifyKeyWithGitHub(key) {
+            try {
+                const response = await fetch(`keys.json?nocache=${Date.now()}`);
+                if (!response.ok) return false;
+                const keysData = await response.json();
+                const entry = keysData[key] || keysData[String(key)];
+                if (entry === undefined || entry === null) return false;
+                if (typeof entry === 'boolean') return entry === true;
+                if (typeof entry === 'object') return entry.active === true;
+                return false;
+            } catch (err) {
+                console.error("Грешка при проверка на keys.json:", err);
+                return false;
             }
         }
 
@@ -687,5 +370,219 @@
             }
         }
 
-        async function verifyKeyWithGitHub(key) {
-            try {
+        async function checkLicenseOnStart() {
+            const savedKey = localStorage.getItem('licenseKey');
+            if (savedKey) {
+                const isValid = await verifyKeyWithGitHub(savedKey);
+                if (isValid) {
+                    document.getElementById('licenseOverlay').style.display = 'none';
+                } else {
+                    localStorage.removeItem('licenseKey');
+                    document.getElementById('licenseOverlay').style.display = 'flex';
+                    document.getElementById('licenseInput').value = '';
+                    const errorDiv = document.getElementById('licenseError');
+                    errorDiv.innerText = 'Предишният ви код бе деактивиран!';
+                    errorDiv.style.display = 'block';
+                }
+            } else {
+                document.getElementById('licenseOverlay').style.display = 'flex';
+            }
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('btnAddMode').className = mode === 'add' ? 'btn-mode active-add' : 'btn-mode';
+            document.getElementById('btnSubMode').className = mode === 'sub' ? 'btn-mode active-sub' : 'btn-mode';
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('inventoryTable');
+            tbody.innerHTML = '';
+            let uniqueCount = 0;
+            let totalQuantity = 0;
+            const keys = Object.keys(inventory);
+            uniqueCount = keys.length;
+
+            if (uniqueCount === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">Няма намерени артикули. Сканирайте баркод!</td></tr>`;
+            } else {
+                keys.forEach(code => {
+                    const item = inventory[code];
+                    totalQuantity += item.qty;
+                    const row = `<tr>
+                        <td><strong>${code}</strong></td>
+                        <td>${item.name || '<span style="color:#94a3b8;">—</span>'}</td>
+                        <td><span class="badge-qty" style="${item.qty < 0 ? 'background:#fef2f2; color:#dc2626;' : ''}">${item.qty} бр.</span></td>
+                        <td style="text-align: right;">
+                            <button class="btn-action" style="min-width:auto; padding:4px 8px; color:var(--danger); border-color:#fecaca;" onclick="deleteItem('${code}')">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            }
+
+            document.getElementById('totalItems').innerText = uniqueCount;
+            document.getElementById('totalQty').innerText = totalQuantity;
+        }
+
+        function processScan() {
+            const barcode = document.getElementById('barcodeInput').value.trim();
+            const name = document.getElementById('nameInput').value.trim();
+            if (!barcode) return;
+
+            if (!inventory[barcode]) {
+                inventory[barcode] = { name: name, qty: 0 };
+            } else if (name) {
+                inventory[barcode].name = name;
+            }
+
+            const change = currentMode === 'add' ? 1 : -1;
+            inventory[barcode].qty += change;
+
+            logs.unshift({
+                time: new Date().toLocaleTimeString('bg-BG'),
+                code: barcode,
+                name: inventory[barcode].name,
+                type: currentMode,
+                qty: change
+            });
+            if (logs.length > 50) logs.pop();
+
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            localStorage.setItem('logs', JSON.stringify(logs));
+
+            document.getElementById('barcodeInput').value = '';
+            document.getElementById('nameInput').value = '';
+            document.getElementById('barcodeInput').focus();
+            renderTable();
+        }
+
+        function deleteItem(code) {
+            if (confirm(`Сигурни ли сте, че искате да изтриете артикул с код ${code}?`)) {
+                delete inventory[code];
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                renderTable();
+            }
+        }
+
+        function clearInventory() {
+            if (confirm("ВНИМАНИЕ: Сигурни ли сте, че искате да изчистите ЦЕЛИЯ инвентар?")) {
+                inventory = {};
+                logs = [];
+                localStorage.removeItem('inventory');
+                localStorage.removeItem('logs');
+                renderTable();
+            }
+        }
+
+        function toggleCamera() {
+            const container = document.getElementById('scannerContainer');
+            const btnText = document.getElementById('cameraBtnText');
+            if (isCameraOn) {
+                if (codeReader) codeReader.reset();
+                container.style.display = 'none';
+                btnText.innerText = "Включи Камерата за Сканиране";
+                isCameraOn = false;
+            } else {
+                container.style.display = 'block';
+                btnText.innerText = "Спри Камерата";
+                codeReader = new ZXing.BrowserMultiFormatReader();
+                codeReader.decodeFromVideoDevice(null, 'interactive', (result, err) => {
+                    if (result) {
+                        document.getElementById('barcodeInput').value = result.text;
+                        processScan();
+                    }
+                });
+                isCameraOn = true;
+            }
+        }
+
+        function exportExcel() {
+            let csvContent = "\uFEFFКод;Наименование;Количество\n";
+            Object.keys(inventory).forEach(code => {
+                const item = inventory[code];
+                csvContent += `"${code}";"${item.name || ''}";"${item.qty}"\n`;
+            });
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `INVENTORY_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportBackup() {
+            const data = { inventory: inventory, logs: logs, exportDate: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `ARCHIVE_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function importBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.inventory) {
+                        inventory = data.inventory;
+                        logs = data.logs || [];
+                        localStorage.setItem('inventory', JSON.stringify(inventory));
+                        localStorage.setItem('logs', JSON.stringify(logs));
+                        renderTable();
+                        alert("Архивът е възстановен успешно!");
+                    }
+                } catch (err) {
+                    alert("Грешка при зареждане на файла!");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function openLogModal() {
+            const modal = document.getElementById('logModal');
+            const list = document.getElementById('logList');
+            list.innerHTML = '';
+            if (logs.length === 0) {
+                list.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">Няма записани операции.</div>';
+            } else {
+                logs.forEach(log => {
+                    const color = log.type === 'add' ? 'var(--success)' : 'var(--danger)';
+                    const sign = log.type === 'add' ? '+' : '';
+                    list.innerHTML += `<div class="log-item">
+                        <div>
+                            <strong>${log.code}</strong> ${log.name ? `(${log.name})` : ''}
+                            <div style="font-size:11px; color:var(--text-muted);">${log.time}</div>
+                        </div>
+                        <div style="font-weight:bold; color:${color};">${sign}${log.qty} бр.</div>
+                    </div>`;
+                });
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeLogModal() {
+            document.getElementById('logModal').style.display = 'none';
+        }
+
+        window.addEventListener('online', () => {
+            document.getElementById('connectionStatus').innerHTML = '<span class="status-dot dot-online"></span> Онлайн';
+        });
+        window.addEventListener('offline', () => {
+            document.getElementById('connectionStatus').innerHTML = '<span class="status-dot dot-offline"></span> Офлайн режим';
+        });
+
+        // ПЪРВОНАЧАЛНО СТАРТИРАНЕ
+        checkLicenseOnStart();
+        renderTable();
+    </script>
+</body>
+</html>
