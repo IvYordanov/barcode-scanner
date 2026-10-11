@@ -685,22 +685,28 @@
 
         async function verifyKeyWithGitHub(key) {
             try {
-                // Използваме абсолютен път с Timestamp срещу кеширане
-                const response = await fetch(`./keys.json?v=${new Date().getTime()}`);
+                // Пълен формат за избягване на кеш
+                const response = await fetch(`keys.json?v=${new Date().getTime()}`);
                 if (!response.ok) {
-                    console.error("Файлът keys.json не беше намерен на сървъра.");
+                    console.error("Файлът keys.json не може да бъде зареден.");
                     return false;
                 }
                 const keysData = await response.json();
                 
-                // Търсим кода като текст или число
+                // Търсим записа
                 const entry = keysData[key] || keysData[String(key)];
                 
-                if (!entry) return false;
+                if (entry === undefined || entry === null) return false;
                 
-                // Поддържаме и двата формата (стария с true и новия с обект {active: true})
-                if (typeof entry === 'boolean') return entry === true;
-                if (typeof entry === 'object') return entry.active === true;
+                // Вариант 1: Кодът е записан просто като true или false
+                if (typeof entry === 'boolean') {
+                    return entry === true;
+                }
+                
+                // Вариант 2: Кодът е записан като обект { "active": true, ... }
+                if (typeof entry === 'object') {
+                    return entry.active === true;
+                }
                 
                 return false;
             } catch (err) {
