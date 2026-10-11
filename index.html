@@ -2,72 +2,111 @@
 <html lang="bg">
 <head>
     <meta charset="UTF-8">
-    <meta name="robots" content="noindex, nofollow">
-    <link rel="icon" type="image/png" href="favicon.png">
-    <!-- PWA Настройки за скриване на адресната лента -->
-<link rel="manifest" href="manifest.json">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#4f46e5">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>БАРКОД-СКЕНЕР</title>
+    <title>БАРКОД-СКЕНЕР — Инвентарен Контрол</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="favicon.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
     <style>
         :root {
             --primary: #4f46e5;
             --primary-hover: #4338ca;
             --success: #10b981;
-            --success-hover: #059669;
             --danger: #ef4444;
-            --danger-hover: #dc2626;
             --bg: #f3f4f6;
             --card-bg: #ffffff;
             --text: #1f2937;
-            --text-light: #6b7280;
             --border: #e5e7eb;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 15px; max-width: 1200px; margin: 0 auto; }
+        body { background-color: var(--bg); color: var(--text); padding: 15px; max-width: 900px; margin: 0 auto; }
 
+        /* Лицензен екран (Lock screen) */
+        #licenseOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .license-card {
+            background: white;
+            padding: 30px 25px;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .license-card i.lock-icon { font-size: 48px; color: var(--primary); margin-bottom: 15px; }
+        .license-card h2 { font-size: 20px; margin-bottom: 8px; color: var(--text); }
+        .license-card p { font-size: 13px; color: #6b7280; margin-bottom: 20px; }
+
+        .license-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 22px;
+            letter-spacing: 6px;
+            text-align: center;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 15px;
+            outline: none;
+            font-weight: bold;
+        }
+        .license-input:focus { border-color: var(--primary); }
+
+        .license-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .license-btn:hover { background: var(--primary-hover); }
+        .license-error { color: var(--danger); font-size: 13px; margin-top: 10px; display: none; }
+
+        /* Основен интерфейс */
         header {
             background: linear-gradient(135deg, #4f46e5, #3b82f6);
             color: white;
-            padding: 20px;
+            padding: 18px 20px;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
             margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
         }
 
         .brand { display: flex; align-items: center; gap: 12px; }
-        .brand img { width: 38px; height: 38px; border-radius: 8px; }
-        .brand h1 { font-size: 24px; font-weight: 700; }
+        .brand img { width: 36px; height: 36px; border-radius: 8px; }
+        .brand h1 { font-size: 20px; font-weight: 700; }
 
-        .btn-help {
+        .btn-instructions {
             background: rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 8px 14px;
+            padding: 8px 12px;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: 600;
             font-size: 13px;
+            font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.2s;
-            border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        .btn-help:hover { background: rgba(255, 255, 255, 0.35); }
-
-        .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 850px) { .grid { grid-template-columns: 360px 1fr; } }
 
         .card {
             background: var(--card-bg);
@@ -75,565 +114,277 @@
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             border: 1px solid var(--border);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
-        .card-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 15px;
+        .mode-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .mode-btn {
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: white;
+            font-weight: 700;
+            cursor: pointer;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
-            color: var(--text);
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
+            color: #6b7280;
+            transition: all 0.2s;
         }
+        .mode-btn.active-add { background: #ecfdf5; border-color: var(--success); color: var(--success); }
+        .mode-btn.active-sub { background: #fef2f2; border-color: var(--danger); color: var(--danger); }
 
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-light); }
-
-        .input-control {
+        .form-group { margin-bottom: 12px; }
+        .form-group label { font-size: 12px; font-weight: 600; color: #4b5563; margin-bottom: 4px; display: block; }
+        .input-field {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid var(--border);
             border-radius: 8px;
             font-size: 15px;
             outline: none;
-            transition: all 0.2s;
         }
 
-        .input-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-
-        .btn {
-            padding: 12px 16px;
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
             border: none;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        #interactive { width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; display: none; margin-top: 10px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid var(--border); }
+        th { background: #f9fafb; color: #4b5563; font-weight: 600; }
+
+        .table-actions { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
+        .btn-sm {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: white;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-            opacity: 0.55;
-        }
-
-        .btn.active-mode {
-            opacity: 1;
-            box-shadow: 0 0 0 3px rgba(0,0,0,0.2), inset 0 0 0 2px #fff;
-            transform: scale(1.02);
-        }
-
-        .btn-primary { background: var(--primary); color: white; opacity: 1; }
-        .btn-primary:hover { background: var(--primary-hover); }
-
-        .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { background: var(--success-hover); }
-
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-danger:hover { background: var(--danger-hover); }
-
-        .btn-outline { background: white; border: 1px solid var(--border); color: var(--text); opacity: 1; }
-        .btn-outline:hover { background: #f9fafb; }
-
-        .quick-qty { display: flex; gap: 6px; margin-top: 8px; }
-        .btn-sm-qty {
-            flex: 1;
-            padding: 8px;
-            font-size: 13px;
-            background: #f3f4f6;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        .btn-sm-qty:hover { background: #e5e7eb; }
-
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 15px; border-radius: 10px; border: 1px solid var(--border); text-align: center; }
-        .stat-value { font-size: 22px; font-weight: 700; color: var(--primary); }
-        .stat-label { font-size: 12px; color: var(--text-light); margin-top: 4px; }
-
-        .table-wrapper { overflow-x: auto; max-height: 380px; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-        th { background: #f9fafb; padding: 10px 12px; font-weight: 600; color: var(--text-light); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 5; }
-        td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-        tr:hover { background: #f9fafb; }
-
-        .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-        .badge-add { background: #d1fae5; color: #065f46; }
-        .badge-sub { background: #fee2e2; color: #991b1b; }
-
-        .action-icon { cursor: pointer; padding: 5px; color: var(--text-light); border: none; background: none; font-size: 16px; }
-        .action-icon:hover { color: var(--primary); }
-        .action-icon.delete:hover { color: var(--danger); }
-
-        #cameraContainer {
-            display: none;
-            position: relative;
-            width: 100%;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 15px;
-            background: #000;
-        }
-        #webcamVideo {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-        }
-        .scan-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 70%;
-            height: 40%;
-            border: 2px dashed #10b981;
-            box-shadow: 0 0 0 1000px rgba(0,0,0,0.4);
-            border-radius: 8px;
-            pointer-events: none;
+            gap: 5px;
         }
     </style>
 </head>
 <body>
 
+    <!-- МОДАЛЕН ЕКРАН ЗА ЛИЦЕНЗЕН КОД -->
+    <div id="licenseOverlay">
+        <div class="license-card">
+            <i class="fa-solid fa-key lock-icon"></i>
+            <h2>Въведете Код за Достъп</h2>
+            <p>За да използвате приложението, въведете вашия 4-цифрен лицензен код.</p>
+            <input type="text" id="licenseInput" class="license-input" maxlength="4" placeholder="0000">
+            <button class="license-btn" onclick="validateLicense()">Активирай</button>
+            <div id="licenseError" class="license-error">Невалиден или деактивиран код!</div>
+        </div>
+    </div>
+
+    <!-- ОСНОВНО ПРИЛОЖЕНИЕ -->
     <header>
         <div class="brand">
-            <img src="favicon.png" alt="БГ-СКЕНЕР Иконка" style="width: 36px; height: 36px; border-radius: 8px;">
-            <div>
-                <h1>БАРКОД-СКЕНЕР</h1>
-                <p style="font-size: 13px; opacity: 0.9;">Система за контрол на наличностите HITSHOP BG LTD</p>
-            </div>
+            <img src="favicon.png" alt="Лого">
+            <h1>БАРКОД-СКЕНЕР</h1>
         </div>
-        <!-- ЛИНК КЪМ ИНСТРУКЦИИТЕ -->
-        <a href="instructions.html" class="btn-help" title="Виж ръководството">
-            <i class="fa-solid fa-book"></i> Инструкции
-        </a>
+        <a href="instructions.html" class="btn-instructions"><i class="fa-solid fa-book"></i> Инструкции</a>
     </header>
 
-    <div class="grid">
-        <!-- ЛЯВ ПАНЕЛ -->
-        <div>
-            <div class="card">
-                <div class="card-title">
-                    <i class="fa-solid fa-cart-plus"></i> Избор на режим & Сканиране
-                </div>
-                
-                <button type="button" class="btn btn-outline" id="cameraBtn" onclick="toggleCamera()" style="width: 100%; margin-bottom: 15px; border-color: var(--primary); color: var(--primary);">
-                    <i class="fa-solid fa-camera"></i> Пусни Камерата
-                </button>
-
-                <div id="cameraContainer">
-                    <video id="webcamVideo" playsinline autoplay muted></video>
-                    <div class="scan-overlay"></div>
-                </div>
-
-                <div class="btn-group" style="margin-bottom: 15px; margin-top: 0;">
-                    <button type="button" id="btnAddMode" class="btn btn-success active-mode" onclick="setMode('ADD')">
-                        <i class="fa-solid fa-plus"></i> ПРИБАВИ <span id="checkAdd">✓</span>
-                    </button>
-                    <button type="button" id="btnSubMode" class="btn btn-danger" onclick="setMode('SUB')">
-                        <i class="fa-solid fa-minus"></i> ИЗВАДИ <span id="checkSub" style="display:none;">✓</span>
-                    </button>
-                </div>
-
-                <form id="scanForm" onsubmit="handleFormSubmit(event)">
-                    <div class="form-group">
-                        <label for="barcodeInput">Баркод / Код на артикул</label>
-                        <input type="text" id="barcodeInput" class="input-control" placeholder="Сканирайте или въведете..." autofocus required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="itemNameInput">Наименование (незадължително)</label>
-                        <input type="text" id="itemNameInput" class="input-control" placeholder="Име на продукта...">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="qtyInput">Количество</label>
-                        <input type="number" id="qtyInput" class="input-control" value="1" min="1" required>
-                        <div class="quick-qty">
-                            <button type="button" class="btn-sm-qty" onclick="setQty(1)">1</button>
-                            <button type="button" class="btn-sm-qty" onclick="setQty(5)">5</button>
-                            <button type="button" class="btn-sm-qty" onclick="setQty(10)">10</button>
-                            <button type="button" class="btn-sm-qty" onclick="setQty(50)">50</button>
-                        </div>
-                    </div>
-
-                    <button type="submit" id="btnExecute" class="btn btn-primary" style="width: 100%; margin-top: 10px;">
-                        <i class="fa-solid fa-check"></i> Потвърди операцията
-                    </button>
-                </form>
-            </div>
-
-            <div class="card">
-                <div class="card-title">
-                    <i class="fa-solid fa-box-archive"></i> Архивиране и данни
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <button class="btn btn-primary" onclick="exportExcel()" style="width: 100%;">
-                        <i class="fa-solid fa-file-excel"></i> Експорт в Excel (.csv)
-                    </button>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-outline" onclick="exportBackup()" style="flex: 1;">
-                            <i class="fa-solid fa-download"></i> Запази архив
-                        </button>
-                        <button class="btn btn-outline" onclick="document.getElementById('importFile').click()" style="flex: 1;">
-                            <i class="fa-solid fa-upload"></i> Възстанови
-                        </button>
-                        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importBackup(event)">
-                    </div>
-                    <button class="btn btn-outline" onclick="clearAllData()" style="width: 100%; color: var(--danger); margin-top: 5px;">
-                        <i class="fa-solid fa-trash"></i> Занули всички данни
-                    </button>
-                </div>
-            </div>
+    <div class="card">
+        <div class="mode-toggle">
+            <button id="btnAddMode" class="mode-btn active-add" onclick="setMode('add')">
+                <i class="fa-solid fa-plus-circle"></i> ПРИБАВИ
+            </button>
+            <button id="btnSubMode" class="mode-btn" onclick="setMode('sub')">
+                <i class="fa-solid fa-minus-circle"></i> ИЗВАДИ
+            </button>
         </div>
 
-        <!-- ДЕСЕН ПАНЕЛ -->
-        <div>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="statTotalItems">0</div>
-                    <div class="stat-label">Уникални кода</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="statTotalQty">0</div>
-                    <div class="stat-label">Общо количество</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="statLogsCount">0</div>
-                    <div class="stat-label">Движения</div>
-                </div>
-            </div>
+        <div style="text-align: center; margin-bottom: 10px;">
+            <button class="btn-sm" style="width:100%; padding:10px; background:#e0e7ff; color:var(--primary); border:none;" onclick="toggleCamera()">
+                <i class="fa-solid fa-camera"></i> Пусни / Спри Камерата
+            </button>
+            <video id="interactive"></video>
+        </div>
 
-            <div class="card">
-                <div class="card-title">
-                    <i class="fa-solid fa-list-check"></i> Текущ инвентар
-                </div>
+        <div class="form-group">
+            <label>Баркод / Код на артикул:</label>
+            <input type="text" id="barcodeInput" class="input-field" placeholder="Сканирайте или въведете..." onkeydown="if(event.key === 'Enter') processScan()">
+        </div>
 
-                <div style="margin-bottom: 15px;">
-                    <input type="text" id="searchInput" class="input-control" placeholder="🔍 Търсене по код или име..." onkeyup="renderTables()">
-                </div>
+        <div class="form-group">
+            <label>Наименование (Опционално):</label>
+            <input type="text" id="nameInput" class="input-field" placeholder="Име на продукта...">
+        </div>
 
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Код</th>
-                                <th>Наименование</th>
-                                <th style="text-align: center;">Наличност</th>
-                                <th style="text-align: right;">Действия</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventoryTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
+        <button class="action-btn" onclick="processScan()"><i class="fa-solid fa-check"></i> Потвърди операцията</button>
+    </div>
 
-            <div class="card">
-                <div class="card-title">
-                    <i class="fa-solid fa-history"></i> Последна история
-                </div>
-                <div class="table-wrapper" style="max-height: 220px;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Час</th>
-                                <th>Код</th>
-                                <th>Действие</th>
-                                <th style="text-align: right;">Количество</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logsTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
+    <div class="card">
+        <h3 style="font-size:16px; margin-bottom:10px;"><i class="fa-solid fa-boxes-stacked"></i> Текущ Инвентар</h3>
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Код</th>
+                        <th>Наименование</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryTable">
+                    <!-- Данните се зареждат диначично -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-actions">
+            <button class="btn-sm" onclick="exportExcel()"><i class="fa-solid fa-file-excel"></i> Експорт Excel (.CSV)</button>
+            <button class="btn-sm" onclick="exportBackup()"><i class="fa-solid fa-download"></i> Запази архив (.JSON)</button>
+            <button class="btn-sm" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload"></i> Възстанови</button>
+            <input type="file" id="importFile" style="display:none" onchange="importBackup(event)">
         </div>
     </div>
 
     <script>
-        let inventory = JSON.parse(localStorage.getItem('bg_scanner_inventory')) || {};
-        let logs = JSON.parse(localStorage.getItem('bg_scanner_logs')) || [];
-        let videoStream = null;
-        let barcodeDetector = null;
-        let isScanning = false;
-        let currentMode = 'ADD';
-        let scanCooldown = false;
+        let currentMode = 'add';
+        let inventory = JSON.parse(localStorage.getItem('inventory')) || {};
+        let logs = JSON.parse(localStorage.getItem('logs')) || [];
+        let codeReader = null;
+        let isCameraOn = false;
 
-        function saveData() {
-            localStorage.setItem('bg_scanner_inventory', JSON.stringify(inventory));
-            localStorage.setItem('bg_scanner_logs', JSON.stringify(logs));
-            renderTables();
+        // ПРОВЕРКА НА ЛИЦЕНЗНИЯ КОД
+        async function checkLicenseOnStart() {
+            const savedKey = localStorage.getItem('licenseKey');
+            if (savedKey) {
+                const isValid = await verifyKeyWithGitHub(savedKey);
+                if (isValid) {
+                    document.getElementById('licenseOverlay').style.display = 'none';
+                } else {
+                    document.getElementById('licenseOverlay').style.display = 'flex';
+                    document.getElementById('licenseError').style.display = 'block';
+                    document.getElementById('licenseError').innerText = 'Лицензът е деактивиран!';
+                }
+            }
         }
 
-        function setQty(val) { document.getElementById('qtyInput').value = val; }
+        async function validateLicense() {
+            const inputKey = document.getElementById('licenseInput').value.trim();
+            const errorDiv = document.getElementById('licenseError');
 
+            if (inputKey.length !== 4) {
+                errorDiv.innerText = 'Въведете точно 4 цифри!';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            const isValid = await verifyKeyWithGitHub(inputKey);
+            if (isValid) {
+                localStorage.setItem('licenseKey', inputKey);
+                document.getElementById('licenseOverlay').style.display = 'none';
+            } else {
+                errorDiv.innerText = 'Невалиден или деактивиран код!';
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        async function verifyKeyWithGitHub(key) {
+            try {
+                // Добавяме Timestamp за избягване на кеширането
+                const response = await fetch(`keys.json?t=${new Date().getTime()}`);
+                if (!response.ok) return false;
+                const keysData = await response.json();
+                return keysData[key] === true;
+            } catch (err) {
+                console.error("Грешка при проверка на лиценза:", err);
+                return false;
+            }
+        }
+
+        // ЛОГИКА НА СКЕНЕРА
         function setMode(mode) {
             currentMode = mode;
-            const btnAdd = document.getElementById('btnAddMode');
-            const btnSub = document.getElementById('btnSubMode');
-            const checkAdd = document.getElementById('checkAdd');
-            const checkSub = document.getElementById('checkSub');
-
-            if (mode === 'ADD') {
-                btnAdd.classList.add('active-mode');
-                btnSub.classList.remove('active-mode');
-                checkAdd.style.display = 'inline';
-                checkSub.style.display = 'none';
-            } else {
-                btnSub.classList.add('active-mode');
-                btnAdd.classList.remove('active-mode');
-                checkSub.style.display = 'inline';
-                checkAdd.style.display = 'none';
-            }
+            document.getElementById('btnAddMode').className = mode === 'add' ? 'mode-btn active-add' : 'mode-btn';
+            document.getElementById('btnSubMode').className = mode === 'sub' ? 'mode-btn active-sub' : 'mode-btn';
         }
 
-        function handleFormSubmit(event) {
-            event.preventDefault();
-            processStock(currentMode);
+        function renderTable() {
+            const tbody = document.getElementById('inventoryTable');
+            tbody.innerHTML = '';
+            Object.keys(inventory).forEach(code => {
+                const item = inventory[code];
+                const row = `<tr>
+                    <td><strong>${code}</strong></td>
+                    <td>${item.name || '-'}</td>
+                    <td><span style="font-weight:bold; color:${item.qty < 0 ? 'red' : 'inherit'}">${item.qty}</span></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
         }
 
-        async function toggleCamera() {
-            const container = document.getElementById('cameraContainer');
-            const btn = document.getElementById('cameraBtn');
-            const video = document.getElementById('webcamVideo');
-
-            if (isScanning) {
-                stopCamera();
-                return;
-            }
-
-            try {
-                videoStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { exact: "environment" } }
-                }).catch(() => {
-                    return navigator.mediaDevices.getUserMedia({ video: true });
-                });
-
-                video.srcObject = videoStream;
-                await video.play();
-
-                container.style.display = 'block';
-                btn.innerHTML = '<i class="fa-solid fa-stop"></i> Спри Камерата';
-                btn.style.backgroundColor = '#fee2e2';
-                btn.style.color = '#b91c1c';
-                isScanning = true;
-
-                if ('BarcodeDetector' in window) {
-                    barcodeDetector = new BarcodeDetector({ formats: ['code_128', 'ean_13', 'ean_8', 'qr_code', 'upc_a'] });
-                }
-
-                scanFrame();
-            } catch (err) {
-                alert('Не може да се пусне камерата. Уверете се, че сте потвърдили съобщението за достъп в браузъра!');
-            }
-        }
-
-        async function scanFrame() {
-            if (!isScanning) return;
-            const video = document.getElementById('webcamVideo');
-
-            if (barcodeDetector && video.readyState === video.HAVE_ENOUGH_DATA && !scanCooldown) {
-                try {
-                    const barcodes = await barcodeDetector.detect(video);
-                    if (barcodes.length > 0) {
-                        const code = barcodes[0].rawValue;
-                        document.getElementById('barcodeInput').value = code;
-                        
-                        scanCooldown = true;
-                        playBeep();
-                        
-                        processStock(currentMode);
-
-                        setTimeout(() => {
-                            scanCooldown = false;
-                        }, 1500);
-                    }
-                } catch (e) {}
-            }
-            requestAnimationFrame(scanFrame);
-        }
-
-        function stopCamera() {
-            const container = document.getElementById('cameraContainer');
-            const btn = document.getElementById('cameraBtn');
-            const video = document.getElementById('webcamVideo');
-
-            if (videoStream) {
-                videoStream.getTracks().forEach(track => track.stop());
-                videoStream = null;
-            }
-            video.srcObject = null;
-            container.style.display = 'none';
-            btn.innerHTML = '<i class="fa-solid fa-camera"></i> Пусни Камерата';
-            btn.style.backgroundColor = 'white';
-            btn.style.color = 'var(--primary)';
-            isScanning = false;
-        }
-
-        function playBeep() {
-            try {
-                let ctx = new (window.AudioContext || window.webkitAudioContext)();
-                let osc = ctx.createOscillator();
-                osc.frequency.value = 1000;
-                osc.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.08);
-            } catch(e){}
-        }
-
-        function processStock(action) {
+        function processScan() {
             const barcode = document.getElementById('barcodeInput').value.trim();
-            const name = document.getElementById('itemNameInput').value.trim();
-            let qty = parseInt(document.getElementById('qtyInput').value);
+            const name = document.getElementById('nameInput').value.trim();
 
-            if (!barcode) {
-                alert('Моля, въведете или сканирайте баркод!');
-                document.getElementById('barcodeInput').focus();
-                return;
-            }
-
-            if (isNaN(qty) || qty <= 0) {
-                alert('Моля, въведете валидно количество!');
-                return;
-            }
+            if (!barcode) return;
 
             if (!inventory[barcode]) {
-                inventory[barcode] = { name: name || 'Артикул ' + barcode, qty: 0 };
+                inventory[barcode] = { name: name, qty: 0 };
             } else if (name) {
                 inventory[barcode].name = name;
             }
 
-            if (action === 'ADD') inventory[barcode].qty += qty;
-            else if (action === 'SUB') inventory[barcode].qty -= qty;
-
-            logs.unshift({
-                timestamp: new Date().toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-                barcode: barcode,
-                name: inventory[barcode].name,
-                action: action,
-                qty: qty
-            });
-
-            document.getElementById('barcodeInput').value = '';
-            document.getElementById('itemNameInput').value = '';
-            document.getElementById('qtyInput').value = '1';
-
-            saveData();
-        }
-
-        function quickChange(barcode, delta) {
-            if (!inventory[barcode]) return;
-            inventory[barcode].qty += delta;
-            logs.unshift({
-                timestamp: new Date().toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-                barcode: barcode,
-                name: inventory[barcode].name,
-                action: delta > 0 ? 'ADD' : 'SUB',
-                qty: Math.abs(delta)
-            });
-            saveData();
-        }
-
-        function deleteItem(barcode) {
-            if (confirm(`Сигурни ли сте, че искате да изтриете код ${barcode}?`)) {
-                delete inventory[barcode];
-                saveData();
+            if (currentMode === 'add') {
+                inventory[barcode].qty += 1;
+            } else {
+                inventory[barcode].qty -= 1;
             }
+
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            document.getElementById('barcodeInput').value = '';
+            document.getElementById('nameInput').value = '';
+            document.getElementById('barcodeInput').focus();
+            renderTable();
         }
 
-        function renderTables() {
-            const invBody = document.getElementById('inventoryTableBody');
-            const logsBody = document.getElementById('logsTableBody');
-            const search = document.getElementById('searchInput').value.toLowerCase();
-
-            invBody.innerHTML = '';
-            logsBody.innerHTML = '';
-
-            let totalItemsCount = 0;
-            let totalQtySum = 0;
-
+        function exportExcel() {
+            let csvContent = "\uFEFFКод;Наименование;Количество\n";
             Object.keys(inventory).forEach(code => {
                 const item = inventory[code];
-                if (code.toLowerCase().includes(search) || item.name.toLowerCase().includes(search)) {
-                    totalItemsCount++;
-                    totalQtySum += item.qty;
-
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><strong>${code}</strong></td>
-                        <td>${item.name}</td>
-                        <td style="text-align: center; font-size: 16px; font-weight: bold; color: ${item.qty < 0 ? 'var(--danger)' : 'var(--text)'};">${item.qty}</td>
-                        <td style="text-align: right;">
-                            <button class="action-icon" onclick="quickChange('${code}', 1)" title="Добави 1"><i class="fa-solid fa-circle-plus" style="color: var(--success);"></i></button>
-                            <button class="action-icon" onclick="quickChange('${code}', -1)" title="Извади 1"><i class="fa-solid fa-circle-minus" style="color: var(--danger);"></i></button>
-                            <button class="action-icon delete" onclick="deleteItem('${code}')" title="Изтрий"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    `;
-                    invBody.appendChild(tr);
-                }
+                csvContent += `"${code}";"${item.name}";"${item.qty}"\n`;
             });
 
-            if (totalItemsCount === 0) {
-                invBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--text-light);">Няма намерени артикули</td></tr>';
-            }
-
-            logs.slice(0, 30).forEach(log => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td style="color: var(--text-light); font-size: 12px;">${log.timestamp}</td>
-                    <td><strong>${log.barcode}</strong></td>
-                    <td><span class="badge ${log.action === 'ADD' ? 'badge-add' : 'badge-sub'}">${log.action === 'ADD' ? '+ Прибавено' : '- Извадено'}</span></td>
-                    <td style="text-align: right; font-weight: bold;">${log.qty} бр.</td>
-                `;
-                logsBody.appendChild(tr);
-            });
-
-            if (logs.length === 0) {
-                logsBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--text-light);">Няма записани движения</td></tr>';
-            }
-
-            document.getElementById('statTotalItems').innerText = totalItemsCount;
-            document.getElementById('statTotalQty').innerText = totalQtySum;
-            document.getElementById('statLogsCount').innerText = logs.length;
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `BARCODE_SCANNER_INVENTORY_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
-      function exportExcel() {
-    let csvContent = "\uFEFFКод;Наименование;Количество\n";
-    Object.keys(inventory).forEach(code => {
-        const item = inventory[code];
-        csvContent += `"${code}";"${item.name}";"${item.qty}"\n`;
-    });
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    // Променено име на файла за Excel
-    link.setAttribute("download", `BARCODE_SCANNER_INVENTORY_${new Date().toISOString().slice(0,10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
-function exportBackup() {
-    const data = { inventory: inventory, logs: logs, exportDate: new Date().toISOString() };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    // Променено име на файла за резервно копие (JSON)
-    link.setAttribute("download", `BARCODE_SCANNER_ARCHIVE_${new Date().toISOString().slice(0,10)}.json`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
+        function exportBackup() {
+            const data = { inventory: inventory, logs: logs, exportDate: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `BARCODE_SCANNER_ARCHIVE_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
 
         function importBackup(event) {
             const file = event.target.files[0];
@@ -644,27 +395,40 @@ function exportBackup() {
                 try {
                     const data = JSON.parse(e.target.result);
                     if (data.inventory) {
-                        if (confirm('Внимание! Това ще замени текущите данни с данните от архива. Желаете ли продължение?')) {
-                            inventory = data.inventory || {};
-                            logs = data.logs || [];
-                            saveData();
-                            alert('Данните са възстановени успешно!');
-                        }
-                    } else { alert('Невалиден формат на файла.'); }
-                } catch (err) { alert('Грешка при четене на файла.'); }
+                        inventory = data.inventory;
+                        localStorage.setItem('inventory', JSON.stringify(inventory));
+                        renderTable();
+                        alert("Архивът е възстановен успешно!");
+                    }
+                } catch (err) {
+                    alert("Грешка при зареждане на архива!");
+                }
             };
             reader.readAsText(file);
         }
 
-        function clearAllData() {
-            if (confirm('ВНИМАНИЕ! Сигурни ли сте, че искате да изтриете ВСИЧКИ наличности и история?')) {
-                inventory = {};
-                logs = [];
-                saveData();
+        function toggleCamera() {
+            const videoElem = document.getElementById('interactive');
+            if (isCameraOn) {
+                if (codeReader) codeReader.reset();
+                videoElem.style.display = 'none';
+                isCameraOn = false;
+            } else {
+                videoElem.style.display = 'block';
+                codeReader = new ZXing.BrowserMultiFormatReader();
+                codeReader.decodeFromVideoDevice(null, 'interactive', (result, err) => {
+                    if (result) {
+                        document.getElementById('barcodeInput').value = result.text;
+                        processScan();
+                    }
+                });
+                isCameraOn = true;
             }
         }
 
-        renderTables();
+        // ПЪРВОНАЧАЛНО ЗАРЕЖДАНЕ
+        checkLicenseOnStart();
+        renderTable();
     </script>
 </body>
 </html>
