@@ -466,10 +466,11 @@
             btn.disabled = false;
             btn.innerHTML = '<i class="fa-solid fa-lock-open"></i> Активирай Достъпа';
 
-            if (isValid) {
-                localStorage.setItem('licenseKey', inputKey);
-                document.getElementById('licenseOverlay').style.display = 'none';
-            } else {
+          if (isValid) {
+    localStorage.setItem('licenseKey', inputKey);
+    document.getElementById('licenseOverlay').style.display = 'none';
+    renderTables(); // <-- Добавяме този ред, за да зареди веднага приложението без рефреш
+} else {
                 localStorage.removeItem('licenseKey');
                 errorDiv.innerText = 'Невалиден или деактивиран код!';
                 errorDiv.style.display = 'block';
