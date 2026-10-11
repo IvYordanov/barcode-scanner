@@ -606,32 +606,34 @@
             document.getElementById('statLogsCount').innerText = logs.length;
         }
 
-        function exportExcel() {
-            let csvContent = "\uFEFFКод;Наименование;Количество\n";
-            Object.keys(inventory).forEach(code => {
-                const item = inventory[code];
-                csvContent += `"${code}";"${item.name}";"${item.qty}"\n`;
-            });
+      function exportExcel() {
+    let csvContent = "\uFEFFКод;Наименование;Количество\n";
+    Object.keys(inventory).forEach(code => {
+        const item = inventory[code];
+        csvContent += `"${code}";"${item.name}";"${item.qty}"\n`;
+    });
 
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", `Инвентар_БГ_СКЕНЕР_${new Date().toISOString().slice(0,10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    // Променено име на файла за Excel
+    link.setAttribute("download", `BARCODE_SCANNER_INVENTORY_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
 
-        function exportBackup() {
-            const data = { inventory: inventory, logs: logs, exportDate: new Date().toISOString() };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.setAttribute("download", `BG_SCANNER_ARCHIVE_${new Date().toISOString().slice(0,10)}.json`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+function exportBackup() {
+    const data = { inventory: inventory, logs: logs, exportDate: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    // Променено име на файла за резервно копие (JSON)
+    link.setAttribute("download", `BARCODE_SCANNER_ARCHIVE_${new Date().toISOString().slice(0,10)}.json`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
 
         function importBackup(event) {
             const file = event.target.files[0];
