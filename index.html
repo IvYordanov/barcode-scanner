@@ -300,18 +300,17 @@
             }
         }
 
-        async function verifyKeyWithGitHub(key) {
-            try {
-                // Добавяме Timestamp за избягване на кеширането
-                const response = await fetch(`keys.json?t=${new Date().getTime()}`);
-                if (!response.ok) return false;
-                const keysData = await response.json();
-                return keysData[key] === true;
-            } catch (err) {
-                console.error("Грешка при проверка на лиценза:", err);
-                return false;
-            }
-        }
+    async function verifyKeyWithGitHub(key) {
+    try {
+        const response = await fetch(`keys.json?t=${new Date().getTime()}`);
+        if (!response.ok) return false;
+        const keysData = await response.json();
+        return keysData[key] && keysData[key].active === true;
+    } catch (err) {
+        console.error("Грешка при проверка на лиценза:", err);
+        return false;
+    }
+}
 
         // ЛОГИКА НА СКЕНЕРА
         function setMode(mode) {
