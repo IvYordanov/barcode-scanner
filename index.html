@@ -12,11 +12,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#4f46e5">
 
-    <!-- Задължителен мобилен Viewport -->
+    <!-- Мобилен Viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>БАРКОД-СКЕНЕР</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css">
     
+    <!-- НАДЕЖДНИ ИКОНКИ (Bootstrap Icons - зареждат се 100% без блокиране) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <!-- УНИВЕРСАЛНА БИБЛИОТЕКА ЗА СКЕНИРАНЕ С КАМЕРА -->
     <script src="https://unpkg.com/html5-qrcode"></script>
 
@@ -147,7 +149,7 @@
         .btn {
             flex: 1; min-width: 0; padding: 10px 4px; border: none; border-radius: 8px;
             font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex;
-            align-items: center; justify-content: center; gap: 4px; opacity: 0.55; white-space: nowrap;
+            align-items: center; justify-content: center; gap: 6px; opacity: 0.55; white-space: nowrap;
         }
 
         .btn.active-mode {
@@ -179,7 +181,7 @@
         .badge-add { background: #d1fae5; color: #065f46; }
         .badge-sub { background: #fee2e2; color: #991b1b; }
 
-        .action-icon { cursor: pointer; padding: 2px; color: var(--text-light); border: none; background: none; font-size: 14px; }
+        .action-icon { cursor: pointer; padding: 2px 4px; color: var(--text-light); border: none; background: none; font-size: 16px; }
 
         #cameraContainer {
             display: none;
@@ -197,12 +199,12 @@
     <!-- МОДАЛЕН ЕКРАН ЗА ЛИЦЕНЗЕН КОД -->
     <div id="licenseOverlay">
         <div class="license-card">
-            <div class="icon-box"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="icon-box"><i class="bi bi-shield-lock-fill"></i></div>
             <h2>Достъп до Приложението</h2>
             <p>Моля, въведете вашия 4-цифрен лицензен код, за да отключите инвентарната система.</p>
             <input type="text" id="licenseInput" class="license-input" maxlength="4" placeholder="0000" pattern="[0-9]*" inputmode="numeric" onkeydown="if(event.key === 'Enter') validateLicense()">
             <button id="licenseBtn" class="license-btn" onclick="validateLicense()">
-                <i class="fa-solid fa-lock-open"></i> Активирай Достъпа
+                <i class="bi bi-unlock-fill"></i> Активирай Достъпа
             </button>
             <div id="licenseError" class="license-error"></div>
         </div>
@@ -217,7 +219,7 @@
             </div>
         </div>
         <a href="instructions.html" class="btn-help" title="Виж ръководството">
-            <i class="fa-solid fa-book"></i> Инструкции
+            <i class="bi bi-journal-text"></i> Инструкции
         </a>
     </header>
 
@@ -226,21 +228,21 @@
         <div>
             <div class="card">
                 <div class="card-title">
-                    <i class="fa-solid fa-cart-plus"></i> Избор на режим & Сканиране
+                    <i class="bi bi-cart-plus-fill"></i> Избор на режим & Сканиране
                 </div>
                 
                 <button type="button" class="btn btn-outline" id="cameraBtn" onclick="toggleCamera()" style="width: 100%; margin-bottom: 10px; border-color: var(--primary); color: var(--primary);">
-                    <i class="fa-solid fa-camera"></i> Пусни Камерата
+                    <i class="bi bi-camera-fill"></i> Пусни Камерата
                 </button>
 
                 <div id="cameraContainer"></div>
 
                 <div class="btn-group">
                     <button type="button" id="btnAddMode" class="btn btn-success active-mode" onclick="setMode('ADD')">
-                        <i class="fa-solid fa-plus"></i> ПРИБАВИ <span id="checkAdd">✓</span>
+                        <i class="bi bi-plus-lg"></i> ПРИБАВИ <span id="checkAdd">✓</span>
                     </button>
                     <button type="button" id="btnSubMode" class="btn btn-danger" onclick="setMode('SUB')">
-                        <i class="fa-solid fa-minus"></i> ИЗВАДИ <span id="checkSub" style="display:none;">✓</span>
+                        <i class="bi bi-dash-lg"></i> ИЗВАДИ <span id="checkSub" style="display:none;">✓</span>
                     </button>
                 </div>
 
@@ -267,30 +269,30 @@
                     </div>
 
                     <button type="submit" id="btnExecute" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
-                        <i class="fa-solid fa-check"></i> Потвърди операцията
+                        <i class="bi bi-check-lg"></i> Потвърди операцията
                     </button>
                 </form>
             </div>
 
             <div class="card" style="margin-top: 10px;">
                 <div class="card-title">
-                    <i class="fa-solid fa-box-archive"></i> Архивиране и данни
+                    <i class="bi bi-archive-fill"></i> Архивиране и данни
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                     <button class="btn btn-primary" onclick="exportExcel()" style="width: 100%;">
-                        <i class="fa-solid fa-file-excel"></i> Експорт в Excel (.csv)
+                        <i class="bi bi-file-earmark-excel-fill"></i> Експорт в Excel (.csv)
                     </button>
                     <div style="display: flex; gap: 8px;">
                         <button class="btn btn-outline" onclick="exportBackup()" style="flex: 1; padding: 8px; font-size: 11px;">
-                            <i class="fa-solid fa-download"></i> Архив
+                            <i class="bi bi-download"></i> Архив
                         </button>
                         <button class="btn btn-outline" onclick="document.getElementById('importFile').click()" style="flex: 1; padding: 8px; font-size: 11px;">
-                            <i class="fa-solid fa-upload"></i> Възстанови
+                            <i class="bi bi-upload"></i> Възстанови
                         </button>
                         <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importBackup(event)">
                     </div>
                     <button class="btn btn-outline" onclick="clearAllData()" style="width: 100%; color: var(--danger); margin-top: 2px;">
-                        <i class="fa-solid fa-trash"></i> Занули всички данни
+                        <i class="bi bi-trash-fill"></i> Занули всички данни
                     </button>
                 </div>
             </div>
@@ -315,7 +317,7 @@
 
             <div class="card">
                 <div class="card-title">
-                    <i class="fa-solid fa-list-check"></i> Текущ инвентар
+                    <i class="bi bi-list-check"></i> Текущ инвентар
                 </div>
 
                 <div style="margin-bottom: 10px;">
@@ -339,7 +341,7 @@
 
             <div class="card" style="margin-top: 10px;">
                 <div class="card-title">
-                    <i class="fa-solid fa-history"></i> Последна история
+                    <i class="bi bi-clock-history"></i> Последна история
                 </div>
                 <div class="table-wrapper" style="max-height: 180px;">
                     <table>
@@ -359,7 +361,6 @@
     </div>
 
     <script>
-        // 1. ЛОГИКА ЗА ПРОВЕРКА НА ЛИЦЕНЗА
         async function verifyKeyWithGitHub(key) {
             try {
                 const response = await fetch(`keys.json?nocache=${Date.now()}`);
@@ -387,13 +388,13 @@
             }
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Проверка...';
+            btn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Проверка...';
             errorDiv.style.display = 'none';
 
             const isValid = await verifyKeyWithGitHub(inputKey);
             
             btn.disabled = false;
-            btn.innerHTML = '<i class="fa-solid fa-lock-open"></i> Активирай Достъпа';
+            btn.innerHTML = '<i class="bi bi-unlock-fill"></i> Активирай Достъпа';
 
             if (isValid) {
                 localStorage.setItem('licenseKey', inputKey);
@@ -427,7 +428,6 @@
             }
         }
 
-        // 2. ОСНОВНА ЛОГИКА НА ПРИЛОЖЕНИЕТО
         let inventory = JSON.parse(localStorage.getItem('bg_scanner_inventory')) || {};
         let logs = JSON.parse(localStorage.getItem('bg_scanner_logs')) || [];
         let html5QrCode = null;
@@ -489,7 +489,7 @@
             }
 
             container.style.display = 'block';
-            btn.innerHTML = '<i class="fa-solid fa-stop"></i> Спри Камерата';
+            btn.innerHTML = '<i class="bi bi-stop-circle-fill"></i> Спри Камерата';
             btn.style.backgroundColor = '#fee2e2';
             btn.style.color = '#b91c1c';
             isScanning = true;
@@ -554,7 +554,7 @@
             }
 
             container.style.display = 'none';
-            btn.innerHTML = '<i class="fa-solid fa-camera"></i> Пусни Камерата';
+            btn.innerHTML = '<i class="bi bi-camera-fill"></i> Пусни Камерата';
             btn.style.backgroundColor = 'white';
             btn.style.color = 'var(--primary)';
             isScanning = false;
@@ -606,7 +606,6 @@
                 qty: qty
             });
 
-            // Автоматично изчистване и фокусиране за следващо сканиране
             barcodeInput.value = '';
             document.getElementById('itemNameInput').value = '';
             document.getElementById('qtyInput').value = '1';
@@ -660,9 +659,9 @@
                         <td>${item.name}</td>
                         <td style="text-align: center; font-size: 14px; font-weight: bold; color: ${item.qty < 0 ? 'var(--danger)' : 'var(--text)'};">${item.qty}</td>
                         <td style="text-align: right;">
-                            <button class="action-icon" onclick="quickChange('${code}', 1)" title="Добави 1"><i class="fa-solid fa-circle-plus" style="color: var(--success);"></i></button>
-                            <button class="action-icon" onclick="quickChange('${code}', -1)" title="Извади 1"><i class="fa-solid fa-circle-minus" style="color: var(--danger);"></i></button>
-                            <button class="action-icon delete" onclick="deleteItem('${code}')" title="Изтрий"><i class="fa-solid fa-trash"></i></button>
+                            <button class="action-icon" onclick="quickChange('${code}', 1)" title="Добави 1"><i class="bi bi-plus-circle-fill" style="color: var(--success);"></i></button>
+                            <button class="action-icon" onclick="quickChange('${code}', -1)" title="Извади 1"><i class="bi bi-dash-circle-fill" style="color: var(--danger);"></i></button>
+                            <button class="action-icon" onclick="deleteItem('${code}')" title="Изтрий"><i class="bi bi-trash-fill" style="color: var(--danger);"></i></button>
                         </td>
                     `;
                     invBody.appendChild(tr);
@@ -753,7 +752,6 @@
             focusBarcodeInput();
         }
 
-        // СТАРТИРАНЕ
         checkLicenseOnStart();
         renderTables();
     </script>
