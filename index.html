@@ -571,7 +571,7 @@
             } catch(e){}
         }
 
-        // ОБНОВЕНА ФУНКЦИЯ С ПРОВЕРКА ПРИ ИЗВАЖДАНЕ
+        // ПОДОБРЕНА ФУНКЦИЯ: ЗАЩИТА СРЕЩУ ОПИТ ЗА ИЗВАЖДАНЕ ПРИ НЕДОСТАТЪЧНА НАЛИЧНОСТ
         function processStock(action) {
             const barcodeInput = document.getElementById('barcodeInput');
             const barcode = barcodeInput.value.trim();
@@ -589,14 +589,34 @@
                 return;
             }
 
-            // ПРОВЕРКА: Ако искаме да ИЗВАДИМ (SUB), но продуктът не съществува в инвентара
-            if (action === 'SUB' && !inventory[barcode]) {
-                alert(`Грешка: Артикул с код [${barcode}] не съществува в инвентара!`);
-                barcodeInput.value = '';
-                document.getElementById('itemNameInput').value = '';
-                document.getElementById('qtyInput').value = '1';
-                focusBarcodeInput();
-                return;
+            if (action === 'SUB') {
+                // 1. Ако артикулът въобще липсва в базата
+                if (!inventory[barcode]) {
+                    alert(`Грешка: Артикул с код [${barcode}] не съществува в инвентара!`);
+                    barcodeInput.value = '';
+                    document.getElementById('itemNameInput').value = '';
+                    document.getElementById('qtyInput').value = '1';
+                    focusBarcodeInput();
+                    return;
+                }
+
+                // 2. Ако артикулът го има, но наличността му е 0 или искаме да извадим повече от наличната бройка
+                const currentQty = inventory[barcode].qty;
+                if (currentQty <= 0) {
+                    alert(`Грешка: Артикул [${barcode}] вече е с наличност 0!`);
+                    barcodeInput.value = '';
+                    document.getElementById('itemNameInput').value = '';
+                    document.getElementById('qtyInput').value = '1';
+                    focusBarcodeInput();
+                    return;
+                } else if (qty > currentQty) {
+                    alert(`Грешка: Опитвате да извадите ${qty} бр., а в наличност има само ${currentQty} бр.!`);
+                    barcodeInput.value = '';
+                    document.getElementById('itemNameInput').value = '';
+                    document.getElementById('qtyInput').value = '1';
+                    focusBarcodeInput();
+                    return;
+                }
             }
 
             if (!inventory[barcode]) {
