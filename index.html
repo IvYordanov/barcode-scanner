@@ -12,12 +12,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#4f46e5">
 
-    <!-- Задължителен Viewport за Android Chrome & Desktop -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>БАРКОД-СКЕНЕР</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <!-- Библиотека за универсално сканиране с камера (Десктоп + Мобилен) -->
+    <!-- УНИВЕРСАЛНА БИБЛИОТЕКА ЗА СКЕНИРАНЕ -->
     <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
@@ -43,10 +42,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html {
-            width: 100%;
-            overflow-x: hidden;
-        }
+        html { width: 100%; overflow-x: hidden; }
 
         body { 
             width: 100%;
@@ -57,35 +53,25 @@
             padding: 10px;
         }
 
-        /* ЕКРАН ЗА ЛИЦЕНЗЕН КОД */
         #licenseOverlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.92);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            padding: 15px;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999; padding: 15px;
         }
 
         .license-card {
-            background: white;
-            padding: 24px 18px;
-            border-radius: 16px;
-            max-width: 360px;
-            width: 100%;
-            text-align: center;
+            background: white; padding: 24px 18px; border-radius: 16px;
+            max-width: 360px; width: 100%; text-align: center;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
         .license-card .icon-box {
-            width: 54px; height: 54px;
-            background: #e0e7ff; color: var(--primary);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
+            width: 54px; height: 54px; background: #e0e7ff; color: var(--primary);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
             font-size: 24px; margin: 0 auto 14px;
         }
 
@@ -93,33 +79,23 @@
         .license-card p { font-size: 12px; color: var(--text-light); margin-bottom: 18px; line-height: 1.4; }
 
         .license-input {
-            width: 100%; padding: 10px;
-            font-size: 22px; letter-spacing: 6px; text-align: center;
-            border: 2px solid var(--border); border-radius: 10px;
-            margin-bottom: 14px; outline: none; font-weight: 700;
-            color: var(--primary);
+            width: 100%; padding: 10px; font-size: 22px; letter-spacing: 6px; text-align: center;
+            border: 2px solid var(--border); border-radius: 10px; margin-bottom: 14px;
+            outline: none; font-weight: 700; color: var(--primary);
         }
 
         .license-btn {
-            width: 100%; background: var(--primary); color: white;
-            border: none; padding: 12px; font-size: 14px; font-weight: 600;
-            border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; background: var(--primary); color: white; border: none;
+            padding: 12px; font-size: 14px; font-weight: 600; border-radius: 10px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
 
         .license-error { color: var(--danger); font-size: 12px; font-weight: 600; margin-top: 10px; display: none; }
 
-        /* МОБИЛЕН ХЕДЪР */
         header {
-            background: linear-gradient(135deg, #4f46e5, #3b82f6);
-            color: white;
-            padding: 12px 14px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
+            background: linear-gradient(135deg, #4f46e5, #3b82f6); color: white;
+            padding: 12px 14px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; width: 100%;
         }
 
         .brand { display: flex; align-items: center; gap: 8px; min-width: 0; }
@@ -127,17 +103,9 @@
         .brand h1 { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .btn-help {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 6px 10px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 11px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2); color: white; padding: 6px 10px;
+            border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 11px;
+            display: inline-flex; align-items: center; gap: 4px; border: 1px solid rgba(255, 255, 255, 0.3);
             flex-shrink: 0;
         }
 
@@ -149,23 +117,13 @@
         }
 
         .card {
-            background: var(--card-bg);
-            padding: 14px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid var(--border);
-            width: 100%;
+            background: var(--card-bg); padding: 14px; border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--border); width: 100%;
         }
 
         .card-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--text);
-            border-bottom: 1px solid var(--border);
+            font-size: 14px; font-weight: 600; margin-bottom: 12px; display: flex;
+            align-items: center; gap: 6px; color: var(--text); border-bottom: 1px solid var(--border);
             padding-bottom: 8px;
         }
 
@@ -173,41 +131,20 @@
         .form-group label { display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; color: var(--text-light); }
 
         .input-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
+            width: 100%; padding: 10px; border: 1px solid var(--border);
+            border-radius: 8px; font-size: 14px; outline: none;
         }
 
-        .btn-group { 
-            display: flex; 
-            gap: 8px; 
-            margin-bottom: 12px; 
-            width: 100%; 
-        }
+        .btn-group { display: flex; gap: 8px; margin-bottom: 12px; width: 100%; }
 
         .btn {
-            flex: 1;
-            min-width: 0;
-            padding: 10px 4px;
-            border: none;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            opacity: 0.55;
-            white-space: nowrap;
+            flex: 1; min-width: 0; padding: 10px 4px; border: none; border-radius: 8px;
+            font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex;
+            align-items: center; justify-content: center; gap: 4px; opacity: 0.55; white-space: nowrap;
         }
 
         .btn.active-mode {
-            opacity: 1;
-            box-shadow: 0 0 0 2px rgba(0,0,0,0.15), inset 0 0 0 2px #fff;
+            opacity: 1; box-shadow: 0 0 0 2px rgba(0,0,0,0.15), inset 0 0 0 2px #fff;
         }
 
         .btn-primary { background: var(--primary); color: white; opacity: 1; }
@@ -215,22 +152,10 @@
         .btn-danger { background: var(--danger); color: white; }
         .btn-outline { background: white; border: 1px solid var(--border); color: var(--text); opacity: 1; }
 
-        .quick-qty { 
-            display: flex; 
-            gap: 4px; 
-            margin-top: 6px; 
-            width: 100%; 
-        }
+        .quick-qty { display: flex; gap: 4px; margin-top: 6px; width: 100%; }
         .btn-sm-qty {
-            flex: 1;
-            min-width: 0;
-            padding: 8px 0;
-            font-size: 12px;
-            background: #f3f4f6;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-weight: 600;
-            text-align: center;
+            flex: 1; min-width: 0; padding: 8px 0; font-size: 12px; background: #f3f4f6;
+            border: 1px solid var(--border); border-radius: 6px; font-weight: 600; text-align: center;
         }
 
         .stats-grid { display: flex; gap: 6px; margin-bottom: 12px; width: 100%; }
@@ -257,13 +182,11 @@
             overflow: hidden;
             margin-bottom: 12px;
             background: #000;
-            min-height: 200px;
         }
     </style>
 </head>
 <body>
 
-    <!-- МОДАЛЕН ЕКРАН ЗА ЛИЦЕНЗЕН КОД -->
     <div id="licenseOverlay">
         <div class="license-card">
             <div class="icon-box"><i class="fa-solid fa-shield-halved"></i></div>
@@ -291,7 +214,6 @@
     </header>
 
     <div class="grid">
-        <!-- ЛЯВ ПАНЕЛ -->
         <div>
             <div class="card">
                 <div class="card-title">
@@ -365,7 +287,6 @@
             </div>
         </div>
 
-        <!-- ДЕСЕН ПАНЕЛ -->
         <div>
             <div class="stats-grid">
                 <div class="stat-card">
@@ -428,7 +349,6 @@
     </div>
 
     <script>
-        // 1. ЛОГИКА ЗА ПРОВЕРКА НА ЛИЦЕНЗА
         async function verifyKeyWithGitHub(key) {
             try {
                 const response = await fetch(`keys.json?nocache=${Date.now()}`);
@@ -440,7 +360,6 @@
                 if (typeof entry === 'object') return entry.active === true;
                 return false;
             } catch (err) {
-                console.error("Грешка при проверка на keys.json:", err);
                 return false;
             }
         }
@@ -495,7 +414,6 @@
             }
         }
 
-        // 2. ОСНОВНА ЛОГИКА НА ПРИЛОЖЕНИЕТО
         let inventory = JSON.parse(localStorage.getItem('bg_scanner_inventory')) || {};
         let logs = JSON.parse(localStorage.getItem('bg_scanner_logs')) || [];
         let html5QrCode = null;
@@ -535,7 +453,7 @@
             processStock(currentMode);
         }
 
-        // УНИВЕРСАЛНА КАМЕРА (КОМПЮТЪР + ТЕЛЕФОН)
+        // ПОДОБРЕНА ЛОГИКА ЗА ДЕСКТОП И МОБИЛНИ КАМЕРИ
         async function toggleCamera() {
             const container = document.getElementById('cameraContainer');
             const btn = document.getElementById('cameraBtn');
@@ -555,19 +473,50 @@
                 html5QrCode = new Html5Qrcode("cameraContainer");
             }
 
+            // ИЗРИЧНИ НАСТРОЙКИ ЗА HD КАЧЕСТВО И ШИРОК НАБОР ФОРМАТИ
             const config = { 
-                fps: 15, 
-                qrbox: { width: 250, height: 150 },
-                aspectRatio: 1.777778
+                fps: 20,
+                qrbox: function(viewfinderWidth, viewfinderHeight) {
+                    return {
+                        width: Math.floor(viewfinderWidth * 0.8),
+                        height: Math.floor(viewfinderHeight * 0.5)
+                    };
+                },
+                formatsToSupport: [
+                    Html5QrcodeSupportedFormats.EAN_13,
+                    Html5QrcodeSupportedFormats.EAN_8,
+                    Html5QrcodeSupportedFormats.CODE_128,
+                    Html5QrcodeSupportedFormats.CODE_39,
+                    Html5QrcodeSupportedFormats.UPC_A,
+                    Html5QrcodeSupportedFormats.UPC_E,
+                    Html5QrcodeSupportedFormats.QR_CODE
+                ]
+            };
+
+            const cameraConstraints = {
+                video: {
+                    width: { min: 640, ideal: 1280, max: 1920 },
+                    height: { min: 480, ideal: 720, max: 1080 }
+                }
             };
 
             try {
-                await html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
+                // Първи опит: Задна камера (за телефон) с HD резолюция
+                await html5QrCode.start(
+                    { facingMode: "environment" }, 
+                    { ...config, videoConstraints: { facingMode: "environment", ...cameraConstraints.video } }, 
+                    onScanSuccess
+                );
             } catch (err) {
                 try {
-                    await html5QrCode.start({ facingMode: "user" }, config, onScanSuccess);
+                    // Втори опит: Десктоп/Предна камера с HD резолюция
+                    await html5QrCode.start(
+                        { facingMode: "user" }, 
+                        { ...config, videoConstraints: { facingMode: "user", ...cameraConstraints.video } }, 
+                        onScanSuccess
+                    );
                 } catch (err2) {
-                    alert('Грешка при пускане на камерата: ' + err2);
+                    alert('Не може да се достъпи камерата: ' + err2);
                     stopCamera();
                 }
             }
@@ -595,9 +544,7 @@
             if (html5QrCode && isScanning) {
                 try {
                     await html5QrCode.stop();
-                } catch (e) {
-                    console.error(e);
-                }
+                } catch (e) {}
             }
 
             container.style.display = 'none';
