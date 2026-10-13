@@ -16,7 +16,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>БАРКОД-СКЕНЕР</title>
     
-    <!-- НАДЕЖДНИ ИКОНКИ (Bootstrap Icons - зареждат се 100% без блокиране) -->
+    <!-- НАДЕЖДНИ ИКОНКИ (Bootstrap Icons) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- УНИВЕРСАЛНА БИБЛИОТЕКА ЗА СКЕНИРАНЕ С КАМЕРА -->
@@ -37,7 +37,6 @@
             --border: #e5e7eb;
         }
 
-        /* Пълно нулиране и защита срещу хоризонтален скрол */
         *, *::before, *::after { 
             box-sizing: border-box !important; 
             margin: 0; 
@@ -388,7 +387,7 @@
             }
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Проверка...';
+            btn.innerHTML = 'Проверка...';
             errorDiv.style.display = 'none';
 
             const isValid = await verifyKeyWithGitHub(inputKey);
@@ -572,6 +571,7 @@
             } catch(e){}
         }
 
+        // ОБНОВЕНА ФУНКЦИЯ С ПРОВЕРКА ПРИ ИЗВАЖДАНЕ
         function processStock(action) {
             const barcodeInput = document.getElementById('barcodeInput');
             const barcode = barcodeInput.value.trim();
@@ -586,6 +586,16 @@
 
             if (isNaN(qty) || qty <= 0) {
                 alert('Моля, въведете валидно количество!');
+                return;
+            }
+
+            // ПРОВЕРКА: Ако искаме да ИЗВАДИМ (SUB), но продуктът не съществува в инвентара
+            if (action === 'SUB' && !inventory[barcode]) {
+                alert(`Грешка: Артикул с код [${barcode}] не съществува в инвентара!`);
+                barcodeInput.value = '';
+                document.getElementById('itemNameInput').value = '';
+                document.getElementById('qtyInput').value = '1';
+                focusBarcodeInput();
                 return;
             }
 
@@ -616,6 +626,13 @@
 
         function quickChange(barcode, delta) {
             if (!inventory[barcode]) return;
+            
+            // Защита и при бърза промяна от таблицата (-1)
+            if (delta < 0 && inventory[barcode].qty <= 0) {
+                alert(`Артикул [${barcode}] вече е с наличност 0!`);
+                return;
+            }
+
             inventory[barcode].qty += delta;
             logs.unshift({
                 timestamp: new Date().toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
