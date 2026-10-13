@@ -12,11 +12,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#4f46e5">
 
+    <!-- Задължителен мобилен Viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>БАРКОД-СКЕНЕР</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
-    <!-- УНИВЕРСАЛНА БИБЛИОТЕКА ЗА СКЕНИРАНЕ -->
+    <!-- УНИВЕРСАЛНА БИБЛИОТЕКА ЗА СКЕНИРАНЕ С КАМЕРА -->
     <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
@@ -34,6 +35,7 @@
             --border: #e5e7eb;
         }
 
+        /* Пълно нулиране и защита срещу хоризонтален скрол */
         *, *::before, *::after { 
             box-sizing: border-box !important; 
             margin: 0; 
@@ -53,6 +55,7 @@
             padding: 10px;
         }
 
+        /* ЕКРАН ЗА ЛИЦЕНЗЕН КОД */
         #licenseOverlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -134,6 +137,10 @@
             width: 100%; padding: 10px; border: 1px solid var(--border);
             border-radius: 8px; font-size: 14px; outline: none;
         }
+        .input-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
 
         .btn-group { display: flex; gap: 8px; margin-bottom: 12px; width: 100%; }
 
@@ -187,6 +194,7 @@
 </head>
 <body>
 
+    <!-- МОДАЛЕН ЕКРАН ЗА ЛИЦЕНЗЕН КОД -->
     <div id="licenseOverlay">
         <div class="license-card">
             <div class="icon-box"><i class="fa-solid fa-shield-halved"></i></div>
@@ -214,6 +222,7 @@
     </header>
 
     <div class="grid">
+        <!-- ЛЯВ ПАНЕЛ -->
         <div>
             <div class="card">
                 <div class="card-title">
@@ -287,6 +296,7 @@
             </div>
         </div>
 
+        <!-- ДЕСЕН ПАНЕЛ -->
         <div>
             <div class="stats-grid">
                 <div class="stat-card">
@@ -349,6 +359,7 @@
     </div>
 
     <script>
+        // 1. ЛОГИКА ЗА ПРОВЕРКА НА ЛИЦЕНЗА
         async function verifyKeyWithGitHub(key) {
             try {
                 const response = await fetch(`keys.json?nocache=${Date.now()}`);
@@ -388,6 +399,7 @@
                 localStorage.setItem('licenseKey', inputKey);
                 document.getElementById('licenseOverlay').style.display = 'none';
                 renderTables();
+                focusBarcodeInput();
             } else {
                 localStorage.removeItem('licenseKey');
                 errorDiv.innerText = 'Невалиден или деактивиран код!';
@@ -401,6 +413,7 @@
                 const isValid = await verifyKeyWithGitHub(savedKey);
                 if (isValid) {
                     document.getElementById('licenseOverlay').style.display = 'none';
+                    focusBarcodeInput();
                 } else {
                     localStorage.removeItem('licenseKey');
                     document.getElementById('licenseOverlay').style.display = 'flex';
@@ -414,6 +427,7 @@
             }
         }
 
+        // 2. ОСНОВНА ЛОГИКА НА ПРИЛОЖЕНИЕТО
         let inventory = JSON.parse(localStorage.getItem('bg_scanner_inventory')) || {};
         let logs = JSON.parse(localStorage.getItem('bg_scanner_logs')) || [];
         let html5QrCode = null;
@@ -426,7 +440,10 @@
             renderTables();
         }
 
-        function setQty(val) { document.getElementById('qtyInput').value = val; }
+        function setQty(val) { 
+            document.getElementById('qtyInput').value = val; 
+            focusBarcodeInput();
+        }
 
         function setMode(mode) {
             currentMode = mode;
@@ -446,6 +463,7 @@
                 checkSub.style.display = 'inline';
                 checkAdd.style.display = 'none';
             }
+            focusBarcodeInput();
         }
 
         function handleFormSubmit(event) {
@@ -453,7 +471,14 @@
             processStock(currentMode);
         }
 
-        // ПОДОБРЕНА ЛОГИКА ЗА ДЕСКТОП И МОБИЛНИ КАМЕРИ
+        function focusBarcodeInput() {
+            const input = document.getElementById('barcodeInput');
+            if (input) {
+                input.focus();
+                input.select();
+            }
+        }
+
         async function toggleCamera() {
             const container = document.getElementById('cameraContainer');
             const btn = document.getElementById('cameraBtn');
@@ -473,7 +498,6 @@
                 html5QrCode = new Html5Qrcode("cameraContainer");
             }
 
-            // ИЗРИЧНИ НАСТРОЙКИ ЗА HD КАЧЕСТВО И ШИРОК НАБОР ФОРМАТИ
             const config = { 
                 fps: 20,
                 qrbox: function(viewfinderWidth, viewfinderHeight) {
@@ -481,38 +505,20 @@
                         width: Math.floor(viewfinderWidth * 0.8),
                         height: Math.floor(viewfinderHeight * 0.5)
                     };
-                },
-                formatsToSupport: [
-                    Html5QrcodeSupportedFormats.EAN_13,
-                    Html5QrcodeSupportedFormats.EAN_8,
-                    Html5QrcodeSupportedFormats.CODE_128,
-                    Html5QrcodeSupportedFormats.CODE_39,
-                    Html5QrcodeSupportedFormats.UPC_A,
-                    Html5QrcodeSupportedFormats.UPC_E,
-                    Html5QrcodeSupportedFormats.QR_CODE
-                ]
-            };
-
-            const cameraConstraints = {
-                video: {
-                    width: { min: 640, ideal: 1280, max: 1920 },
-                    height: { min: 480, ideal: 720, max: 1080 }
                 }
             };
 
             try {
-                // Първи опит: Задна камера (за телефон) с HD резолюция
                 await html5QrCode.start(
                     { facingMode: "environment" }, 
-                    { ...config, videoConstraints: { facingMode: "environment", ...cameraConstraints.video } }, 
+                    config, 
                     onScanSuccess
                 );
             } catch (err) {
                 try {
-                    // Втори опит: Десктоп/Предна камера с HD резолюция
                     await html5QrCode.start(
                         { facingMode: "user" }, 
-                        { ...config, videoConstraints: { facingMode: "user", ...cameraConstraints.video } }, 
+                        config, 
                         onScanSuccess
                     );
                 } catch (err2) {
@@ -552,6 +558,7 @@
             btn.style.backgroundColor = 'white';
             btn.style.color = 'var(--primary)';
             isScanning = false;
+            focusBarcodeInput();
         }
 
         function playBeep() {
@@ -566,13 +573,14 @@
         }
 
         function processStock(action) {
-            const barcode = document.getElementById('barcodeInput').value.trim();
+            const barcodeInput = document.getElementById('barcodeInput');
+            const barcode = barcodeInput.value.trim();
             const name = document.getElementById('itemNameInput').value.trim();
             let qty = parseInt(document.getElementById('qtyInput').value);
 
             if (!barcode) {
                 alert('Моля, въведете или сканирайте баркод!');
-                document.getElementById('barcodeInput').focus();
+                focusBarcodeInput();
                 return;
             }
 
@@ -598,11 +606,13 @@
                 qty: qty
             });
 
-            document.getElementById('barcodeInput').value = '';
+            // Автоматично изчистване и фокусиране за следващо сканиране
+            barcodeInput.value = '';
             document.getElementById('itemNameInput').value = '';
             document.getElementById('qtyInput').value = '1';
 
             saveData();
+            focusBarcodeInput();
         }
 
         function quickChange(barcode, delta) {
@@ -616,12 +626,14 @@
                 qty: Math.abs(delta)
             });
             saveData();
+            focusBarcodeInput();
         }
 
         function deleteItem(barcode) {
             if (confirm(`Сигурни ли сте, че искате да изтриете код ${barcode}?`)) {
                 delete inventory[barcode];
                 saveData();
+                focusBarcodeInput();
             }
         }
 
@@ -695,6 +707,7 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            focusBarcodeInput();
         }
 
         function exportBackup() {
@@ -706,6 +719,7 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            focusBarcodeInput();
         }
 
         function importBackup(event) {
@@ -725,6 +739,7 @@
                         }
                     } else { alert('Невалиден формат на файла.'); }
                 } catch (err) { alert('Грешка при четене на файла.'); }
+                focusBarcodeInput();
             };
             reader.readAsText(file);
         }
@@ -735,8 +750,10 @@
                 logs = [];
                 saveData();
             }
+            focusBarcodeInput();
         }
 
+        // СТАРТИРАНЕ
         checkLicenseOnStart();
         renderTables();
     </script>
