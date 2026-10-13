@@ -16,6 +16,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>БАРКОД-СКЕНЕР</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode"></script>
     
     <style>
         :root {
@@ -546,84 +547,92 @@
             processStock(currentMode);
         }
 
+       // ПРОМЕНЛИВИ ЗА КАМЕРАТА
+        let html5QrCode = null;
+        let isScanning = false;
+        let currentMode = 'ADD';
+
         async function toggleCamera() {
             const container = document.getElementById('cameraContainer');
             const btn = document.getElementById('cameraBtn');
-            const video = document.getElementById('webcamVideo');
 
             if (isScanning) {
                 stopCamera();
                 return;
             }
 
+            container.style.display = 'block';
+            btn.innerHTML = '<i class="fa-solid fa-stop"></i> Спри Камерата';
+            btn.style.backgroundColor = '#fee2e2';
+            btn.style.color = '#b91c1c';
+            isScanning = true;
+
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("cameraContainer");
+            }
+
+            const config = { 
+                fps: 15, 
+                qrbox: { width: 250, height: 150 },
+                aspectRatio: 1.777778
+            };
+
             try {
-                videoStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { exact: "environment" } }
-                }).catch(() => {
-                    return navigator.mediaDevices.getUserMedia({ video: true });
-                });
-
-                video.srcObject = videoStream;
-                await video.play();
-
-                container.style.display = 'block';
-                btn.innerHTML = '<i class="fa-solid fa-stop"></i> Спри Камерата';
-                btn.style.backgroundColor = '#fee2e2';
-                btn.style.color = '#b91c1c';
-                isScanning = true;
-
-                if ('BarcodeDetector' in window) {
-                    barcodeDetector = new BarcodeDetector({ formats: ['code_128', 'ean_13', 'ean_8', 'qr_code', 'upc_a'] });
-                }
-
-                scanFrame();
+                // Опитва първо със задната камера (за телефони), ако няма - пуска наличната (за лаптопи)
+                await html5QrCode.start(
+                    { facingMode: "environment" }, 
+                    config, 
+                    onScanSuccess
+                );
             } catch (err) {
-                alert('Не може да се пусне камерата. Уверете се, че сте потвърдили съобщението за достъп в браузъра!');
-            }
-        }
-
-        async function scanFrame() {
-            if (!isScanning) return;
-            const video = document.getElementById('webcamVideo');
-
-            if (barcodeDetector && video.readyState === video.HAVE_ENOUGH_DATA && !scanCooldown) {
                 try {
-                    const barcodes = await barcodeDetector.detect(video);
-                    if (barcodes.length > 0) {
-                        const code = barcodes[0].rawValue;
-                        document.getElementById('barcodeInput').value = code;
-                        
-                        scanCooldown = true;
-                        playBeep();
-                        
-                        processStock(currentMode);
-
-                        setTimeout(() => {
-                            scanCooldown = false;
-                        }, 1500);
-                    }
-                } catch (e) {}
+                    await html5QrCode.start(
+                        { facingMode: "user" }, 
+                        config, 
+                        onScanSuccess
+                    );
+                } catch (err2) {
+                    alert('Не може да се достъпи камерата: ' + err2);
+                    stopCamera();
+                }
             }
-            requestAnimationFrame(scanFrame);
         }
 
-        function stopCamera() {
+        function onScanSuccess(decodedText, decodedResult) {
+            // При успешно сканиране
+            document.getElementById('barcodeInput').value = decodedText;
+            playBeep();
+            processStock(currentMode);
+            
+            // Временна пауза, за да не сканира повторно същия баркод веднага
+            if (html5QrCode) {
+                html5QrCode.pause(true);
+                setTimeout(() => {
+                    if (html5QrCode && isScanning) {
+                        html5QrCode.resume();
+                    }
+                }, 1500);
+            }
+        }
+
+        async function stopCamera() {
             const container = document.getElementById('cameraContainer');
             const btn = document.getElementById('cameraBtn');
-            const video = document.getElementById('webcamVideo');
 
-            if (videoStream) {
-                videoStream.getTracks().forEach(track => track.stop());
-                videoStream = null;
+            if (html5QrCode && isScanning) {
+                try {
+                    await html5QrCode.stop();
+                } catch (e) {
+                    console.error(e);
+                }
             }
-            video.srcObject = null;
+
             container.style.display = 'none';
             btn.innerHTML = '<i class="fa-solid fa-camera"></i> Пусни Камерата';
             btn.style.backgroundColor = 'white';
             btn.style.color = 'var(--primary)';
             isScanning = false;
         }
-
         function playBeep() {
             try {
                 let ctx = new (window.AudioContext || window.webkitAudioContext)();
