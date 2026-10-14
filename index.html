@@ -726,20 +726,37 @@
  }  
   
  async function startCamera() {  
-     codeReader = new ZXing.BrowserMultiFormatReader();  
+     // Конфигуриране на поддържаните формати за максимална бързина и точност  
+     const hints = new Map();  
+     const formats = [  
+         ZXing.BarcodeFormat.EAN_13,  
+         ZXing.BarcodeFormat.EAN_8,  
+         ZXing.BarcodeFormat.CODE_128,  
+         ZXing.BarcodeFormat.CODE_39,  
+         ZXing.BarcodeFormat.UPC_A,  
+         ZXing.BarcodeFormat.UPC_E,  
+         ZXing.BarcodeFormat.QR_CODE  
+     ];  
+     hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, formats);  
+     hints.set(ZXing.DecodeHintType.TRY_HARDER, true);  
+  
+     codeReader = new ZXing.BrowserMultiFormatReader(hints);  
      const container = document.getElementById('cameraContainer');  
      container.style.display = 'block';  
      document.getElementById('cameraBtn').innerHTML = `<i class="fa-solid fa-stop"></i> Спри Камерата`;  
      cameraActive = true;  
   
      try {  
-         const stream = await navigator.mediaDevices.getUserMedia({  
+         const constraints = {  
              video: {  
                  facingMode: { ideal: "environment" },  
                  width: { ideal: 1280 },  
-                 height: { ideal: 720 }  
+                 height: { ideal: 720 },  
+                 focusMode: { ideal: "continuous" }  
              }  
-         });  
+         };  
+  
+         const stream = await navigator.mediaDevices.getUserMedia(constraints);  
          const videoElement = document.getElementById('webcamVideo');  
          videoElement.srcObject = stream;  
          await videoElement.play();  
@@ -750,7 +767,7 @@
                  playBeep();  
                  processScan(result.text, '', 1, currentMode);  
                  document.getElementById('barcodeInput').value = result.text;  
-                 setTimeout(() => { isScanning = false; }, 1500);  
+                 setTimeout(() => { isScanning = false; }, 1200);  
              }  
          });  
      } catch (err) {  
