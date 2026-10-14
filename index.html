@@ -4,12 +4,11 @@
  <meta charset="UTF-8">  
  <meta name="robots" content="noindex, nofollow">  
  <link rel="icon" type="image/png" href="favicon.png">  
- <!-- PWA Настройки за скриване на адресната лента -->  
-<link rel="manifest" href="manifest.json">  
-<meta name="mobile-web-app-capable" content="yes">  
-<meta name="apple-mobile-web-app-capable" content="yes">  
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">  
-<meta name="theme-color" content="#4f46e5">  
+ <link rel="manifest" href="manifest.json">  
+ <meta name="mobile-web-app-capable" content="yes">  
+ <meta name="apple-mobile-web-app-capable" content="yes">  
+ <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">  
+ <meta name="theme-color" content="#4f46e5">  
   
  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
  <title>БАРКОД-СКЕНЕР</title>  
@@ -225,7 +224,7 @@
  <i class="fa-solid fa-cart-plus"></i> Избор на режим & Сканиране  
  </div>  
    
-<button type="button" class="btn btn-outline" id="cameraBtn" onclick="toggleCamera()" style="width: 100%; margin-bottom: 15px; border-color: var(--primary); color: var(--primary);">  
+ <button type="button" class="btn btn-outline" id="cameraBtn" onclick="toggleCamera()" style="width: 100%; margin-bottom: 15px; border-color: var(--primary); color: var(--primary);">  
  <i class="fa-solid fa-camera"></i> Пусни Камерата  
  </button>  
   
@@ -368,6 +367,7 @@
  <script src="https://apis.google.com/js/api.js" async defer></script>  
   
  <script>  
+ // Не забравяйте да си поставите новия CLIENT_ID долу, ако сте генерирали такъв!
  const CLIENT_ID = '461455643326-n6p2g7vj0rpe7ega8v2kjgq1gkld1r57.apps.googleusercontent.com';  
  const SCOPES = 'https://www.googleapis.com/auth/drive.file';  
  const BACKUP_FILE_NAME = 'barcode_backup.json';  
@@ -398,8 +398,9 @@
  throw (resp);  
  }  
  driveConnected = true;  
- updateDriveUI('Свързване...', '#10b981');  
- await syncDataWithDrive();  
+ updateDriveUI('Свързано с Google Drive', '#10b981');  
+ // При първо свързване сваля данните от облака
+ await downloadFromDrive();  
  }  
  });  
  gsisInited = true;  
@@ -417,8 +418,8 @@
  if (!driveConnected) {  
  tokenClient.requestAccessToken({prompt: 'consent'});  
  } else {  
- // Ако вече е свързан, при повторно натискане принудително изтегля и обновява от облака  
- syncDataWithDrive();  
+ // Ръчна синхронизация при повторно натискане
+ downloadFromDrive();  
  }  
  }  
   
@@ -447,16 +448,15 @@
  return null;  
  }  
   
- async function syncDataWithDrive() {  
+ // САМО ИЗТЕГЛЯНЕ ОТ ОБЛАКА
+ async function downloadFromDrive() {  
  if (!driveConnected) return;  
  try {  
  const fileId = await findBackupFileId();  
-  
- // ТЕГЛЕНЕ НА ДАННИ ОТ ОБЛАКА  
  if (fileId) {  
  const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });  
  const cloudData = res.result;  
- if (cloudData && cloudData.products) {  
+ if (cloudData && Array.isArray(cloudData.products) && cloudData.products.length > 0) {  
  products = cloudData.products;  
  historyLogs = cloudData.history || [];  
  localStorage.setItem('barcode_products', JSON.stringify(products));  
@@ -464,11 +464,22 @@
  renderProducts();  
  renderHistory();  
  updateStats();  
+ const now = new Date().toLocaleTimeString('bg-BG');  
+ updateDriveUI(`Изтеглено от облака в ${now} ч.`);  
+ }  
+ }  
+ } catch (err) {  
+ console.error("Грешка при изтегляне от облака:", err);  
  }  
  }  
   
- // ЗАПИСВАНЕ НА ОБНОВЕНИТЕ ДАННИ  
+ // САМО КАЧВАНЕ КЪМ ОБЛАКА
+ async function uploadToDrive() {  
+ if (!driveConnected) return;  
+ try {  
+ const fileId = await findBackupFileId();  
  const backupContent = JSON.stringify({ products: products, history: historyLogs }, null, 2);  
+  
  if (fileId) {  
  await gapi.client.request({  
  path: `/upload/drive/v3/files/${fileId}`,  
@@ -485,9 +496,9 @@
  }  
   
  const now = new Date().toLocaleTimeString('bg-BG');  
- updateDriveUI(`Синхронизирано в ${now} ч.`);  
+ updateDriveUI(`Създаден нов бекъп в ${now} ч.`);  
  } catch (err) {  
- console.error("Грешка при облачната синхронизация:", err);  
+ console.error("Грешка при качване в облака:", err);  
  }  
  }  
   
@@ -567,7 +578,7 @@
  renderProducts();  
  renderHistory();  
  updateStats();  
- syncDataWithDrive();  
+ uploadToDrive(); // Само качва новите данни  
  }  
   
  function adjustQty(code, delta) {  
