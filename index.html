@@ -16,11 +16,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>БАРКОД-СКЕНЕР</title>
     
-    <!-- НАДЕЖДНИ ИКОНКИ (Bootstrap Icons) -->
+    <!-- ИКОНКИ (Bootstrap Icons) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- УНИВЕРСАЛНА БИБЛИОТЕКА ЗА СКЕНИРАНЕ С КАМЕРА -->
     <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <!-- GOOGLE IDENTITY & DRIVE API -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <style>
         :root {
@@ -160,6 +163,25 @@
         .btn-danger { background: var(--danger); color: white; }
         .btn-outline { background: white; border: 1px solid var(--border); color: var(--text); opacity: 1; }
 
+        .btn-gdrive {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+        }
+        .btn-gdrive.connected {
+            background: #10b981;
+        }
+
         .quick-qty { display: flex; gap: 4px; margin-top: 6px; width: 100%; }
         .btn-sm-qty {
             flex: 1; min-width: 0; padding: 8px 0; font-size: 12px; background: #f3f4f6;
@@ -190,6 +212,13 @@
             overflow: hidden;
             margin-bottom: 12px;
             background: #000;
+        }
+
+        .sync-status {
+            font-size: 10px;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 4px;
         }
     </style>
 </head>
@@ -275,15 +304,21 @@
 
             <div class="card" style="margin-top: 10px;">
                 <div class="card-title">
-                    <i class="bi bi-archive-fill"></i> Архивиране и данни
+                    <i class="bi bi-archive-fill"></i> Архивиране и облак
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <!-- БУТОН ЗА GOOGLE DRIVE -->
+                    <button id="gdriveBtn" class="btn-gdrive" onclick="handleAuthClick()">
+                        <i class="bi bi-google"></i> Свържи с Google Drive
+                    </button>
+                    <div id="syncStatus" class="sync-status">Автоматичен бекъп: изключен</div>
+
                     <button class="btn btn-primary" onclick="exportExcel()" style="width: 100%;">
                         <i class="bi bi-file-earmark-excel-fill"></i> Експорт в Excel (.csv)
                     </button>
                     <div style="display: flex; gap: 8px;">
                         <button class="btn btn-outline" onclick="exportBackup()" style="flex: 1; padding: 8px; font-size: 11px;">
-                            <i class="bi bi-download"></i> Архив
+                            <i class="bi bi-download"></i> Ръчен Архив
                         </button>
                         <button class="btn btn-outline" onclick="document.getElementById('importFile').click()" style="flex: 1; padding: 8px; font-size: 11px;">
                             <i class="bi bi-upload"></i> Възстанови
@@ -360,6 +395,137 @@
     </div>
 
     <script>
+        // -------------------------------------------------------------
+        // GOOGLE DRIVE АВТОМАТИЧЕН СИНХРОН (НАСТРОЙКИ)
+        // -------------------------------------------------------------
+        const CLIENT_ID = '461455643326-b17m21n75h3603mr9tldnlmehl22n1jk.apps.googleusercontent.com'; // ЗАМЕНЕТЕ С ВАШИЯ CLIENT ID ОТ GOOGLE CLOUD
+        const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+        let tokenClient;
+        let accessToken = localStorage.getItem('gdrive_token') || null;
+        let driveFileId = localStorage.getItem('gdrive_file_id') || null;
+
+        function initGoogleAuth() {
+            if (typeof google === 'undefined') return;
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: async (resp) => {
+                    if (resp.error) {
+                        console.error("Грешка при вход:", resp);
+                        return;
+                    }
+                    accessToken = resp.access_token;
+                    localStorage.setItem('gdrive_token', accessToken);
+                    updateGDriveUI(true);
+                    await syncToGoogleDrive();
+                },
+            });
+
+            if (accessToken) {
+                updateGDriveUI(true);
+            }
+        }
+
+        function handleAuthClick() {
+            if (!tokenClient) {
+                initGoogleAuth();
+            }
+            if (tokenClient) {
+                tokenClient.requestAccessToken({ prompt: 'consent' });
+            } else {
+                alert("Библиотеката на Google все още зарежда. Опитайте отново след секунда.");
+            }
+        }
+
+        function updateGDriveUI(isConnected) {
+            const btn = document.getElementById('gdriveBtn');
+            const status = document.getElementById('syncStatus');
+            if (isConnected) {
+                btn.classList.add('connected');
+                btn.innerHTML = '<i class="bi bi-cloud-check-fill"></i> Google Drive е свързан';
+                status.innerText = 'Автоматичен бекъп: Активен';
+            } else {
+                btn.classList.remove('connected');
+                btn.innerHTML = '<i class="bi bi-google"></i> Свържи с Google Drive';
+                status.innerText = 'Автоматичен бекъп: изключен';
+            }
+        }
+
+        async function syncToGoogleDrive() {
+            if (!accessToken) return;
+
+            const status = document.getElementById('syncStatus');
+            status.innerText = 'Синхронизиране...';
+
+            const backupData = {
+                inventory: inventory,
+                logs: logs,
+                lastUpdated: new Date().toISOString()
+            };
+
+            const fileContent = JSON.stringify(backupData, null, 2);
+            const file = new Blob([fileContent], { type: 'application/json' });
+
+            try {
+                // 1. Ако нямаме File ID, първо търсим дали вече съществува файл с това име
+                if (!driveFileId) {
+                    const searchResp = await fetch("https://www.googleapis.com/drive/v3/files?q=name='barcode_backup.json' and trashed=false", {
+                        headers: { 'Authorization': `Bearer ${accessToken}` }
+                    });
+                    const searchData = await searchResp.json();
+                    if (searchData.files && searchData.files.length > 0) {
+                        driveFileId = searchData.files[0].id;
+                        localStorage.setItem('gdrive_file_id', driveFileId);
+                    }
+                }
+
+                // 2. Ако съществува - го ОБНОВЯВАМЕ (PATCH)
+                if (driveFileId) {
+                    const updateResp = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: fileContent
+                    });
+                    if (updateResp.ok) {
+                        status.innerText = `Синхронизирано в ${new Date().toLocaleTimeString('bg-BG')}`;
+                    } else if (updateResp.status === 401) {
+                        // Изтекъл токен
+                        accessToken = null;
+                        localStorage.removeItem('gdrive_token');
+                        updateGDriveUI(false);
+                    }
+                } else {
+                    // 3. Ако го няма - го СЪЗДАВАМЕ (POST)
+                    const metadata = { name: 'barcode_backup.json', mimeType: 'application/json' };
+                    const form = new FormData();
+                    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+                    form.append('file', file);
+
+                    const createResp = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${accessToken}` },
+                        body: form
+                    });
+
+                    if (createResp.ok) {
+                        const createdData = await createResp.json();
+                        driveFileId = createdData.id;
+                        localStorage.setItem('gdrive_file_id', driveFileId);
+                        status.innerText = `Създаден нов бекъп в ${new Date().toLocaleTimeString('bg-BG')}`;
+                    }
+                }
+            } catch (err) {
+                console.error("Грешка при бекъп в Google Drive:", err);
+                status.innerText = 'Грешка при синхронизация';
+            }
+        }
+
+        // -------------------------------------------------------------
+        // ЛИЦЕНЗИ И ОСНОВНА ЛОГИКА
+        // -------------------------------------------------------------
         async function verifyKeyWithGitHub(key) {
             try {
                 const response = await fetch(`keys.json?nocache=${Date.now()}`);
@@ -437,6 +603,9 @@
             localStorage.setItem('bg_scanner_inventory', JSON.stringify(inventory));
             localStorage.setItem('bg_scanner_logs', JSON.stringify(logs));
             renderTables();
+            
+            // АВТОМАТИЧЕН БЕКЪП В GOOGLE DRIVE ПРИ ВСЯКА ПРОМЯНА
+            syncToGoogleDrive();
         }
 
         function setQty(val) { 
@@ -508,18 +677,10 @@
             };
 
             try {
-                await html5QrCode.start(
-                    { facingMode: "environment" }, 
-                    config, 
-                    onScanSuccess
-                );
+                await html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
             } catch (err) {
                 try {
-                    await html5QrCode.start(
-                        { facingMode: "user" }, 
-                        config, 
-                        onScanSuccess
-                    );
+                    await html5QrCode.start({ facingMode: "user" }, config, onScanSuccess);
                 } catch (err2) {
                     alert('Не може да се достъпи камерата: ' + err2);
                     stopCamera();
@@ -571,7 +732,6 @@
             } catch(e){}
         }
 
-        // ПОДОБРЕНА ФУНКЦИЯ: ЗАЩИТА СРЕЩУ ОПИТ ЗА ИЗВАЖДАНЕ ПРИ НЕДОСТАТЪЧНА НАЛИЧНОСТ
         function processStock(action) {
             const barcodeInput = document.getElementById('barcodeInput');
             const barcode = barcodeInput.value.trim();
@@ -590,7 +750,6 @@
             }
 
             if (action === 'SUB') {
-                // 1. Ако артикулът въобще липсва в базата
                 if (!inventory[barcode]) {
                     alert(`Грешка: Артикул с код [${barcode}] не съществува в инвентара!`);
                     barcodeInput.value = '';
@@ -600,7 +759,6 @@
                     return;
                 }
 
-                // 2. Ако артикулът го има, но наличността му е 0 или искаме да извадим повече от наличната бройка
                 const currentQty = inventory[barcode].qty;
                 if (currentQty <= 0) {
                     alert(`Грешка: Артикул [${barcode}] вече е с наличност 0!`);
@@ -647,7 +805,6 @@
         function quickChange(barcode, delta) {
             if (!inventory[barcode]) return;
             
-            // Защита и при бърза промяна от таблицата (-1)
             if (delta < 0 && inventory[barcode].qty <= 0) {
                 alert(`Артикул [${barcode}] вече е с наличност 0!`);
                 return;
@@ -788,6 +945,10 @@
             }
             focusBarcodeInput();
         }
+
+        window.addEventListener('load', () => {
+            initGoogleAuth();
+        });
 
         checkLicenseOnStart();
         renderTables();
