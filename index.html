@@ -10,7 +10,7 @@
  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">  
  <meta name="theme-color" content="#4f46e5">  
   
- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">  
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">  
  <title>БАРКОД-СКЕНЕР</title>  
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">  
  <style>  
@@ -97,7 +97,7 @@
  padding: 10px 12px;  
  border: 1px solid var(--border);  
  border-radius: 8px;  
- font-size: 16px; /* 16px спира авто-зуума на мобилни браузъри */  
+ font-size: 16px;  
  outline: none;  
  transition: all 0.2s;  
  }  
@@ -185,7 +185,7 @@
  }  
  #webcamVideo {  
  width: 100%;  
- height: 220px;  
+ height: 250px;  
  object-fit: cover;  
  }  
  .scan-overlay {  
@@ -706,23 +706,37 @@
      if (cameraActive) { stopCamera(); } else { startCamera(); }  
  }  
   
- function startCamera() {  
+ async function startCamera() {  
      codeReader = new ZXing.BrowserMultiFormatReader();  
      const container = document.getElementById('cameraContainer');  
      container.style.display = 'block';  
      document.getElementById('cameraBtn').innerHTML = `<i class="fa-solid fa-stop"></i> Спри Камерата`;  
      cameraActive = true;  
   
-     // Изрично указваме "environment", за да активира основната задна камера с фокус
-     const hints = new Map();  
-     const constraints = { video: { facingMode: "environment" } };  
-  
-     codeReader.decodeFromConstraints(constraints, 'webcamVideo', (result, err) => {  
-         if (result) {  
-             processScan(result.text, '', 1, currentMode);  
-             document.getElementById('barcodeInput').value = result.text;  
+     try {  
+         const videoInputDevices = await codeReader.listVideoInputDevices();  
+         // Намираме задната камера (или избираме последната налична)  
+         let selectedDeviceId = videoInputDevices[0]?.deviceId;  
+         for (const device of videoInputDevices) {  
+             const label = device.label.toLowerCase();  
+             if (label.includes('back') || label.includes('rear') || label.includes('environment')) {  
+                 selectedDeviceId = device.deviceId;  
+                 break;  
+             }  
          }  
-     });  
+         if (!selectedDeviceId && videoInputDevices.length > 1) {  
+             selectedDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;  
+         }  
+  
+         codeReader.decodeFromVideoDevice(selectedDeviceId, 'webcamVideo', (result, err) => {  
+             if (result) {  
+                 processScan(result.text, '', 1, currentMode);  
+                 document.getElementById('barcodeInput').value = result.text;  
+             }  
+         });  
+     } catch (err) {  
+         console.error("Грешка при стартиране на камерата:", err);  
+     }  
  }  
   
  function stopCamera() {  
