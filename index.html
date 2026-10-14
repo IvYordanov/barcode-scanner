@@ -196,13 +196,13 @@
  top: 50%;  
  left: 50%;  
  transform: translate(-50%, -50%);  
- width: 70%;  
+ width: 75%;  
  height: 60%;  
  border: 2px dashed #10b981;  
  box-shadow: 0 0 0 1000px rgba(0,0,0,0.4);  
  border-radius: 8px;  
  pointer-events: none;  
- transition: border-color 0.2s;  
+ transition: border-color 0.1s;  
  }  
  .scan-overlay.success {  
  border-color: #3b82f6;  
@@ -712,7 +712,6 @@
  let cameraActive = false;  
  let isScanning = false;  
   
- // Инициализиране и пускане на звука  
  function initAudio() {  
      if (!audioCtx) {  
          audioCtx = new (window.AudioContext || window.webkitAudioContext)();  
@@ -730,31 +729,28 @@
          osc.connect(gain);  
          gain.connect(audioCtx.destination);  
          osc.type = "sine";  
-         osc.frequency.value = 1000;  
+         osc.frequency.value = 1200;  
          gain.gain.value = 0.2;  
          osc.start();  
-         setTimeout(() => { osc.stop(); }, 120);  
+         setTimeout(() => { osc.stop(); }, 90);  
      } catch (e) { console.error("Audio error:", e); }  
  }  
   
  function toggleCamera() {  
-     initAudio(); // Активира аудио при клик  
+     initAudio();  
      if (cameraActive) { stopCamera(); } else { startCamera(); }  
  }  
   
  async function startCamera() {  
+     // Оптимизиран списък с най-често използваните 1D/2D формати за максимална бързина  
      const hints = new Map();  
      const formats = [  
          ZXing.BarcodeFormat.EAN_13,  
          ZXing.BarcodeFormat.EAN_8,  
          ZXing.BarcodeFormat.CODE_128,  
-         ZXing.BarcodeFormat.CODE_39,  
-         ZXing.BarcodeFormat.UPC_A,  
-         ZXing.BarcodeFormat.UPC_E,  
-         ZXing.BarcodeFormat.QR_CODE  
+         ZXing.BarcodeFormat.CODE_39  
      ];  
      hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, formats);  
-     hints.set(ZXing.DecodeHintType.TRY_HARDER, true);  
   
      codeReader = new ZXing.BrowserMultiFormatReader(hints);  
      const container = document.getElementById('cameraContainer');  
@@ -782,26 +778,22 @@
                  isScanning = true;  
                  playBeep();  
                    
-                 // Визуален индикатор (синя рамка) при успешно сканиране  
                  const overlay = document.getElementById('scanOverlay');  
                  if (overlay) overlay.classList.add('success');  
   
-                 // Вземане на избраното количество  
                  const qty = parseInt(document.getElementById('qtyInput').value) || 1;  
                  const name = document.getElementById('itemNameInput').value.trim();  
   
-                 // Директно обработване и добавяне в инвентара  
                  processScan(result.text, name, qty, currentMode);  
                    
-                 // Нулиране на полетата  
                  document.getElementById('barcodeInput').value = '';  
                  document.getElementById('itemNameInput').value = '';  
                    
-                 // Пауза 1.5 сек. преди следващото сканиране  
+                 // Пауза само 0.5 сек. за ултрабързо сканиране  
                  setTimeout(() => {  
                      if (overlay) overlay.classList.remove('success');  
                      isScanning = false;  
-                 }, 1500);  
+                 }, 500);  
              }  
          });  
      } catch (err) {  
