@@ -1,6 +1,6 @@
 {
-  "1482": { "active": true, "role": "admin", "client": "Ivan Yordanov", "email": "ivan@example.com", "note": "Администратор" },
-  "9305": { "active": false, "role": "user", "client": "", "email": "", "note": "" },
+  "1482": { "active": true, "role": "admin", "client": "Ivan Yordanov", "email": "hitshopbg2019@gmail.com", "note": "Администратор" },
+  "9305": { "active": true, "role": "user", "client": "Ivan Yordanov", "jfrdanov.72@gmail.com": "", "note": "Клиент" },
   "3164": { "active": false, "role": "user", "client": "", "email": "", "note": "" },
   "7821": { "active": false, "role": "user", "client": "", "email": "", "note": "" },
   "4590": { "active": false, "role": "user", "client": "", "email": "", "note": "" },
