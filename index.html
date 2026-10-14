@@ -542,26 +542,29 @@
  document.getElementById('barcodeInput').focus();  
  }  
   
- function processScan(code, name, qty, mode) {  
- let prodIndex = products.findIndex(p => p.code === code);  
+function processScan(code, name, qty, mode) {  
+    let prodIndex = products.findIndex(p => p.code === code);  
   
- if (mode === 'SUB') {  
- if (prodIndex === -1 || products[prodIndex].qty <= 0) {  
- alert('Грешка: Продуктът липсва или е с нулева наличност!');  
- return;  
- }  
- const actualSub = Math.min(products[prodIndex].qty, qty);  
- products[prodIndex].qty -= actualSub;  
- logAction(code, 'Извадено', actualSub);  
- } else {  
- if (prodIndex > -1) {  
- products[prodIndex].qty += qty;  
- if (name) products[prodIndex].name = name;  
- } else {  
- products[prodIndex] = { code: code, name: name || `Артикул ${code}`, qty: qty };  
- }  
- logAction(code, 'Прибавено', qty);  
- }  
+    if (mode === 'SUB') {  
+        if (prodIndex === -1 || products[prodIndex].qty <= 0) {  
+            alert('Грешка: Продуктът липсва или е с нулева наличност!');  
+            return;  
+        }  
+        const actualSub = Math.min(products[prodIndex].qty, qty);  
+        products[prodIndex].qty -= actualSub;  
+        logAction(code, 'Извадено', actualSub);  
+    } else {  
+        if (prodIndex > -1) {  
+            products[prodIndex].qty += qty;  
+            if (name) products[prodIndex].name = name;  
+        } else {  
+            products.push({ code: code, name: name || `Артикул ${code}`, qty: qty });  
+        }  
+        logAction(code, 'Прибавено', qty);  
+    }  
+  
+    saveAndRender();  
+}
   
  saveAndRender();  
  }  
