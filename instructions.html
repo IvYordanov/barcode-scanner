@@ -25,8 +25,6 @@
             --primary-hover: #4338ca;
             --success: #10b981;
             --danger: #ef4444;
-            --warning-bg: #fffbeeb;
-            --warning-border: #f59e0b;
             --bg: #f3f4f6;
             --card-bg: #ffffff;
             --text: #1f2937;
@@ -125,6 +123,19 @@
             font-size: 13px;
         }
 
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .info-box p {
+            color: #1e40af;
+            font-size: 13px;
+        }
+
         .qr-section {
             display: flex;
             flex-direction: column;
@@ -212,43 +223,58 @@
 
     <!-- СТЪПКА 3 -->
     <div class="card">
-        <h2><i class="bi bi-qr-code-scan"></i> 3. Сканиране и Въвеждане на Стока</h2>
-        <p>Приложението разчита както стандартни баркодове (EAN-13, CODE-128, UPC), така и **QR кодове**:</p>
+        <h2><i class="bi bi-google"></i> 3. Автоматичен Синхрон с Google Drive</h2>
+        <p>Приложението разполага с функция за автоматично архивиране в облака на Google, за да предпази данните ви от загуба:</p>
         <ol>
-            <li><strong>Ръчен USB Баркод Скенер (Препоръчително за десктоп):</strong> Включете скенера. Курсорът автоматично се позиционира в полето. Просто сканирайте артикула.</li>
-            <li><strong>Камера на Телефон / Компютър:</strong> Натиснете <code><i class="bi bi-camera-fill"></i> Пусни Камерата</code> и насочете към баркод или QR код. Чува се звуков сигнал и кодът се записва веднага.</li>
-            <li><strong>Ръчно въвеждане:</strong> Напишете кода с клавиатурата и натиснете <code>Enter</code>.</li>
+            <li><strong>Еднократно свързване:</strong> Натиснете синия бутон <code><i class="bi bi-google"></i> Свържи с Google Drive</code>.</li>
+            <li><strong>Потвърждение:</strong> Изберете вашия Google акаунт. При поява на съобщение <em>„Не сме потвърдили това приложение“</em>, натиснете линка <strong>„Напред“</strong> -> <strong>„Премини към Баркод Скенер (небезопасно)“</strong> и разрешете достъпа.</li>
+            <li><strong>Автоматична работа:</strong> След като бутонът стане зелен (<code><i class="bi bi-cloud-check-fill"></i> Google Drive е свързан</code>), с всяко ново сканиране файлът <code>barcode_backup.json</code> във вашия Google Drive се обновява автоматично.</li>
         </ol>
+
+        <div class="info-box">
+            <p><i class="bi bi-info-circle-fill"></i> <strong>Полза:</strong> Дори да смените устройството или да изчистите браузъра, просто натиснете бутона за Google Drive наново — приложението веднага ще възстанови всички продукти и история!</p>
+        </div>
     </div>
 
     <!-- СТЪПКА 4 -->
     <div class="card">
-        <h2><i class="bi bi-toggle-on"></i> 4. Режими: Прибавяне и Изваждане</h2>
+        <h2><i class="bi bi-qr-code-scan"></i> 4. Сканиране и Въвеждане на Стока</h2>
+        <p>Приложението разчита както стандартни баркодове (EAN-13, CODE-128, UPC), така и **QR кодове**:</p>
+        <ol>
+            <li><strong>Ръчен USB Баркод Скенер (Препоръчително за компютър):</strong> Включете скенера. Курсорът автоматично е в полето — просто сканирайте.</li>
+            <li><strong>Камера на Телефон / Компютър:</strong> Натиснете <code><i class="bi bi-camera-fill"></i> Пусни Камерата</code> и насочете към баркод или QR код. При успешно разчитане се чува звуков сигнал.</li>
+            <li><strong>Ръчно въвеждане:</strong> Напишете кода с клавиатурата и натиснете <code>Enter</code>.</li>
+        </ol>
+    </div>
+
+    <!-- СТЪПКА 5 -->
+    <div class="card">
+        <h2><i class="bi bi-toggle-on"></i> 5. Режими: Прибавяне и Изваждане</h2>
         <p>Изберете оперативен режим преди сканиране:</p>
         <ul>
             <li><span class="badge-demo bg-add"><i class="bi bi-plus-lg"></i> ПРИБАВИ</span> — Добавя количество. При нов код продуктът се заприходява автоматично.</li>
             <li><span class="badge-demo bg-sub"><i class="bi bi-dash-lg"></i> ИЗВАДИ</span> — Намалява наличността при изписване или продажба.</li>
         </ul>
         <p style="margin-top: 8px; color: var(--danger); font-size: 12px; font-weight: 600;">
-            <i class="bi bi-exclamation-triangle-fill"></i> Защита на наличностите: В режим „ИЗВАДИ“ системата блокира операцията, ако кодът липсва в базата или ако наличната бройка е 0.
+            <i class="bi bi-exclamation-triangle-fill"></i> Защита на наличностите: В режим „ИЗВАДИ“ системата блокира операцията, ако кодът липсва в базата или наличната бройка е 0.
         </p>
     </div>
 
-    <!-- СТЪПКА 5 -->
+    <!-- СТЪПКА 6 -->
     <div class="card">
-        <h2><i class="bi bi-database-fill-gear"></i> 5. Капацитет на паметта и Архивиране</h2>
-        <p>Данните се съхраняват локално в браузъра (<code>localStorage</code>) на конкретното устройство.</p>
+        <h2><i class="bi bi-database-fill-gear"></i> 6. Капацитет на Паметта и Архивиране</h2>
+        <p>Данните се съхраняват локално в браузъра (<code>localStorage</code>) и в Google Drive.</p>
         <ul>
-            <li><strong>Капацитет:</strong> Паметта от <strong>5 MB</strong> позволява съхранението на над <strong>50 000 – 80 000 уникални артикула</strong>.</li>
-            <li><strong>Експорт в Excel (.csv):</strong> Извлича текущите наличности в табличен формат.</li>
-            <li><strong>Архив (.json):</strong> Сваля пълно резервно копие на наличностите и историята.</li>
+            <li><strong>Локален капацитет:</strong> Паметта от <strong>5 MB</strong> позволява съхранението на над <strong>50 000 – 80 000 уникални артикула</strong>.</li>
+            <li><strong>Експорт в Excel (.csv):</strong> Извлича текущите наличности в удобен табличен файл.</li>
+            <li><strong>Ръчен Архив (.json):</strong> Позволява сваляне на локално резервно копие на компютъра или телефона.</li>
         </ul>
 
         <!-- ВАЖНО ПРЕДУПРЕЖДЕНИЕ -->
         <div class="warning-box">
             <p><i class="bi bi-exclamation-octagon-fill"></i> ВАЖНО ПРЕДУПРЕЖДЕНИЕ ЗА СИГУРНОСТ:</p>
             <p style="font-weight: normal; color: #7f1d1d; margin-top: 4px;">
-                Преди да извършите <strong>почистване на историята/кеша на браузъра</strong> (Clear browsing data / Delete cookies), <strong>ЗАДЪЛЖИТЕЛНО направете и запазете Архив (.json)</strong>! В противен случай локално съхранената база данни ще бъде изтрита от браузъра.
+                Ако не сте свързали приложението с <strong>Google Drive</strong>, преди изчистване на историята/кеша на браузъра (Clear browsing data), <strong>ЗАДЪЛЖИТЕЛНО направете Ръчен Архив (.json)</strong>! В противен случай незаписаните локални данни могат да бъдат изтрити.
             </p>
         </div>
     </div>
