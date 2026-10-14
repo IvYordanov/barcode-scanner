@@ -188,7 +188,7 @@
  }  
  #webcamVideo {  
  width: 100%;  
- height: 220px;  
+ height: 260px;  
  object-fit: cover;  
  }  
  .scan-overlay {  
@@ -196,8 +196,8 @@
  top: 50%;  
  left: 50%;  
  transform: translate(-50%, -50%);  
- width: 75%;  
- height: 45%;  
+ width: 80%;  
+ height: 40%;  
  border: 2px dashed #10b981;  
  box-shadow: 0 0 0 1000px rgba(0,0,0,0.4);  
  border-radius: 8px;  
@@ -623,131 +623,4 @@
              <td><strong>${p.qty}</strong></td>  
              <td style="text-align: right;">  
                  <button class="action-icon" onclick="adjustQty('${p.code}', 1)"><i class="fa-solid fa-circle-plus" style="color: var(--success);"></i></button>  
-                 <button class="action-icon" onclick="adjustQty('${p.code}', -1)"><i class="fa-solid fa-circle-minus" style="color: var(--danger);"></i></button>  
-                 <button class="action-icon delete" onclick="deleteProduct('${p.code}')"><i class="fa-solid fa-trash"></i></button>  
-             </td>  
-         `;  
-         tbody.appendChild(tr);  
-     });  
- }  
-  
- function renderHistory() {  
-     const tbody = document.getElementById('historyTable');  
-     tbody.innerHTML = '';  
-  
-     historyLogs.forEach(h => {  
-         const tr = document.createElement('tr');  
-         const isAdd = h.action === 'Прибавено';  
-         tr.innerHTML = `  
-             <td>${h.time}</td>  
-             <td><strong>${h.code}</strong></td>  
-             <td><span class="badge ${isAdd ? 'badge-add' : 'badge-sub'}">${h.action}</span></td>  
-             <td style="text-align: right;"><strong>${h.qty} бр.</strong></td>  
-         `;  
-         tbody.appendChild(tr);  
-     });  
- }  
-  
- function updateStats() {  
-     document.getElementById('statUnique').innerText = products.length;  
-     const totalQty = products.reduce((acc, p) => acc + p.qty, 0);  
-     document.getElementById('statTotalQty').innerText = totalQty;  
-     document.getElementById('statLogs').innerText = historyLogs.length;  
- }  
-  
- function exportToExcel() {  
-     if (products.length === 0) { alert('Няма данни за експорт!'); return; }  
-     let csv = '\uFEFFКод;Наименование;Наличност\n';  
-     products.forEach(p => { csv += `"${p.code}";"${p.name}";"${p.qty}"\n`; });  
-     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });  
-     const link = document.createElement('a');  
-     link.href = URL.createObjectURL(blob);  
-     link.download = `inventory_${new Date().toISOString().slice(0,10)}.csv`;  
-     link.click();  
- }  
-  
- function exportBackupJSON() {  
-     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ products: products, history: historyLogs }));  
-     const dlAnchor = document.createElement('a');  
-     dlAnchor.setAttribute("href", dataStr);  
-     dlAnchor.setAttribute("download", `barcode_backup_${new Date().toISOString().slice(0,10)}.json`);  
-     dlAnchor.click();  
- }  
-  
- function importBackupJSON() { document.getElementById('jsonFileInput').click(); }  
-  
- function handleFileSelect(evt) {  
-     const file = evt.target.files[0];  
-     if (!file) return;  
-     const reader = new FileReader();  
-     reader.onload = (e) => {  
-         try {  
-             const imported = JSON.parse(e.target.result);  
-             if (imported.products) {  
-                 products = imported.products;  
-                 historyLogs = imported.history || [];  
-                 saveAndRender();  
-                 alert('Данните са успешно възстановени!');  
-             }  
-         } catch (err) { alert('Грешка при четене на JSON файла!'); }  
-     };  
-     reader.readAsText(file);  
- }  
-  
- function clearAllData() {  
-     if (confirm('ВНИМАНИЕ: Това ще изтрие всички локални данни! Сигурни ли сте?')) {  
-         products = [];  
-         historyLogs = [];  
-         saveAndRender();  
-     }  
- }  
-  
- let codeReader;  
- let cameraActive = false;  
-  
- function toggleCamera() {  
-     if (cameraActive) { stopCamera(); } else { startCamera(); }  
- }  
-  
- async function startCamera() {  
-     codeReader = new ZXing.BrowserMultiFormatReader();  
-     const container = document.getElementById('cameraContainer');  
-     container.style.display = 'block';  
-     document.getElementById('cameraBtn').innerHTML = `<i class="fa-solid fa-stop"></i> Спри Камерата`;  
-     cameraActive = true;  
-  
-     try {  
-         // Изрично изискваме задната камера през родния браузърен API  
-         const stream = await navigator.mediaDevices.getUserMedia({  
-             video: { facingMode: { ideal: "environment" } }  
-         });  
-           
-         const videoElement = document.getElementById('webcamVideo');  
-         videoElement.srcObject = stream;  
-  
-         codeReader.decodeFromVideoElement(videoElement, (result, err) => {  
-             if (result) {  
-                 processScan(result.text, '', 1, currentMode);  
-                 document.getElementById('barcodeInput').value = result.text;  
-             }  
-         });  
-     } catch (err) {  
-         console.error("Грешка при достъп до камерата:", err);  
-         alert("Грешка при пускане на камерата: Уверете се, че сте дали разрешение за камерата в браузъра.");  
-     }  
- }  
-  
- function stopCamera() {  
-     const videoElement = document.getElementById('webcamVideo');  
-     if (videoElement.srcObject) {  
-         videoElement.srcObject.getTracks().forEach(track => track.stop());  
-         videoElement.srcObject = null;  
-     }  
-     if (codeReader) codeReader.reset();  
-     document.getElementById('cameraContainer').style.display = 'none';  
-     document.getElementById('cameraBtn').innerHTML = `<i class="fa-solid fa-camera"></i> Пусни Камерата`;  
-     cameraActive = false;  
- }  
- </script>  
-</body>  
-</html>
+                 <button class="action-icon" onclick="adjustQty('${p.code}', -1)"><i class="fa
