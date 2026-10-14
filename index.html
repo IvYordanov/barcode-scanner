@@ -202,6 +202,11 @@
  box-shadow: 0 0 0 1000px rgba(0,0,0,0.4);  
  border-radius: 8px;  
  pointer-events: none;  
+ transition: border-color 0.2s;  
+ }  
+ .scan-overlay.success {  
+ border-color: #3b82f6;  
+ border-style: solid;  
  }  
  </style>  
 </head>  
@@ -233,7 +238,7 @@
   
  <div id="cameraContainer">  
  <video id="webcamVideo" playsinline autoplay muted></video>  
- <div class="scan-overlay"></div>  
+ <div class="scan-overlay" id="scanOverlay"></div>  
  </div>  
   
  <div class="btn-group" style="margin-bottom: 15px; margin-top: 0;">  
@@ -382,6 +387,7 @@
  let currentMode = 'ADD';  
  let products = JSON.parse(localStorage.getItem('barcode_products')) || [];  
  let historyLogs = JSON.parse(localStorage.getItem('barcode_history')) || [];  
+ let audioCtx = null;  
   
  function gapiLoaded() {  
      if (typeof gapi !== 'undefined') {  
@@ -706,27 +712,37 @@
  let cameraActive = false;  
  let isScanning = false;  
   
+ // Инициализиране и пускане на звука  
+ function initAudio() {  
+     if (!audioCtx) {  
+         audioCtx = new (window.AudioContext || window.webkitAudioContext)();  
+     }  
+     if (audioCtx.state === 'suspended') {  
+         audioCtx.resume();  
+     }  
+ }  
+  
  function playBeep() {  
      try {  
-         const ctx = new (window.AudioContext || window.webkitAudioContext)();  
-         const osc = ctx.createOscillator();  
-         const gain = ctx.createGain();  
+         initAudio();  
+         const osc = audioCtx.createOscillator();  
+         const gain = audioCtx.createGain();  
          osc.connect(gain);  
-         gain.connect(ctx.destination);  
+         gain.connect(audioCtx.destination);  
          osc.type = "sine";  
          osc.frequency.value = 1000;  
-         gain.gain.value = 0.1;  
+         gain.gain.value = 0.2;  
          osc.start();  
-         setTimeout(() => { osc.stop(); ctx.close(); }, 120);  
-     } catch (e) {}  
+         setTimeout(() => { osc.stop(); }, 120);  
+     } catch (e) { console.error("Audio error:", e); }  
  }  
   
  function toggleCamera() {  
+     initAudio(); // Активира аудио при клик  
      if (cameraActive) { stopCamera(); } else { startCamera(); }  
  }  
   
  async function startCamera() {  
-     // Активираме декодиране за завъртяни (вертикални) баркодове  
      const hints = new Map();  
      const formats = [  
          ZXing.BarcodeFormat.EAN_13,  
@@ -750,7 +766,6 @@
          const videoInputDevices = await codeReader.listVideoInputDevices();  
          let selectedDeviceId = videoInputDevices[0]?.deviceId;  
   
-         // Избираме задната камера  
          for (const device of videoInputDevices) {  
              const label = device.label.toLowerCase();  
              if (label.includes('back') || label.includes('rear') || label.includes('environment')) {  
@@ -762,14 +777,31 @@
              selectedDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;  
          }  
   
-         // Използваме вградения декодер за непрекъснато сканиране с висока разделителна способност  
          codeReader.decodeFromVideoDevice(selectedDeviceId, 'webcamVideo', (result, err) => {  
              if (result && !isScanning) {  
                  isScanning = true;  
                  playBeep();  
-                 processScan(result.text, '', 1, currentMode);  
-                 document.getElementById('barcodeInput').value = result.text;  
-                 setTimeout(() => { isScanning = false; }, 1500);  
+                   
+                 // Визуален индикатор (синя рамка) при успешно сканиране  
+                 const overlay = document.getElementById('scanOverlay');  
+                 if (overlay) overlay.classList.add('success');  
+  
+                 // Вземане на избраното количество  
+                 const qty = parseInt(document.getElementById('qtyInput').value) || 1;  
+                 const name = document.getElementById('itemNameInput').value.trim();  
+  
+                 // Директно обработване и добавяне в инвентара  
+                 processScan(result.text, name, qty, currentMode);  
+                   
+                 // Нулиране на полетата  
+                 document.getElementById('barcodeInput').value = '';  
+                 document.getElementById('itemNameInput').value = '';  
+                   
+                 // Пауза 1.5 сек. преди следващото сканиране  
+                 setTimeout(() => {  
+                     if (overlay) overlay.classList.remove('success');  
+                     isScanning = false;  
+                 }, 1500);  
              }  
          });  
      } catch (err) {  
