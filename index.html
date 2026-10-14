@@ -188,7 +188,7 @@
  }  
  #webcamVideo {  
  width: 100%;  
- height: 260px;  
+ height: 280px;  
  object-fit: cover;  
  }  
  .scan-overlay {  
@@ -196,8 +196,8 @@
  top: 50%;  
  left: 50%;  
  transform: translate(-50%, -50%);  
- width: 80%;  
- height: 40%;  
+ width: 70%;  
+ height: 60%;  
  border: 2px dashed #10b981;  
  box-shadow: 0 0 0 1000px rgba(0,0,0,0.4);  
  border-radius: 8px;  
@@ -726,7 +726,7 @@
  }  
   
  async function startCamera() {  
-     // Конфигуриране на поддържаните формати за максимална бързина и точност  
+     // Активираме декодиране за завъртяни (вертикални) баркодове  
      const hints = new Map();  
      const formats = [  
          ZXing.BarcodeFormat.EAN_13,  
@@ -747,42 +747,39 @@
      cameraActive = true;  
   
      try {  
-         const constraints = {  
-             video: {  
-                 facingMode: { ideal: "environment" },  
-                 width: { ideal: 1280 },  
-                 height: { ideal: 720 },  
-                 focusMode: { ideal: "continuous" }  
+         const videoInputDevices = await codeReader.listVideoInputDevices();  
+         let selectedDeviceId = videoInputDevices[0]?.deviceId;  
+  
+         // Избираме задната камера  
+         for (const device of videoInputDevices) {  
+             const label = device.label.toLowerCase();  
+             if (label.includes('back') || label.includes('rear') || label.includes('environment')) {  
+                 selectedDeviceId = device.deviceId;  
+                 break;  
              }  
-         };  
+         }  
+         if (!selectedDeviceId && videoInputDevices.length > 1) {  
+             selectedDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;  
+         }  
   
-         const stream = await navigator.mediaDevices.getUserMedia(constraints);  
-         const videoElement = document.getElementById('webcamVideo');  
-         videoElement.srcObject = stream;  
-         await videoElement.play();  
-  
-         codeReader.decodeFromVideoElement(videoElement, (result, err) => {  
+         // Използваме вградения декодер за непрекъснато сканиране с висока разделителна способност  
+         codeReader.decodeFromVideoDevice(selectedDeviceId, 'webcamVideo', (result, err) => {  
              if (result && !isScanning) {  
                  isScanning = true;  
                  playBeep();  
                  processScan(result.text, '', 1, currentMode);  
                  document.getElementById('barcodeInput').value = result.text;  
-                 setTimeout(() => { isScanning = false; }, 1200);  
+                 setTimeout(() => { isScanning = false; }, 1500);  
              }  
          });  
      } catch (err) {  
-         console.error("Грешка при достъп до камерата:", err);  
-         alert("Грешка при пускане на камерата! Уверете се, че сте дали разрешение за камерата в браузъра.");  
+         console.error("Грешка при пускане на камерата:", err);  
+         alert("Грешка при пускане на камерата! Уверете се, че сте дали разрешение в браузъра.");  
          stopCamera();  
      }  
  }  
   
  function stopCamera() {  
-     const videoElement = document.getElementById('webcamVideo');  
-     if (videoElement && videoElement.srcObject) {  
-         videoElement.srcObject.getTracks().forEach(track => track.stop());  
-         videoElement.srcObject = null;  
-     }  
      if (codeReader) codeReader.reset();  
      document.getElementById('cameraContainer').style.display = 'none';  
      document.getElementById('cameraBtn').innerHTML = `<i class="fa-solid fa-camera"></i> Пусни Камерата`;  
