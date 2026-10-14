@@ -25,6 +25,8 @@
             --primary-hover: #4338ca;
             --success: #10b981;
             --danger: #ef4444;
+            --warning-bg: #fffbeeb;
+            --warning-border: #f59e0b;
             --bg: #f3f4f6;
             --card-bg: #ffffff;
             --text: #1f2937;
@@ -109,22 +111,42 @@
             color: var(--text);
         }
 
+        .warning-box {
+            background: #fef2f2;
+            border-left: 4px solid var(--danger);
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .warning-box p {
+            color: #991b1b;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .qr-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px dashed var(--primary);
+            margin-top: 10px;
+        }
+
+        .qr-section img {
+            width: 140px;
+            height: 140px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
         ul, ol { margin-left: 20px; margin-top: 6px; }
         li { margin-bottom: 6px; }
-
-        .step-num {
-            display: inline-block;
-            background: var(--primary);
-            color: white;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            text-align: center;
-            font-size: 11px;
-            font-weight: bold;
-            line-height: 20px;
-            margin-right: 6px;
-        }
 
         .badge-demo {
             display: inline-block;
@@ -135,6 +157,19 @@
         }
         .bg-add { background: #d1fae5; color: #065f46; }
         .bg-sub { background: #fee2e2; color: #991b1b; }
+
+        .url-box {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 13px;
+            word-break: break-all;
+            display: inline-block;
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -154,58 +189,68 @@
 
     <!-- СТЪПКА 1 -->
     <div class="card">
-        <h2><i class="bi bi-shield-lock-fill"></i> 1. Достъп и Активация</h2>
-        <p>При първоначално отваряне на приложението се показва защитен екран за валидация:</p>
-        <ul>
-            <li>Въведете вашия <strong>4-цифрен лицензен код</strong> и натиснете <em>„Активирай Достъпа“</em>.</li>
-            <li>Приложението проверява кода онлайн. Настройките се запазват автоматично и няма да се налага повторно въвеждане при следващи влизания, освен ако кодът не бъде деактивиран.</li>
-        </ul>
+        <h2><i class="bi bi-link-45deg"></i> 1. Адрес и Достъп до Приложението</h2>
+        <p>Приложението е достъпно онлайн без нужда от инсталация от следния адрес:</p>
+        <div class="url-box">https://hitshopbg.github.io/barcode-scanner/</div>
+        
+        <div class="qr-section">
+            <p><strong><i class="bi bi-qr-code"></i> Бързо отваряне през мобилен телефон:</strong></p>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://hitshopbg.github.io/barcode-scanner/" alt="QR код за достъп">
+            <p style="font-size: 11px; color: var(--text-light);">Сканирайте QR кода с камерата на телефона си, за да отворите системата веднага.</p>
+        </div>
     </div>
 
     <!-- СТЪПКА 2 -->
     <div class="card">
-        <h2><i class="bi bi-qr-code-scan"></i> 2. Сканиране и Въвеждане на Стока</h2>
-        <p>Системата поддържа 3 различни начина за въвеждане на артикули:</p>
-        <ol>
-            <li><strong>Ръчен USB Баркод Скенер (Препоръчително за десктоп):</strong> Включете скенера в компютъра. Кликането с мишката не е задължително — курсорът автоматично се намира в полето. Просто сканирайте кода.</li>
-            <li><strong>Камера на Телефон / Лаптоп:</strong> Натиснете бутона <code><i class="bi bi-camera-fill"></i> Пусни Камерата</code>. Насочете я към баркода. При успешно разчитане се чува звуков сигнал и кодът се записва веднага.</li>
-            <li><strong>Ръчно въвеждане:</strong> Напишете кода с клавиатурата и натиснете <code>Enter</code> или бутона <em>„Потвърди операцията“</em>.</li>
-        </ol>
+        <h2><i class="bi bi-shield-lock-fill"></i> 2. Лицензен Код</h2>
+        <p>При първоначално отваряне системата изисква въвеждане на сигурен код за достъп:</p>
+        <ul>
+            <li>Въведете вашия <strong>4-цифрен лицензен код</strong> и натиснете <em>„Активирай Достъпа“</em>.</li>
+            <li>Активацията се запазва на устройството и не се изисква повторно въвеждане при всяко влизане.</li>
+        </ul>
     </div>
 
     <!-- СТЪПКА 3 -->
     <div class="card">
-        <h2><i class="bi bi-toggle-on"></i> 3. Режими: Прибавяне и Изваждане</h2>
-        <p>Преди да сканирате, изберете желания режим от горните бутони:</p>
-        <ul>
-            <li><span class="badge-demo bg-add"><i class="bi bi-plus-lg"></i> ПРИБАВИ</span> — Записва закриване/заприходяване на стока. Ако продуктът не съществува, той се създава автоматично.</li>
-            <li><span class="badge-demo bg-sub"><i class="bi bi-dash-lg"></i> ИЗВАДИ</span> — Намалява наличността при продажба или изписване.</li>
-        </ul>
-        <p style="margin-top: 8px; color: var(--danger); font-size: 12px; font-weight: 600;">
-            <i class="bi bi-exclamation-triangle-fill"></i> Защита на наличностите: В режим „ИЗВАДИ“ системата блокира операцията, ако кодът липсва в базата или ако наличната бройка е 0 (няма да се появят отрицателни количества).
-        </p>
+        <h2><i class="bi bi-qr-code-scan"></i> 3. Сканиране и Въвеждане на Стока</h2>
+        <p>Приложението разчита както стандартни баркодове (EAN-13, CODE-128, UPC), така и **QR кодове**:</p>
+        <ol>
+            <li><strong>Ръчен USB Баркод Скенер (Препоръчително за десктоп):</strong> Включете скенера. Курсорът автоматично се позиционира в полето. Просто сканирайте артикула.</li>
+            <li><strong>Камера на Телефон / Компютър:</strong> Натиснете <code><i class="bi bi-camera-fill"></i> Пусни Камерата</code> и насочете към баркод или QR код. Чува се звуков сигнал и кодът се записва веднага.</li>
+            <li><strong>Ръчно въвеждане:</strong> Напишете кода с клавиатурата и натиснете <code>Enter</code>.</li>
+        </ol>
     </div>
 
     <!-- СТЪПКА 4 -->
     <div class="card">
-        <h2><i class="bi bi-table"></i> 4. Управление на Инвентара</h2>
+        <h2><i class="bi bi-toggle-on"></i> 4. Режими: Прибавяне и Изваждане</h2>
+        <p>Изберете оперативен режим преди сканиране:</p>
         <ul>
-            <li><strong>Бърза промяна (+ / -):</strong> В таблицата <em>„Текущ инвентар“</em> може бързо да добавяте или изваждате по 1 бройка чрез иконките <i class="bi bi-plus-circle-fill" style="color:var(--success);"></i> и <i class="bi bi-dash-circle-fill" style="color:var(--danger);"></i>.</li>
-            <li><strong>Търсене:</strong> Използвайте търсачката над таблицата за бързо филтриране по код или наименование.</li>
-            <li><strong>Изтриване:</strong> Иконката с кошче <i class="bi bi-trash-fill" style="color:var(--danger);"></i> премахва изцяло артикула от системата.</li>
+            <li><span class="badge-demo bg-add"><i class="bi bi-plus-lg"></i> ПРИБАВИ</span> — Добавя количество. При нов код продуктът се заприходява автоматично.</li>
+            <li><span class="badge-demo bg-sub"><i class="bi bi-dash-lg"></i> ИЗВАДИ</span> — Намалява наличността при изписване или продажба.</li>
         </ul>
+        <p style="margin-top: 8px; color: var(--danger); font-size: 12px; font-weight: 600;">
+            <i class="bi bi-exclamation-triangle-fill"></i> Защита на наличностите: В режим „ИЗВАДИ“ системата блокира операцията, ако кодът липсва в базата или ако наличната бройка е 0.
+        </p>
     </div>
 
     <!-- СТЪПКА 5 -->
     <div class="card">
         <h2><i class="bi bi-database-fill-gear"></i> 5. Капацитет на паметта и Архивиране</h2>
-        <p>Данните се съхраняват локално в браузъра (<code>localStorage</code>) на вашето устройство.</p>
+        <p>Данните се съхраняват локално в браузъра (<code>localStorage</code>) на конкретното устройство.</p>
         <ul>
-            <li><strong>Обем на паметта:</strong> Приложението разполага с <strong>5 MB капацитет</strong>, което позволява записването на над <strong>50 000 – 80 000 уникални продукта</strong> и техните движения.</li>
-            <li><strong>Експорт в Excel (.csv):</strong> Генерира табличен файл с текущите наличности, готов за отваряне в Excel или LibreOffice.</li>
-            <li><strong>Архив (.json):</strong> Изтегля пълен резервен файл съдържащ и наличностите, и историята на движенията.</li>
-            <li><strong>Възстановяване:</strong> При смяна на устройството или почистване на браузъра, качете `.json` архива чрез бутона <em>„Възстанови“</em>.</li>
+            <li><strong>Капацитет:</strong> Паметта от <strong>5 MB</strong> позволява съхранението на над <strong>50 000 – 80 000 уникални артикула</strong>.</li>
+            <li><strong>Експорт в Excel (.csv):</strong> Извлича текущите наличности в табличен формат.</li>
+            <li><strong>Архив (.json):</strong> Сваля пълно резервно копие на наличностите и историята.</li>
         </ul>
+
+        <!-- ВАЖНО ПРЕДУПРЕЖДЕНИЕ -->
+        <div class="warning-box">
+            <p><i class="bi bi-exclamation-octagon-fill"></i> ВАЖНО ПРЕДУПРЕЖДЕНИЕ ЗА СИГУРНОСТ:</p>
+            <p style="font-weight: normal; color: #7f1d1d; margin-top: 4px;">
+                Преди да извършите <strong>почистване на историята/кеша на браузъра</strong> (Clear browsing data / Delete cookies), <strong>ЗАДЪЛЖИТЕЛНО направете и запазете Архив (.json)</strong>! В противен случай локално съхранената база данни ще бъде изтрита от браузъра.
+            </p>
+        </div>
     </div>
 
 </body>
