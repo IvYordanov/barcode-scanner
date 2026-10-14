@@ -10,7 +10,7 @@
  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">  
  <meta name="theme-color" content="#4f46e5">  
   
- <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">  
  <title>БАРКОД-СКЕНЕР</title>  
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">  
  <style>  
@@ -97,7 +97,7 @@
  padding: 10px 12px;  
  border: 1px solid var(--border);  
  border-radius: 8px;  
- font-size: 15px;  
+ font-size: 16px; /* 16px спира авто-зуума на мобилни браузъри */  
  outline: none;  
  transition: all 0.2s;  
  }  
@@ -381,19 +381,19 @@
  let historyLogs = JSON.parse(localStorage.getItem('barcode_history')) || [];  
   
  function gapiLoaded() {  
-     if (typeof gapi !== 'undefined') {
+     if (typeof gapi !== 'undefined') {  
          gapi.load('client', async () => {  
-             try {
+             try {  
                  await gapi.client.init({});  
                  await gapi.client.load('https://www.googleapis.com/discovery/v1/apis/drive/v3/rest');  
                  gapiInited = true;  
-             } catch(e) { console.error("GAPI Init error:", e); }
+             } catch(e) { console.error("GAPI Init error:", e); }  
          });  
-     }
+     }  
  }  
   
  function gsiLoaded() {  
-     if (typeof google !== 'undefined' && google.accounts) {
+     if (typeof google !== 'undefined' && google.accounts) {  
          tokenClient = google.accounts.oauth2.initTokenClient({  
              client_id: CLIENT_ID,  
              scope: SCOPES,  
@@ -407,7 +407,7 @@
              }  
          });  
          gsisInited = true;  
-     }
+     }  
  }  
   
  window.onload = () => {  
@@ -419,10 +419,10 @@
  };  
   
  function handleDriveButtonClick() {  
-     if (!tokenClient) {
-         alert('Google API библиотеките все още зареждат или са блокирани. Моля, опитайте след секунда.');
-         return;
-     }
+     if (!tokenClient) {  
+         alert('Google API библиотеките все още зареждат или са блокирани. Моля, опитайте след секунда.');  
+         return;  
+     }  
      if (!driveConnected) {  
          tokenClient.requestAccessToken({prompt: 'consent'});  
      } else {  
@@ -433,10 +433,10 @@
  function updateDriveUI(statusText, color = '#10b981') {  
      const btn = document.getElementById('driveConnectBtn');  
      const status = document.getElementById('driveStatusText');  
-     if (btn) {
+     if (btn) {  
          btn.style.background = color;  
          btn.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Google Drive е свързан`;  
-     }
+     }  
      if (status) status.innerText = statusText;  
  }  
   
@@ -713,7 +713,11 @@
      document.getElementById('cameraBtn').innerHTML = `<i class="fa-solid fa-stop"></i> Спри Камерата`;  
      cameraActive = true;  
   
-     codeReader.decodeFromVideoDevice(undefined, 'webcamVideo', (result, err) => {  
+     // Изрично указваме "environment", за да активира основната задна камера с фокус
+     const hints = new Map();  
+     const constraints = { video: { facingMode: "environment" } };  
+  
+     codeReader.decodeFromConstraints(constraints, 'webcamVideo', (result, err) => {  
          if (result) {  
              processScan(result.text, '', 1, currentMode);  
              document.getElementById('barcodeInput').value = result.text;  
