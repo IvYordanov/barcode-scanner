@@ -2,185 +2,92 @@
 <html lang="bg">
 <head>
     <meta charset="UTF-8">
-    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Инструкции за работа - Баркод Скенер</title>
     <link rel="icon" type="image/png" href="favicon.png">
-    
-    <!-- PWA Настройки -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#4f46e5">
-
-    <!-- Мобилен Viewport -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Инструкции за работа - БАРКОД-СКЕНЕР</title>
-    
-    <!-- ИКОНКИ (Bootstrap Icons) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --primary: #4f46e5;
             --primary-hover: #4338ca;
-            --success: #10b981;
-            --danger: #ef4444;
             --bg: #f3f4f6;
             --card-bg: #ffffff;
             --text: #1f2937;
             --text-light: #6b7280;
             --border: #e5e7eb;
+            --success: #10b981;
+            --danger: #ef4444;
         }
 
-        *, *::before, *::after { 
-            box-sizing: border-box !important; 
-            margin: 0; 
-            padding: 0; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html { width: 100%; overflow-x: hidden; }
-
-        body { 
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            overflow-x: hidden;
-            background-color: var(--bg); 
-            color: var(--text); 
-            padding: 12px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 15px; max-width: 800px; margin: 0 auto; line-height: 1.6; }
 
         header {
             background: linear-gradient(135deg, #4f46e5, #3b82f6);
             color: white;
-            padding: 16px;
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 10px;
         }
 
-        .brand { display: flex; align-items: center; gap: 10px; }
-        .brand img { width: 32px; height: 32px; border-radius: 6px; }
-        .brand h1 { font-size: 16px; font-weight: 700; }
+        .brand { display: flex; align-items: center; gap: 12px; }  
+        .brand img { width: 36px; height: 36px; border-radius: 8px; }  
+        .brand h1 { font-size: 20px; font-weight: 700; }  
 
         .btn-back {
             background: rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 8px 12px;
+            padding: 8px 14px;
             border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 13px;
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            transition: all 0.2s;
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
+        .btn-back:hover { background: rgba(255, 255, 255, 0.35); }
 
         .card {
             background: var(--card-bg);
-            padding: 16px;
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             border: 1px solid var(--border);
-            margin-bottom: 14px;
+            margin-bottom: 15px;
         }
 
-        .card h2 {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 8px;
-        }
+        h2 { font-size: 17px; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        p { font-size: 14px; color: var(--text); margin-bottom: 10px; }
+        ul, ol { padding-left: 20px; font-size: 14px; color: var(--text); margin-bottom: 10px; }
+        li { margin-bottom: 6px; }
 
-        .card p, .card li {
-            font-size: 13px;
-            line-height: 1.6;
-            color: var(--text);
-        }
-
-        .warning-box {
-            background: #fef2f2;
-            border-left: 4px solid var(--danger);
-            padding: 12px 14px;
-            border-radius: 8px;
-            margin: 10px 0;
-        }
-
-        .warning-box p {
-            color: #991b1b;
-            font-weight: 600;
-            font-size: 13px;
-        }
-
-        .info-box {
+        .highlight-box {
             background: #eff6ff;
             border-left: 4px solid var(--primary);
-            padding: 12px 14px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
             margin: 10px 0;
         }
-
-        .info-box p {
-            color: #1e40af;
-            font-size: 13px;
-        }
-
-        .qr-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 10px;
-            padding: 12px;
-            background: #f8fafc;
-            border-radius: 10px;
-            border: 1px dashed var(--primary);
-            margin-top: 10px;
-        }
-
-        .qr-section img {
-            width: 140px;
-            height: 140px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
-        ul, ol { margin-left: 20px; margin-top: 6px; }
-        li { margin-bottom: 6px; }
 
         .badge-demo {
             display: inline-block;
-            padding: 2px 6px;
+            padding: 2px 8px;
             border-radius: 6px;
-            font-size: 10px;
-            font-weight: bold;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
         }
-        .bg-add { background: #d1fae5; color: #065f46; }
-        .bg-sub { background: #fee2e2; color: #991b1b; }
-
-        .url-box {
-            background: #e0e7ff;
-            color: #3730a3;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-family: monospace;
-            font-weight: bold;
-            font-size: 13px;
-            word-break: break-all;
-            display: inline-block;
-            margin-top: 4px;
-        }
+        .bg-add { background: var(--success); }
+        .bg-sub { background: var(--danger); }
     </style>
 </head>
 <body>
@@ -189,94 +96,50 @@
         <div class="brand">
             <img src="favicon.png" alt="Иконка">
             <div>
-                <h1>РЪКОВОДСТВО ЗА РАБОТА</h1>
-                <p style="font-size: 10px; opacity: 0.85;">HITSHOP BG LTD</p>
+                <h1>ИНСТРУКЦИИ ЗА РАБОТА</h1>
+                <p style="font-size: 11px; opacity: 0.9;">HITSHOP BG LTD</p>
             </div>
         </div>
         <a href="index.html" class="btn-back">
-            <i class="bi bi-arrow-left"></i> Назад към Скенера
+            <i class="fa-solid fa-arrow-left"></i> Назад
         </a>
     </header>
 
-    <!-- СТЪПКА 1 -->
     <div class="card">
-        <h2><i class="bi bi-link-45deg"></i> 1. Адрес и Достъп до Приложението</h2>
-        <p>Приложението е достъпно онлайн без нужда от инсталация от следния адрес:</p>
-        <div class="url-box">https://hitshopbg.github.io/barcode-scanner/</div>
-        
-        <div class="qr-section">
-            <p><strong><i class="bi bi-qr-code"></i> Бързо отваряне през мобилен телефон:</strong></p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://hitshopbg.github.io/barcode-scanner/" alt="QR код за достъп">
-            <p style="font-size: 11px; color: var(--text-light);">Сканирайте QR кода с камерата на телефона си, за да отворите системата веднага.</p>
-        </div>
-    </div>
-
-    <!-- СТЪПКА 2 -->
-    <div class="card">
-        <h2><i class="bi bi-shield-lock-fill"></i> 2. Лицензен Код</h2>
-        <p>При първоначално отваряне системата изисква въвеждане на сигурен код за достъп:</p>
-        <ul>
-            <li>Въведете вашия <strong>4-цифрен лицензен код</strong> и натиснете <em>„Активирай Достъпа“</em>.</li>
-            <li>Активацията се запазва на устройството и не се изисква повторно въвеждане при всяко влизане.</li>
-        </ul>
-    </div>
-
-    <!-- СТЪПКА 3 -->
-    <div class="card">
-        <h2><i class="bi bi-google"></i> 3. Автоматичен Синхрон с Google Drive</h2>
-        <p>Приложението разполага с функция за автоматично архивиране в облака на Google, за да предпази данните ви от загуба:</p>
+        <h2><i class="fa-solid fa-camera"></i> Сканиране с Камера</h2>
         <ol>
-            <li><strong>Еднократно свързване:</strong> Натиснете синия бутон <code><i class="bi bi-google"></i> Свържи с Google Drive</code>.</li>
-            <li><strong>Потвърждение:</strong> Изберете вашия Google акаунт. При поява на съобщение <em>„Не сме потвърдили това приложение“</em>, натиснете линка <strong>„Напред“</strong> -> <strong>„Премини към Баркод Скенер (небезопасно)“</strong> и разрешете достъпа.</li>
-            <li><strong>Автоматична работа:</strong> След като бутонът стане зелен (<code><i class="bi bi-cloud-check-fill"></i> Google Drive е свързан</code>), с всяко ново сканиране файлът <code>barcode_backup.json</code> във вашия Google Drive се обновява автоматично.</li>
+            <li>Натиснете бутона <strong>"Пусни Камерата"</strong> в основното меню.</li>
+            <li>Насочете камерата към баркода на продукта така, че той да влезе в зеления ориентировъчен прозорец.</li>
+            <li>Приложението автоматично разпознава както <strong>хоризонтални</strong>, така и <strong>вертикално завъртени</strong> баркодове.</li>
+            <li>При успешно прочитане ще чуете <strong>звуков сигнал (бип)</strong>, рамката ще светне в синьо за момент, а продуктът ще се заведе автоматично.</li>
         </ol>
-
-        <div class="info-box">
-            <p><i class="bi bi-info-circle-fill"></i> <strong>Полза:</strong> Дори да смените устройството или да изчистите браузъра, просто натиснете бутона за Google Drive наново — приложението веднага ще възстанови всички продукти и история!</p>
+        <div class="highlight-box">
+            <strong>Забележка:</strong> Сканирането работи във фонов режим през 0.5 секунди. Полето за въвеждане се изчиства автоматично след всеки код за бърза и последователна работа.
         </div>
     </div>
 
-    <!-- СТЪПКА 4 -->
     <div class="card">
-        <h2><i class="bi bi-qr-code-scan"></i> 4. Сканиране и Въвеждане на Стока</h2>
-        <p>Приложението разчита както стандартни баркодове (EAN-13, CODE-128, UPC), така и **QR кодове**:</p>
-        <ol>
-            <li><strong>Ръчен USB Баркод Скенер (Препоръчително за компютър):</strong> Включете скенера. Курсорът автоматично е в полето — просто сканирайте.</li>
-            <li><strong>Камера на Телефон / Компютър:</strong> Натиснете <code><i class="bi bi-camera-fill"></i> Пусни Камерата</code> и насочете към баркод или QR код. При успешно разчитане се чува звуков сигнал.</li>
-            <li><strong>Ръчно въвеждане:</strong> Напишете кода с клавиатурата и натиснете <code>Enter</code>.</li>
-        </ol>
+        <h2><i class="fa-solid fa-sliders"></i> Избор на Режим (ПРИБАВИ / ИЗВАДИ)</h2>
+        <ul>
+            <li><span class="badge-demo bg-add">ПРИБАВИ</span> — Добавя сканираните бройки към наличността на продукта. Ако продуктът не съществува, той се създава автоматично.</li>
+            <li><span class="badge-demo bg-sub">ИЗВАДИ</span> — Намалява наличността от инвентара. Ако наличността достигне 0 бр., системата ще ви уведоми.</li>
+            <li>Можете бързо да променяте количеството за едно сканиране чрез бутоните за бърз избор (<strong>1, 5, 10, 50</strong>).</li>
+        </ul>
     </div>
 
-    <!-- СТЪПКА 5 -->
     <div class="card">
-        <h2><i class="bi bi-toggle-on"></i> 5. Режими: Прибавяне и Изваждане</h2>
-        <p>Изберете оперативен режим преди сканиране:</p>
+        <h2><i class="fa-solid fa-cloud-arrow-up"></i> Архивиране и Синхронизация</h2>
         <ul>
-            <li><span class="badge-demo bg-add"><i class="bi bi-plus-lg"></i> ПРИБАВИ</span> — Добавя количество. При нов код продуктът се заприходява автоматично.</li>
-            <li><span class="badge-demo bg-sub"><i class="bi bi-dash-lg"></i> ИЗВАДИ</span> — Намалява наличността при изписване или продажба.</li>
+            <li><strong>Google Drive:</strong> Натиснете бутона "Свържи с Google Drive", за да включите автоматичен бекъп в облака при всяко сканиране.</li>
+            <li><strong>Експорт в Excel (.csv):</strong> Изтеглете пълния списък с наличностите във формат, удобен за отваряне в Excel или LibreOffice.</li>
+            <li><strong>Ръчен Архив (.json):</strong> Изтеглете архив на вашите данни или го възстановете на друго устройство.</li>
         </ul>
-        <p style="margin-top: 8px; color: var(--danger); font-size: 12px; font-weight: 600;">
-            <i class="bi bi-exclamation-triangle-fill"></i> Защита на наличностите: В режим „ИЗВАДИ“ системата блокира операцията, ако кодът липсва в базата или наличната бройка е 0.
-        </p>
     </div>
 
-    <!-- СТЪПКА 6 -->
-    <div class="card">
-        <h2><i class="bi bi-database-fill-gear"></i> 6. Капацитет на Паметта и Архивиране</h2>
-        <p>Данните се съхраняват локално в браузъра (<code>localStorage</code>) и в Google Drive.</p>
-        <ul>
-            <li><strong>Локален капацитет:</strong> Паметта от <strong>5 MB</strong> позволява съхранението на над <strong>50 000 – 80 000 уникални артикула</strong>.</li>
-            <li><strong>Експорт в Excel (.csv):</strong> Извлича текущите наличности в удобен табличен файл.</li>
-            <li><strong>Ръчен Архив (.json):</strong> Позволява сваляне на локално резервно копие на компютъра или телефона.</li>
-        </ul>
-
-        <!-- ВАЖНО ПРЕДУПРЕЖДЕНИЕ -->
-        <div class="warning-box">
-            <p><i class="bi bi-exclamation-octagon-fill"></i> ВАЖНО ПРЕДУПРЕЖДЕНИЕ ЗА СИГУРНОСТ:</p>
-            <p style="font-weight: normal; color: #7f1d1d; margin-top: 4px;">
-                Ако не сте свързали приложението с <strong>Google Drive</strong>, преди изчистване на историята/кеша на браузъра (Clear browsing data), <strong>ЗАДЪЛЖИТЕЛНО направете Ръчен Архив (.json)</strong>! В противен случай незаписаните локални данни могат да бъдат изтрити.
-            </p>
-        </div>
+    <div style="text-align: center; margin-top: 20px; margin-bottom: 30px;">
+        <a href="index.html" class="btn-back" style="background: var(--primary); padding: 12px 24px; font-size: 15px;">
+            <i class="fa-solid fa-check"></i> Към Скенера
+        </a>
     </div>
 
 </body>
