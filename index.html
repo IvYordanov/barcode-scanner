@@ -50,7 +50,7 @@
  .brand { display: flex; align-items: center; gap: 10px; }  
  .brand img { width: 32px; height: 32px; border-radius: 8px; }  
  .brand h1 { font-size: 20px; font-weight: 700; }  
-  
+
  .btn-help {  
  background: rgba(255, 255, 255, 0.2);  
  color: white;  
@@ -208,6 +208,18 @@
  border-color: #3b82f6;  
  border-style: solid;  
  }  
+  
+ .qr-card-content {  
+ text-align: center;  
+ padding: 10px 0;  
+ }  
+ #qrcodeContainer img, #qrcodeContainer canvas {  
+ margin: 0 auto;  
+ border-radius: 8px;  
+ border: 1px solid var(--border);  
+ padding: 5px;  
+ background: #fff;  
+ }  
  </style>  
 </head>  
 <body>  
@@ -286,9 +298,13 @@
  <button type="button" id="driveConnectBtn" class="btn btn-primary" onclick="handleDriveButtonClick()" style="width: 100%; margin-bottom: 6px;">  
  <i class="fa-brands fa-google-drive"></i> Свържи с Google Drive  
  </button>  
- <p id="driveStatusText" style="font-size: 11px; color: var(--text-light); text-align: center; margin-bottom: 12px;">  
+ <p id="driveStatusText" style="font-size: 11px; color: var(--text-light); text-align: center; margin-bottom: 10px;">  
  Автоматичен бекъп: изключен  
  </p>  
+
+ <button type="button" id="downloadDriveBtn" class="btn btn-outline" onclick="downloadFromDriveManual()" style="width: 100%; margin-bottom: 12px; border-color: var(--primary); color: var(--primary); display: none;">  
+ <i class="fa-solid fa-cloud-arrow-down"></i> Зареди от Облака  
+ </button>  
   
  <button type="button" class="btn btn-primary" onclick="exportToExcel()" style="width: 100%; margin-bottom: 10px;">  
  <i class="fa-solid fa-file-excel"></i> Експорт в Excel (.csv)  
@@ -307,6 +323,16 @@
  <button type="button" class="btn btn-outline" onclick="clearAllData()" style="width: 100%; margin-top: 15px; color: var(--danger); border-color: #fca5a5;">  
  <i class="fa-solid fa-trash"></i> Занули всички данни  
  </button>  
+ </div>  
+
+ <div class="card">  
+ <div class="card-title">  
+ <i class="fa-solid fa-qrcode"></i> Сподели приложението  
+ </div>  
+ <div class="qr-card-content">  
+ <div id="qrcodeContainer"></div>  
+ <p style="font-size: 12px; color: var(--text-light); margin-top: 8px;" id="domainLabel"></p>  
+ </div>  
  </div>  
  </div>  
   
@@ -368,7 +394,8 @@
  </div>  
  </div>  
  </div>  
-  <!-- Библиотеки за Камера, QR Генератор и Google Drive -->  
+  
+ <!-- Библиотеки за Камера, QR Генератор и Google Drive -->  
  <script src="https://unpkg.com/@zxing/library@latest"></script>  
  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>  
  <script src="https://accounts.google.com/gsi/client" async defer></script>  
@@ -414,8 +441,8 @@
                  }  
                  
                  driveConnected = true;  
-                 updateDriveUI('Свързано! Синхронизиране...', '#10b981');  
-                 await syncWithDrive(); // Задейства интелигентната двупосочна синхронизация
+                 updateDriveUI('Свързано с Google Drive', '#10b981');  
+                 await uploadToDrive(); // Автоматично запазва текущото състояние
              }  
          });  
          gsisInited = true;  
@@ -463,13 +490,17 @@
  function updateDriveUI(statusText, color = '#10b981') {  
      const btn = document.getElementById('driveConnectBtn');  
      const status = document.getElementById('driveStatusText');  
+     const dlBtn = document.getElementById('downloadDriveBtn');
+
      if (btn) {  
          if (driveConnected) {
              btn.style.background = color;  
              btn.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Google Drive е свързан`;  
+             if (dlBtn) dlBtn.style.display = 'block'; // Показва бутона за заждане
          } else {
              btn.style.background = 'var(--primary)';
              btn.innerHTML = `<i class="fa-brands fa-google-drive"></i> Свържи с Google Drive`;
+             if (dlBtn) dlBtn.style.display = 'none';
          }
      }  
      if (status) status.innerText = statusText;  
@@ -496,84 +527,43 @@
      return null;  
  }  
   
- // ДВУПОСОЧНО ОБЕДИНЯВАНЕ НА ДАННИТЕ (SMART MERGE)
- async function syncWithDrive() {  
+ // РЪЧНО ИЗТЕГЛЯНЕ ОТ ОБЛАКА ПРИ НАТИСКАНЕ НА БУТОНА "Зареди от Облака"
+ async function downloadFromDriveManual() {  
+     if (!driveConnected) return;  
+     if (confirm("ВНИМАНИЕ: Това ще зареди данните от облака и ще презапише текущите наличности на това устройство. Продължавате ли?")) {
+         try {  
+             const fileId = await findBackupFileId();  
+             if (fileId) {  
+                 const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });  
+                 const cloudData = res.result;  
+                 if (cloudData && Array.isArray(cloudData.products)) {  
+                     products = cloudData.products;  
+                     historyLogs = cloudData.history || [];  
+                     localStorage.setItem('barcode_products', JSON.stringify(products));  
+                     localStorage.setItem('barcode_history', JSON.stringify(historyLogs));  
+                     renderProducts();  
+                     renderHistory();  
+                     updateStats();  
+                     const now = new Date().toLocaleTimeString('bg-BG');  
+                     updateDriveUI(`Заредено от облака в ${now} ч.`);  
+                     alert("Данните са заредени успешно!");
+                 }  
+             } else {
+                 alert("Няма намерен бекъп файл в Google Drive!");
+             }
+         } catch (err) {  
+             console.error("Грешка при изтегляне от облака:", err);  
+             alert("Грешка при изтегляне на данните!");
+         }  
+     }
+ }  
+  
+ async function uploadToDrive() {  
      if (!driveConnected) return;  
      try {  
          const fileId = await findBackupFileId();  
-         let cloudData = { products: [], history: [] };
+         if (!driveConnected) return;
 
-         if (fileId) {  
-             const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });  
-             if (res.result && Array.isArray(res.result.products)) {
-                 cloudData = res.result;
-             }
-         }
-
-         // 1. Обединяване на продуктите
-         const mergedProductsMap = new Map();
-
-         // Първо добавяме данните от облака
-         (cloudData.products || []).forEach(p => {
-             mergedProductsMap.set(p.code, { code: p.code, name: p.name, qty: p.qty });
-         });
-
-         // Обединяваме с локалните данни от устройството
-         products.forEach(p => {
-             if (mergedProductsMap.has(p.code)) {
-                 const existing = mergedProductsMap.get(p.code);
-                 // Вземаме по-голямата наличност или актуализираното име
-                 mergedProductsMap.set(p.code, {
-                     code: p.code,
-                     name: p.name || existing.name,
-                     qty: Math.max(existing.qty, p.qty)
-                 });
-             } else {
-                 mergedProductsMap.set(p.code, p);
-             }
-         });
-
-         products = Array.from(mergedProductsMap.values());
-
-         // 2. Обединяване на историята (премахване на дубликати)
-         const historySet = new Set();
-         const mergedHistory = [];
-
-         [...historyLogs, ...(cloudData.history || [])].forEach(h => {
-             const key = `${h.time}_${h.code}_${h.action}_${h.qty}`;
-             if (!historySet.has(key)) {
-                 historySet.add(key);
-                 mergedHistory.push(h);
-             }
-         });
-
-         historyLogs = mergedHistory.slice(0, 100); // Пазим последните 100
-
-         // Запазваме обединения резултат локално
-         localStorage.setItem('barcode_products', JSON.stringify(products));  
-         localStorage.setItem('barcode_history', JSON.stringify(historyLogs));  
-         renderProducts();  
-         renderHistory();  
-         updateStats();  
-
-         // Качваме обединения файл обратно в Google Drive
-         await uploadToDriveMerged(fileId);
-
-         const now = new Date().toLocaleTimeString('bg-BG');  
-         updateDriveUI(`Синхронизирано в ${now} ч.`);  
-     } catch (err) {  
-         console.error("Грешка при синхронизация:", err);  
-         if (err.status === 401 || err.status === 403) {
-             driveConnected = false;
-             updateDriveUI('Сесията изтече! Натиснете за вход', '#ef4444');
-         }
-     }  
- }  
-  
- async function uploadToDriveMerged(existingFileId) {  
-     if (!driveConnected) return;  
-     try {  
-         const fileId = existingFileId || await findBackupFileId();  
          const backupContent = JSON.stringify({ products: products, history: historyLogs }, null, 2);  
   
          if (fileId) {  
@@ -590,15 +580,18 @@
                  fields: 'id'  
              });  
          }  
+  
+         const now = new Date().toLocaleTimeString('bg-BG');  
+         updateDriveUI(`Автоматичен бекъп в ${now} ч.`);  
      } catch (err) {  
-         console.error("Грешка при качване:", err);  
+         console.error("Грешка при качване в облака:", err);  
+         if (err.status === 401 || err.status === 403) {
+             driveConnected = false;
+             updateDriveUI('Сесията изтече! Натиснете за вход', '#ef4444');
+         }
      }  
  }  
   
- function uploadToDrive() {
-     syncWithDrive(); // Винаги правим синхронизация вместо чист презапис
- }
-
  function setMode(mode) {  
      currentMode = mode;  
      const btnAdd = document.getElementById('btnAddMode');  
@@ -889,6 +882,6 @@
      cameraActive = false;  
      isScanning = false;  
  }  
- </script> 
- </body> 
+ </script>  
+</body>  
 </html>
