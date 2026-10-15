@@ -419,7 +419,8 @@
                  
                  driveConnected = true;  
                  updateDriveUI('Свързано с Google Drive', '#10b981');  
-                 await uploadToDrive();  
+                 // ВАЖНО: Премахнато автоматичното качване при вход!
+                 // Записва в облака САМО при реално сканиране/промяна.
              }  
          });  
          gsisInited = true;  
