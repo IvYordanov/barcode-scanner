@@ -208,18 +208,6 @@
  border-color: #3b82f6;  
  border-style: solid;  
  }  
-  
- .qr-card-content {  
- text-align: center;  
- padding: 10px 0;  
- }  
- #qrcodeContainer img, #qrcodeContainer canvas {  
- margin: 0 auto;  
- border-radius: 8px;  
- border: 1px solid var(--border);  
- padding: 5px;  
- background: #fff;  
- }  
  </style>  
 </head>  
 <body>  
@@ -298,9 +286,13 @@
  <button type="button" id="driveConnectBtn" class="btn btn-primary" onclick="handleDriveButtonClick()" style="width: 100%; margin-bottom: 6px;">  
  <i class="fa-brands fa-google-drive"></i> Свържи с Google Drive  
  </button>  
- <p id="driveStatusText" style="font-size: 11px; color: var(--text-light); text-align: center; margin-bottom: 12px;">  
+ <p id="driveStatusText" style="font-size: 11px; color: var(--text-light); text-align: center; margin-bottom: 10px;">  
  Автоматичен бекъп: изключен  
  </p>  
+
+ <button type="button" id="downloadDriveBtn" class="btn btn-outline" onclick="downloadFromDriveManual()" style="width: 100%; margin-bottom: 12px; border-color: var(--primary); color: var(--primary); display: none;">  
+ <i class="fa-solid fa-cloud-arrow-down"></i> Зареди от Облака  
+ </button>  
   
  <button type="button" class="btn btn-primary" onclick="exportToExcel()" style="width: 100%; margin-bottom: 10px;">  
  <i class="fa-solid fa-file-excel"></i> Експорт в Excel (.csv)  
@@ -319,16 +311,6 @@
  <button type="button" class="btn btn-outline" onclick="clearAllData()" style="width: 100%; margin-top: 15px; color: var(--danger); border-color: #fca5a5;">  
  <i class="fa-solid fa-trash"></i> Занули всички данни  
  </button>  
- </div>  
-
- <div class="card">  
- <div class="card-title">  
- <i class="fa-solid fa-qrcode"></i> Сподели приложението  
- </div>  
- <div class="qr-card-content">  
- <div id="qrcodeContainer"></div>  
- <p style="font-size: 12px; color: var(--text-light); margin-top: 8px;" id="domainLabel"></p>  
- </div>  
  </div>  
  </div>  
   
@@ -391,9 +373,8 @@
  </div>  
  </div>  
   
- <!-- Библиотеки за Камера, QR Генератор и Google Drive -->  
+ <!-- Библиотеки за Камера и Google Drive -->  
  <script src="https://unpkg.com/@zxing/library@latest"></script>  
- <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>  
  <script src="https://accounts.google.com/gsi/client" async defer></script>  
  <script src="https://apis.google.com/js/api.js" async defer></script>  
   
@@ -451,29 +432,7 @@
      renderProducts();  
      renderHistory();  
      updateStats();  
-     generateShareQRCode();  
  };  
-  
- function generateShareQRCode() {  
-     const currentUrl = "https://hitshopbg.github.io/barcode-scanner/";  
-     const qrcodeContainer = document.getElementById('qrcodeContainer');  
-     const domainLabel = document.getElementById('domainLabel');  
-       
-     if (qrcodeContainer) {  
-         qrcodeContainer.innerHTML = '';  
-         new QRCode(qrcodeContainer, {  
-             text: currentUrl,  
-             width: 140,  
-             height: 140,  
-             colorDark : "#1f2937",  
-             colorLight : "#ffffff",  
-             correctLevel : QRCode.CorrectLevel.H  
-         });  
-     }  
-     if (domainLabel) {  
-         domainLabel.innerText = 'hitshopbg.github.io/barcode-scanner/';  
-     }  
- }  
   
  function handleDriveButtonClick() {  
      if (!tokenClient) {  
@@ -486,14 +445,17 @@
  function updateDriveUI(statusText, color = '#10b981') {  
      const btn = document.getElementById('driveConnectBtn');  
      const status = document.getElementById('driveStatusText');  
+     const dlBtn = document.getElementById('downloadDriveBtn');  
   
      if (btn) {  
          if (driveConnected) {  
              btn.style.background = color;  
              btn.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Google Drive е свързан`;  
+             if (dlBtn) dlBtn.style.display = 'block';  
          } else {  
              btn.style.background = 'var(--primary)';  
              btn.innerHTML = `<i class="fa-brands fa-google-drive"></i> Свържи с Google Drive`;  
+             if (dlBtn) dlBtn.style.display = 'none';  
          }  
      }  
      if (status) status.innerText = statusText;  
@@ -518,6 +480,36 @@
          }  
      }  
      return null;  
+ }  
+  
+ async function downloadFromDriveManual() {  
+     if (!driveConnected) return;  
+     if (confirm("ВНИМАНИЕ: Това ще зареди данните от облака и ще презапише текущите наличности на това устройство. Продължавате ли?")) {  
+         try {  
+             const fileId = await findBackupFileId();  
+             if (fileId) {  
+                 const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });  
+                 const cloudData = res.result;  
+                 if (cloudData && Array.isArray(cloudData.products)) {  
+                     products = cloudData.products;  
+                     historyLogs = cloudData.history || [];  
+                     localStorage.setItem('barcode_products', JSON.stringify(products));  
+                     localStorage.setItem('barcode_history', JSON.stringify(historyLogs));  
+                     renderProducts();  
+                     renderHistory();  
+                     updateStats();  
+                     const now = new Date().toLocaleTimeString('bg-BG');  
+                     updateDriveUI(`Заредено от облака в ${now} ч.`);  
+                     alert("Данните са заредени успешно!");  
+                 }  
+             } else {  
+                 alert("Няма намерен бекъп файл в Google Drive!");  
+             }  
+         } catch (err) {  
+             console.error("Грешка при изтегляне от облака:", err);  
+             alert("Грешка при изтегляне на данните!");  
+         }  
+     }  
  }  
   
  async function uploadToDrive() {  
