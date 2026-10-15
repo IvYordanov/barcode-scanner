@@ -298,13 +298,9 @@
  <button type="button" id="driveConnectBtn" class="btn btn-primary" onclick="handleDriveButtonClick()" style="width: 100%; margin-bottom: 6px;">  
  <i class="fa-brands fa-google-drive"></i> Свържи с Google Drive  
  </button>  
- <p id="driveStatusText" style="font-size: 11px; color: var(--text-light); text-align: center; margin-bottom: 10px;">  
+ <p id="driveStatusText" style="font-size: 11px; color: var(--text-light); text-align: center; margin-bottom: 12px;">  
  Автоматичен бекъп: изключен  
  </p>  
-
- <button type="button" id="downloadDriveBtn" class="btn btn-outline" onclick="downloadFromDriveManual()" style="width: 100%; margin-bottom: 12px; border-color: var(--primary); color: var(--primary); display: none;">  
- <i class="fa-solid fa-cloud-arrow-down"></i> Зареди от Облака  
- </button>  
   
  <button type="button" class="btn btn-primary" onclick="exportToExcel()" style="width: 100%; margin-bottom: 10px;">  
  <i class="fa-solid fa-file-excel"></i> Експорт в Excel (.csv)  
@@ -435,14 +431,14 @@
              scope: SCOPES,  
              callback: async (resp) => {  
                  if (resp.error !== undefined) {  
-                     driveConnected = false;
-                     updateDriveUI('Сесията изтече! Натиснете за вход', '#ef4444');
+                     driveConnected = false;  
+                     updateDriveUI('Сесията изтече! Натиснете за вход', '#ef4444');  
                      throw (resp);  
                  }  
                  
                  driveConnected = true;  
                  updateDriveUI('Свързано с Google Drive', '#10b981');  
-                 await uploadToDrive(); // Автоматично запазва текущото състояние
+                 await uploadToDrive();  
              }  
          });  
          gsisInited = true;  
@@ -490,18 +486,15 @@
  function updateDriveUI(statusText, color = '#10b981') {  
      const btn = document.getElementById('driveConnectBtn');  
      const status = document.getElementById('driveStatusText');  
-     const dlBtn = document.getElementById('downloadDriveBtn');
-
+  
      if (btn) {  
-         if (driveConnected) {
+         if (driveConnected) {  
              btn.style.background = color;  
              btn.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Google Drive е свързан`;  
-             if (dlBtn) dlBtn.style.display = 'block'; // Показва бутона за заждане
-         } else {
-             btn.style.background = 'var(--primary)';
-             btn.innerHTML = `<i class="fa-brands fa-google-drive"></i> Свържи с Google Drive`;
-             if (dlBtn) dlBtn.style.display = 'none';
-         }
+         } else {  
+             btn.style.background = 'var(--primary)';  
+             btn.innerHTML = `<i class="fa-brands fa-google-drive"></i> Свържи с Google Drive`;  
+         }  
      }  
      if (status) status.innerText = statusText;  
  }  
@@ -519,51 +512,20 @@
          }  
      } catch (e) {  
          console.error("Грешка при търсене на файл:", e);  
-         if (e.status === 401 || e.status === 403) {
-             driveConnected = false;
-             updateDriveUI('Сесията изтече! Натиснете за вход', '#ef4444');
-         }
+         if (e.status === 401 || e.status === 403) {  
+             driveConnected = false;  
+             updateDriveUI('Сесията изтече! Натиснете за вход', '#ef4444');  
+         }  
      }  
      return null;  
- }  
-  
- // РЪЧНО ИЗТЕГЛЯНЕ ОТ ОБЛАКА ПРИ НАТИСКАНЕ НА БУТОНА "Зареди от Облака"
- async function downloadFromDriveManual() {  
-     if (!driveConnected) return;  
-     if (confirm("ВНИМАНИЕ: Това ще зареди данните от облака и ще презапише текущите наличности на това устройство. Продължавате ли?")) {
-         try {  
-             const fileId = await findBackupFileId();  
-             if (fileId) {  
-                 const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });  
-                 const cloudData = res.result;  
-                 if (cloudData && Array.isArray(cloudData.products)) {  
-                     products = cloudData.products;  
-                     historyLogs = cloudData.history || [];  
-                     localStorage.setItem('barcode_products', JSON.stringify(products));  
-                     localStorage.setItem('barcode_history', JSON.stringify(historyLogs));  
-                     renderProducts();  
-                     renderHistory();  
-                     updateStats();  
-                     const now = new Date().toLocaleTimeString('bg-BG');  
-                     updateDriveUI(`Заредено от облака в ${now} ч.`);  
-                     alert("Данните са заредени успешно!");
-                 }  
-             } else {
-                 alert("Няма намерен бекъп файл в Google Drive!");
-             }
-         } catch (err) {  
-             console.error("Грешка при изтегляне от облака:", err);  
-             alert("Грешка при изтегляне на данните!");
-         }  
-     }
  }  
   
  async function uploadToDrive() {  
      if (!driveConnected) return;  
      try {  
          const fileId = await findBackupFileId();  
-         if (!driveConnected) return;
-
+         if (!driveConnected) return;  
+  
          const backupContent = JSON.stringify({ products: products, history: historyLogs }, null, 2);  
   
          if (fileId) {  
@@ -585,10 +547,10 @@
          updateDriveUI(`Автоматичен бекъп в ${now} ч.`);  
      } catch (err) {  
          console.error("Грешка при качване в облака:", err);  
-         if (err.status === 401 || err.status === 403) {
-             driveConnected = false;
-             updateDriveUI('Сесията изтече! Натиснете за вход', '#ef4444');
-         }
+         if (err.status === 401 || err.status === 403) {  
+             driveConnected = false;  
+             updateDriveUI('Сесията изтече! Натиснете за вход', '#ef4444');  
+         }  
      }  
  }  
   
