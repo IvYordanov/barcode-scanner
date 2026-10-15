@@ -31,7 +31,44 @@
  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }  
  html, body { width: 100%; overflow-x: hidden; }  
  body { background-color: var(--bg); color: var(--text); padding: 10px; max-width: 100vw; margin: 0 auto; }  
-  
+
+ /* ЕКРАН ЗА ВХОД C PIN / ЛИЦЕНЗ */
+ #authModal {
+ position: fixed;
+ top: 0; left: 0; width: 100vw; height: 100vh;
+ background: rgba(15, 23, 42, 0.85);
+ backdrop-filter: blur(5px);
+ z-index: 9999;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ padding: 15px;
+ }
+ .auth-card {
+ background: #ffffff;
+ border-radius: 16px;
+ padding: 25px 20px;
+ width: 100%;
+ max-width: 380px;
+ box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+ text-align: center;
+ }
+ .auth-card h2 { font-size: 20px; color: var(--primary); margin-bottom: 8px; }
+ .auth-card p { font-size: 13px; color: var(--text-light); margin-bottom: 20px; }
+ .auth-input {
+ width: 100%;
+ padding: 12px;
+ font-size: 18px;
+ letter-spacing: 2px;
+ text-align: center;
+ border: 2px solid var(--border);
+ border-radius: 10px;
+ margin-bottom: 15px;
+ outline: none;
+ }
+ .auth-input:focus { border-color: var(--primary); }
+ .auth-error { font-size: 13px; color: var(--danger); margin-top: 10px; display: none; font-weight: 600; }
+
  header {  
  background: linear-gradient(135deg, #4f46e5, #3b82f6);  
  color: white;  
@@ -211,7 +248,20 @@
  </style>  
 </head>  
 <body>  
-  
+
+ <!-- МОДАЛЕН ЕКРАН ЗА ВХОД С ПИН -->
+ <div id="authModal">
+     <div class="auth-card">
+         <h2><i class="fa-solid fa-lock"></i> Лицензен Вход</h2>
+         <p>Въведете вашия персонален PIN код за абонамент:</p>
+         <input type="password" id="pinInput" class="auth-input" placeholder="Въведете PIN..." autofocus maxlength="20">
+         <button type="button" class="btn btn-primary" style="width: 100%; opacity: 1;" onclick="validatePin()">
+             <i class="fa-solid fa-key"></i> Влез в системата
+         </button>
+         <div id="authError" class="auth-error"></div>
+     </div>
+ </div>  
+
  <header>  
  <div class="brand">  
  <img src="favicon.png" alt="Иконка">  
@@ -308,7 +358,11 @@
  </div>  
  <input type="file" id="jsonFileInput" accept=".json" style="display:none;" onchange="handleFileSelect(event)">  
   
- <button type="button" class="btn btn-outline" onclick="clearAllData()" style="width: 100%; margin-top: 15px; color: var(--danger); border-color: #fca5a5;">  
+ <button type="button" class="btn btn-outline" onclick="logoutPin()" style="width: 100%; margin-top: 15px; color: var(--text-light); border-color: var(--border);">  
+ <i class="fa-solid fa-arrow-right-from-bracket"></i> Изход / Смяна на PIN  
+ </button>
+
+ <button type="button" class="btn btn-outline" onclick="clearAllData()" style="width: 100%; margin-top: 8px; color: var(--danger); border-color: #fca5a5;">  
  <i class="fa-solid fa-trash"></i> Занули всички данни  
  </button>  
  </div>  
@@ -392,7 +446,73 @@
  let products = JSON.parse(localStorage.getItem('barcode_products')) || [];  
  let historyLogs = JSON.parse(localStorage.getItem('barcode_history')) || [];  
  let audioCtx = null;  
-  
+
+ // ПРОВЕРКА НА PIN / ЛИЦЕНЗ
+ async function validatePin() {
+     const pin = document.getElementById('pinInput').value.trim();
+     const errorDiv = document.getElementById('authError');
+     errorDiv.style.display = 'none';
+
+     if (!pin) {
+         errorDiv.innerText = 'Моля, въведете PIN код!';
+         errorDiv.style.display = 'block';
+         return;
+     }
+
+     try {
+         const response = await fetch('keys.json?v=' + new Date().getTime());
+         if (!response.ok) throw new Error("Не може да се зареди keys.json");
+         const data = await response.json();
+         
+         const keyObj = data.keys.find(k => String(k.code) === String(pin));
+
+         if (!keyObj) {
+             errorDiv.innerText = 'Невалиден PIN код!';
+             errorDiv.style.display = 'block';
+             return;
+         }
+
+         if (!keyObj.active) {
+             errorDiv.innerText = 'Този лиценз е деактивиран!';
+             errorDiv.style.display = 'block';
+             return;
+         }
+
+         const today = new Date().toISOString().slice(0, 10);
+         if (keyObj.valid_until && keyObj.valid_until < today) {
+             errorDiv.innerText = `Абонаментът е изтекъл на ${keyObj.valid_until}!`;
+             errorDiv.style.display = 'block';
+             return;
+         }
+
+         // Успешен вход
+         localStorage.setItem('saved_pin', pin);
+         document.getElementById('authModal').style.display = 'none';
+
+     } catch (err) {
+         console.error("Грешка при проверка на лиценза:", err);
+         errorDiv.innerText = 'Грешка при проверка на абонамента! Проверете интернет връзката.';
+         errorDiv.style.display = 'block';
+     }
+ }
+
+ function checkSavedPin() {
+     const savedPin = localStorage.getItem('saved_pin');
+     if (savedPin) {
+         document.getElementById('pinInput').value = savedPin;
+         validatePin();
+     } else {
+         document.getElementById('authModal').style.display = 'flex';
+     }
+ }
+
+ function logoutPin() {
+     if (confirm('Желаете ли да излезете от текущия лиценз?')) {
+         localStorage.removeItem('saved_pin');
+         location.reload();
+     }
+ }
+
  function gapiLoaded() {  
      if (typeof gapi !== 'undefined') {  
          gapi.load('client', async () => {  
@@ -419,8 +539,6 @@
                  
                  driveConnected = true;  
                  updateDriveUI('Свързано с Google Drive', '#10b981');  
-                 // ВАЖНО: Премахнато автоматичното качване при вход!
-                 // Записва в облака САМО при реално сканиране/промяна.
              }  
          });  
          gsisInited = true;  
@@ -428,6 +546,7 @@
  }  
   
  window.onload = () => {  
+     checkSavedPin();
      gapiLoaded();  
      gsiLoaded();  
      renderProducts();  
