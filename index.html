@@ -369,8 +369,9 @@
  </div>  
  </div>  
   
- <!-- Библиотеки за Камера и Google Drive -->  
+ <!-- Библиотеки за Камера, QR Генератор и Google Drive -->  
  <script src="https://unpkg.com/@zxing/library@latest"></script>  
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>  
  <script src="https://accounts.google.com/gsi/client" async defer></script>  
  <script src="https://apis.google.com/js/api.js" async defer></script>  
   
@@ -383,6 +384,7 @@
  let gapiInited = false;  
  let gsisInited = false;  
  let driveConnected = false;  
+ let isFirstLogin = true; // Следи дали е първоначално отваряне
   
  let currentMode = 'ADD';  
  let products = JSON.parse(localStorage.getItem('barcode_products')) || [];  
@@ -408,11 +410,23 @@
              scope: SCOPES,  
              callback: async (resp) => {  
                  if (resp.error !== undefined) {  
+                     driveConnected = false;
+                     updateDriveUI('Изтекъл достъп! Натиснете за вход', '#ef4444');
                      throw (resp);  
                  }  
+                 
                  driveConnected = true;  
-                 updateDriveUI('Свързано с Google Drive', '#10b981');  
-                 await downloadFromDrive();  
+                 
+                 // АКО Е ПЪРВО ВЛИЗАНЕ ПРИ СТАРТИРАНЕ - Изтегляме от облака
+                 // АКО Е ПОДНОВЯВАНЕ НА СЕСИЯТА - Качваме локалните данни, за да НЕ ги загубим!
+                 if (isFirstLogin && products.length === 0) {
+                     updateDriveUI('Свързано! Изтегляне...', '#10b981');  
+                     await downloadFromDrive();  
+                     isFirstLogin = false;
+                 } else {
+                     updateDriveUI('Свързано! Синхронизиране...', '#10b981');
+                     await uploadToDrive(); // Качва новите въведени артикули в облака!
+                 }
              }  
          });  
          gsisInited = true;  
@@ -425,26 +439,50 @@
      renderProducts();  
      renderHistory();  
      updateStats();  
+     generateShareQRCode();  
  };  
+  
+ function generateShareQRCode() {  
+     const currentUrl = "https://hitshopbg.github.io/barcode-scanner/";  
+     const qrcodeContainer = document.getElementById('qrcodeContainer');  
+     const domainLabel = document.getElementById('domainLabel');  
+       
+     if (qrcodeContainer) {  
+         qrcodeContainer.innerHTML = '';  
+         new QRCode(qrcodeContainer, {  
+             text: currentUrl,  
+             width: 140,  
+             height: 140,  
+             colorDark : "#1f2937",  
+             colorLight : "#ffffff",  
+             correctLevel : QRCode.CorrectLevel.H  
+         });  
+     }  
+     if (domainLabel) {  
+         domainLabel.innerText = 'hitshopbg.github.io/barcode-scanner/';  
+     }  
+ }  
   
  function handleDriveButtonClick() {  
      if (!tokenClient) {  
-         alert('Google API библиотеките все още зареждат или са блокирани. Моля, опитайте след секунда.');  
+         alert('Google API библиотеките все още зареждат. Моля, опитайте след секунда.');  
          return;  
      }  
-     if (!driveConnected) {  
-         tokenClient.requestAccessToken({prompt: 'consent'});  
-     } else {  
-         downloadFromDrive();  
-     }  
+     // Винаги искаме разрешение/токен при клик
+     tokenClient.requestAccessToken({ prompt: driveConnected ? '' : 'select_account' });  
  }  
   
  function updateDriveUI(statusText, color = '#10b981') {  
      const btn = document.getElementById('driveConnectBtn');  
      const status = document.getElementById('driveStatusText');  
      if (btn) {  
-         btn.style.background = color;  
-         btn.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Google Drive е свързан`;  
+         if (driveConnected) {
+             btn.style.background = color;  
+             btn.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Google Drive е свързан`;  
+         } else {
+             btn.style.background = 'var(--primary)';
+             btn.innerHTML = `<i class="fa-brands fa-google-drive"></i> Свържи с Google Drive`;
+         }
      }  
      if (status) status.innerText = statusText;  
  }  
@@ -462,6 +500,10 @@
          }  
      } catch (e) {  
          console.error("Грешка при търсене на файл:", e);  
+         if (e.status === 401 || e.status === 403) {
+             driveConnected = false;
+             updateDriveUI('Сесията изтече! Натиснете за вход', '#ef4444');
+         }
      }  
      return null;  
  }  
@@ -494,6 +536,8 @@
      if (!driveConnected) return;  
      try {  
          const fileId = await findBackupFileId();  
+         if (!driveConnected) return; // Ако findBackupFileId е хванал изтекъл токен
+
          const backupContent = JSON.stringify({ products: products, history: historyLogs }, null, 2);  
   
          if (fileId) {  
@@ -512,9 +556,13 @@
          }  
   
          const now = new Date().toLocaleTimeString('bg-BG');  
-         updateDriveUI(`Създаден нов бекъп в ${now} ч.`);  
+         updateDriveUI(`Автоматичен бекъп в ${now} ч.`);  
      } catch (err) {  
          console.error("Грешка при качване в облака:", err);  
+         if (err.status === 401 || err.status === 403) {
+             driveConnected = false;
+             updateDriveUI('Сесията изтече! Натиснете за повторно свързване', '#ef4444');
+         }
      }  
  }  
   
@@ -742,7 +790,6 @@
  }  
   
  async function startCamera() {  
-     // Оптимизиран списък с най-често използваните 1D/2D формати за максимална бързина  
      const hints = new Map();  
      const formats = [  
          ZXing.BarcodeFormat.EAN_13,  
@@ -789,7 +836,6 @@
                  document.getElementById('barcodeInput').value = '';  
                  document.getElementById('itemNameInput').value = '';  
                    
-                 // Пауза само 0.5 сек. за ултрабързо сканиране  
                  setTimeout(() => {  
                      if (overlay) overlay.classList.remove('success');  
                      isScanning = false;  
@@ -810,6 +856,6 @@
      cameraActive = false;  
      isScanning = false;  
  }  
- </script>  
+ </script>
 </body>  
 </html>
