@@ -249,7 +249,7 @@
 </head>  
 <body>  
 
- <!-- МОДАЛЕН ЕКРАН ЗА ВХОД С ПИН -->
+ <!-- МОДАЛЕН ЕКРАН ЗА ВХОД C ПИН -->
  <div id="authModal">
      <div class="auth-card">
          <h2><i class="fa-solid fa-lock"></i> Лицензен Вход</h2>
@@ -398,6 +398,7 @@
  <th>Код</th>  
  <th>Наименование</th>  
  <th>Наличност</th>  
+ <th>Последна промяна</th>  
  <th style="text-align: right;">Действия</th>  
  </tr>  
  </thead>  
@@ -414,7 +415,7 @@
  <table>  
  <thead>  
  <tr>  
- <th>Час</th>  
+ <th>Дата и Час</th>  
  <th>Код</th>  
  <th>Действие</th>  
  <th style="text-align: right;">Количество</th>  
@@ -446,6 +447,14 @@
  let products = JSON.parse(localStorage.getItem('barcode_products')) || [];  
  let historyLogs = JSON.parse(localStorage.getItem('barcode_history')) || [];  
  let audioCtx = null;  
+
+ // Помощна функция за форматиране на текуща Дата и Час
+ function getFormattedDateTime() {
+     const now = new Date();
+     const date = now.toLocaleDateString('bg-BG');
+     const time = now.toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit' });
+     return `${date} г., ${time} ч.`;
+ }
 
  // ПРОВЕРКА НА PIN / ЛИЦЕНЗ
  async function validatePin() {
@@ -618,8 +627,8 @@
                      renderProducts();  
                      renderHistory();  
                      updateStats();  
-                     const now = new Date().toLocaleTimeString('bg-BG');  
-                     updateDriveUI(`Заредено от облака в ${now} ч.`);  
+                     const nowStr = getFormattedDateTime();  
+                     updateDriveUI(`Заредено от облака: ${nowStr}`);  
                      alert("Данните са заредени успешно!");  
                  }  
              } else {  
@@ -655,8 +664,8 @@
              });  
          }  
   
-         const now = new Date().toLocaleTimeString('bg-BG');  
-         updateDriveUI(`Автоматичен бекъп в ${now} ч.`);  
+         const nowStr = getFormattedDateTime();  
+         updateDriveUI(`Автоматичен бекъп: ${nowStr}`);  
      } catch (err) {  
          console.error("Грешка при качване в облака:", err);  
          if (err.status === 401 || err.status === 403) {  
@@ -708,7 +717,8 @@
   
  function processScan(code, name, qty, mode) {  
      let prodIndex = products.findIndex(p => p.code === code);  
-  
+     const nowStr = getFormattedDateTime();
+
      if (mode === 'SUB') {  
          if (prodIndex === -1 || products[prodIndex].qty <= 0) {  
              alert('Грешка: Продуктът липсва или е с нулева наличност!');  
@@ -716,23 +726,25 @@
          }  
          const actualSub = Math.min(products[prodIndex].qty, qty);  
          products[prodIndex].qty -= actualSub;  
-         logAction(code, 'Извадено', actualSub);  
+         products[prodIndex].lastUpdated = nowStr;
+         logAction(code, 'Извадено', actualSub, nowStr);  
      } else {  
          if (prodIndex > -1) {  
              products[prodIndex].qty += qty;  
              if (name) products[prodIndex].name = name;  
+             products[prodIndex].lastUpdated = nowStr;
          } else {  
-             products.push({ code: code, name: name || `Артикул ${code}`, qty: qty });  
+             products.push({ code: code, name: name || `Артикул ${code}`, qty: qty, lastUpdated: nowStr });  
          }  
-         logAction(code, 'Прибавено', qty);  
+         logAction(code, 'Прибавено', qty, nowStr);  
      }  
   
      saveAndRender();  
  }  
   
- function logAction(code, action, qty) {  
-     const time = new Date().toLocaleTimeString('bg-BG');  
-     historyLogs.unshift({ time: time, code: code, action: action, qty: qty });  
+ function logAction(code, action, qty, timeStr) {  
+     const timestamp = timeStr || getFormattedDateTime();  
+     historyLogs.unshift({ time: timestamp, code: code, action: action, qty: qty });  
      if (historyLogs.length > 100) historyLogs.pop();  
  }  
   
@@ -750,7 +762,9 @@
      if (prodIndex > -1) {  
          if (delta < 0 && products[prodIndex].qty <= 0) return;  
          products[prodIndex].qty += delta;  
-         logAction(code, delta > 0 ? 'Прибавено' : 'Извадено', Math.abs(delta));  
+         const nowStr = getFormattedDateTime();
+         products[prodIndex].lastUpdated = nowStr;
+         logAction(code, delta > 0 ? 'Прибавено' : 'Извадено', Math.abs(delta), nowStr);  
          saveAndRender();  
      }  
  }  
@@ -775,6 +789,7 @@
              <td><strong>${p.code}</strong></td>  
              <td>${p.name}</td>  
              <td><strong>${p.qty}</strong></td>  
+             <td style="font-size: 11px; color: var(--text-light);">${p.lastUpdated || '-'}</td>  
              <td style="text-align: right;">  
                  <button class="action-icon" onclick="adjustQty('${p.code}', 1)"><i class="fa-solid fa-circle-plus" style="color: var(--success);"></i></button>  
                  <button class="action-icon" onclick="adjustQty('${p.code}', -1)"><i class="fa-solid fa-circle-minus" style="color: var(--danger);"></i></button>  
@@ -793,7 +808,7 @@
          const tr = document.createElement('tr');  
          const isAdd = h.action === 'Прибавено';  
          tr.innerHTML = `  
-             <td>${h.time}</td>  
+             <td style="font-size: 11px; color: var(--text-light);">${h.time}</td>  
              <td><strong>${h.code}</strong></td>  
              <td><span class="badge ${isAdd ? 'badge-add' : 'badge-sub'}">${h.action}</span></td>  
              <td style="text-align: right;"><strong>${h.qty} бр.</strong></td>  
@@ -811,8 +826,8 @@
   
  function exportToExcel() {  
      if (products.length === 0) { alert('Няма данни за експорт!'); return; }  
-     let csv = '\uFEFFКод;Наименование;Наличност\n';  
-     products.forEach(p => { csv += `"${p.code}";"${p.name}";"${p.qty}"\n`; });  
+     let csv = '\uFEFFКод;Наименование;Наличност;Последна промяна\n';  
+     products.forEach(p => { csv += `"${p.code}";"${p.name}";"${p.qty}";"${p.lastUpdated || ''}"\n`; });  
      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });  
      const link = document.createElement('a');  
      link.href = URL.createObjectURL(blob);  
@@ -939,7 +954,7 @@
                  setTimeout(() => {  
                      if (overlay) overlay.classList.remove('success');  
                      isScanning = false;  
-                 }, 1000);  
+                 }, 1000); // 1.0 секунда пауза между сканиранията
              }  
          });  
      } catch (err) {  
