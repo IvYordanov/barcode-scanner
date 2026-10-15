@@ -1,7 +1,7 @@
 {
   "keys": [
-    { "code": "101824", "client": "administrator", "active": true, "valid_until": "2040-12-31" },
-    { "code": "102947", "client": "Свободен 2", "active": false, "valid_until": "2026-12-31" },
+    { "code": "101824", "client": "ADMIN", "active": true, "valid_until": "2040-12-31" },
+    { "code": "102947", "client": "Doroteia", "active": true, "valid_until": "2040-12-31" },
     { "code": "103815", "client": "Свободен 3", "active": false, "valid_until": "2026-12-31" },
     { "code": "104729", "client": "Свободен 4", "active": false, "valid_until": "2026-12-31" },
     { "code": "105638", "client": "Свободен 5", "active": false, "valid_until": "2026-12-31" },
