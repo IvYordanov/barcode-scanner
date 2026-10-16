@@ -4,23 +4,15 @@
  <meta charset="UTF-8">  
  <meta name="robots" content="noindex, nofollow">  
  <link rel="icon" type="image/png" href="favicon.png">  
- <link rel="manifest" href="manifest.json">  
- <meta name="mobile-web-app-capable" content="yes">  
- <meta name="apple-mobile-web-app-capable" content="yes">  
- <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">  
- <meta name="theme-color" content="#4f46e5">  
-  
- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">  
- <title>БАРКОД-СКЕНЕР | hitshopbg.github.io</title>  
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+ <title>Инструкции за работа — БАРКОД-СКЕНЕР</title>  
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">  
  <style>  
  :root {  
  --primary: #4f46e5;  
  --primary-hover: #4338ca;  
  --success: #10b981;  
- --success-hover: #059669;  
  --danger: #ef4444;  
- --danger-hover: #dc2626;  
  --bg: #f3f4f6;  
  --card-bg: #ffffff;  
  --text: #1f2937;  
@@ -28,1157 +20,165 @@
  --border: #e5e7eb;  
  }  
   
- * { 
- box-sizing: border-box; 
- margin: 0; 
- padding: 0; 
- font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
- }  
-
- html, body { 
- width: 100%; 
- overflow-x: hidden; 
- -webkit-text-size-adjust: 100%;
- -moz-text-size-adjust: 100%;
- -ms-text-size-adjust: 100%;
- text-size-adjust: 100%;
- background-color: var(--bg); 
- color: var(--text); 
- padding: 8px; 
- max-width: 100vw; 
- margin: 0 auto; 
- }  
-
- /* ЕКРАН ЗА ВХОД C PIN / ЛИЦЕНЗ */
- #authModal {
- position: fixed;
- top: 0; left: 0; width: 100vw; height: 100vh;
- background: rgba(15, 23, 42, 0.85);
- backdrop-filter: blur(5px);
- z-index: 9999;
- display: flex;
- align-items: center;
- justify-content: center;
- padding: 15px;
- }
- .auth-card {
- background: #ffffff;
- border-radius: 16px;
- padding: 25px 20px;
- width: 100%;
- max-width: 380px;
- box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
- text-align: center;
- }
- .auth-card h2 { font-size: 20px; color: var(--primary); margin-bottom: 8px; }
- .auth-card p { font-size: 13px; color: var(--text-light); margin-bottom: 20px; }
- .auth-input {
- width: 100%;
- padding: 12px;
- font-size: 18px;
- letter-spacing: 2px;
- text-align: center;
- border: 2px solid var(--border);
- border-radius: 10px;
- margin-bottom: 15px;
- outline: none;
- }
- .auth-input:focus { border-color: var(--primary); }
- .auth-error { font-size: 13px; color: var(--danger); margin-top: 10px; display: none; font-weight: 600; }
-
+ * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }  
+ body { background-color: var(--bg); color: var(--text); padding: 15px; max-width: 900px; margin: 0 auto; line-height: 1.6; }  
+  
  header {  
  background: linear-gradient(135deg, #4f46e5, #3b82f6);  
  color: white;  
- padding: 12px;  
+ padding: 20px;  
  border-radius: 12px;  
  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);  
- margin-bottom: 12px;  
+ margin-bottom: 25px;  
  display: flex;  
  align-items: center;  
  justify-content: space-between;  
- flex-wrap: wrap;  
- gap: 8px;  
- width: 100%;  
+ flex-wrap: wrap;
+ gap: 10px;
  }  
   
- .brand { display: flex; align-items: center; gap: 10px; }  
- .brand img { width: 32px; height: 32px; border-radius: 8px; }  
- .brand h1 { font-size: 18px; font-weight: 700; }  
-
- .btn-help {  
+ .brand { display: flex; align-items: center; gap: 12px; }  
+ .brand img { width: 38px; height: 38px; border-radius: 8px; }  
+ .brand h1 { font-size: 22px; font-weight: 700; }  
+  
+ .btn-back {  
  background: rgba(255, 255, 255, 0.2);  
  color: white;  
- padding: 6px 10px;  
+ padding: 8px 14px;  
  border-radius: 8px;  
- text-decoration: none;  
+ border: 1px solid rgba(255, 255, 255, 0.3);
  font-weight: 600;  
- font-size: 12px;  
+ font-size: 14px;  
  display: inline-flex;  
  align-items: center;  
- gap: 5px;  
- transition: all 0.2s;  
- border: 1px solid rgba(255, 255, 255, 0.3);  
+ gap: 6px;  
+ text-decoration: none;
+ transition: background 0.2s;  
+ cursor: pointer;
  }  
- .btn-help:hover { background: rgba(255, 255, 255, 0.35); }  
-  
- .grid { display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; }  
- @media (min-width: 850px) { .grid { grid-template-columns: 360px 1fr; } }  
+ .btn-back:hover { background: rgba(255, 255, 255, 0.3); }  
   
  .card {  
  background: var(--card-bg);  
- padding: 12px;  
+ padding: 25px;  
  border-radius: 12px;  
  box-shadow: 0 1px 3px rgba(0,0,0,0.1);  
  border: 1px solid var(--border);  
- margin-bottom: 12px;  
- width: 100%;  
+ margin-bottom: 20px;  
  }  
   
- .card-title {  
- font-size: 14px;  
- font-weight: 600;  
- margin-bottom: 10px;  
- display: flex;  
- align-items: center;  
- gap: 8px;  
- color: var(--text);  
- border-bottom: 1px solid var(--border);  
- padding-bottom: 6px;  
- }  
+ h2 { font-size: 18px; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #eef2ff; padding-bottom: 6px; }  
+ h3 { font-size: 15px; color: var(--text); margin: 12px 0 6px 0; }  
+ p { font-size: 14px; color: var(--text); margin-bottom: 10px; }  
+ ul, ol { margin-left: 20px; margin-bottom: 15px; font-size: 14px; }  
+ li { margin-bottom: 6px; }  
   
- .form-group { margin-bottom: 10px; }  
- .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--text-light); }  
+ .badge { padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; color: white; display: inline-block; }  
+ .badge-success { background: var(--success); }  
+ .badge-danger { background: var(--danger); }  
   
- .input-control {  
- width: 100%;  
- padding: 8px 10px;  
- border: 1px solid var(--border);  
- border-radius: 8px;  
- font-size: 15px;  
- outline: none;  
- transition: all 0.2s;  
- }  
-  
- .input-control:focus {  
- border-color: var(--primary);  
- box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);  
- }  
-  
- .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }  
-  
- .btn {  
- padding: 10px 12px;  
- border: none;  
- border-radius: 8px;  
- font-size: 13px;  
- font-weight: 600;  
- cursor: pointer;  
- display: inline-flex;  
- align-items: center;  
- justify-content: center;  
- gap: 6px;  
- transition: all 0.2s;  
- opacity: 0.55;  
- word-break: break-all;
- }  
-  
- .btn.active-mode {  
- opacity: 1;  
- box-shadow: 0 0 0 3px rgba(0,0,0,0.2), inset 0 0 0 2px #fff;  
- transform: scale(1.02);  
- }  
-  
- .btn-primary { background: var(--primary); color: white; opacity: 1; }  
- .btn-primary:hover { background: var(--primary-hover); }  
-  
- .btn-success { background: var(--success); color: white; }  
- .btn-success:hover { background: var(--success-hover); }  
-  
- .btn-danger { background: var(--danger); color: white; }  
- .btn-danger:hover { background: var(--danger-hover); }  
-  
- .btn-outline { background: white; border: 1px solid var(--border); color: var(--text); opacity: 1; }  
- .btn-outline:hover { background: #f9fafb; }  
-  
- .quick-qty { display: flex; gap: 4px; margin-top: 6px; }  
- .btn-sm-qty {  
- flex: 1;  
- padding: 6px;  
- font-size: 12px;  
- background: #f3f4f6;  
- border: 1px solid var(--border);  
+ .note-box {  
+ background: #eff6ff;  
+ border-left: 4px solid var(--primary);  
+ padding: 12px 15px;  
  border-radius: 6px;  
- cursor: pointer;  
- font-weight: 600;  
+ font-size: 13px;  
+ margin: 15px 0;  
+ color: #1e40af;  
  }  
- .btn-sm-qty:hover { background: #e5e7eb; }  
   
- .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }  
- .stat-card { background: white; padding: 8px; border-radius: 8px; border: 1px solid var(--border); text-align: center; }  
- .stat-value { font-size: 16px; font-weight: 700; color: var(--primary); }  
- .stat-label { font-size: 10px; color: var(--text-light); margin-top: 2px; }  
-  
- .table-wrapper { width: 100%; overflow-x: hidden; max-height: 350px; overflow-y: auto; }  
- table { 
- width: 100%; 
- border-collapse: collapse; 
- text-align: left; 
- font-size: 11px !important; 
- table-layout: fixed; 
- }  
- th { 
- background: #f9fafb; 
- padding: 6px 3px !important; 
- font-weight: 600; 
- font-size: 11px !important; 
- color: var(--text-light); 
- border-bottom: 2px solid var(--border); 
- position: sticky; 
- top: 0; 
- z-index: 5; 
- }  
- td { 
- padding: 6px 3px !important; 
- font-size: 11px !important; 
- border-bottom: 1px solid var(--border); 
- word-break: break-word; 
- }  
- tr:hover { background: #f9fafb; }  
-  
- .badge { padding: 2px 5px; border-radius: 8px; font-size: 9px; font-weight: 600; }  
- .badge-add { background: #d1fae5; color: #065f46; }  
- .badge-sub { background: #fee2e2; color: #991b1b; }  
-  
- .action-icon { cursor: pointer; padding: 2px 3px; color: var(--text-light); border: none; background: none; font-size: 14px; }  
- .action-icon:hover { color: var(--primary); }  
- .action-icon.delete:hover { color: var(--danger); }  
-
- .actions-cell { white-space: nowrap; text-align: right; width: 75px; }
-
- .col-date { display: none; }
- @media (min-width: 600px) {
-   .col-date { display: table-cell; }
-   .table-wrapper { overflow-x: auto; }
- }
-  
- #cameraContainer {  
- display: none;  
- position: relative;  
- width: 100%;  
- border-radius: 10px;  
- overflow: hidden;  
- margin-bottom: 12px;  
- background: #000;  
- }  
- #webcamVideo {  
- width: 100%;  
- height: 260px;  
- object-fit: cover;  
- }  
- .scan-overlay {  
- position: absolute;  
- top: 50%;  
- left: 50%;  
- transform: translate(-50%, -50%);  
- width: 75%;  
- height: 60%;  
- border: 2px dashed #10b981;  
- box-shadow: 0 0 0 1000px rgba(0,0,0,0.4);  
- border-radius: 8px;  
- pointer-events: none;  
- transition: border-color 0.1s;  
- }  
- .scan-overlay.success {  
- border-color: #3b82f6;  
- border-style: solid;  
- }  
-
- /* QR Код Секция */
- #qrModal {
- display: none;
- position: fixed;
- top: 0; left: 0; width: 100vw; height: 100vh;
- background: rgba(0, 0, 0, 0.7);
- z-index: 10000;
- align-items: center;
- justify-content: center;
- padding: 15px;
- }
- .qr-card {
- background: #fff;
- padding: 20px;
- border-radius: 12px;
- text-align: center;
- max-width: 320px;
- width: 100%;
- }
- #qrcode { margin: 15px auto; display: flex; justify-content: center; }
+ .footer-text { text-align: center; font-size: 12px; color: var(--text-light); margin-top: 30px; padding-bottom: 20px; }  
  </style>  
 </head>  
 <body>  
-
- <!-- МОДАЛЕН ЕКРАН ЗА ВХОД C PIN -->
- <div id="authModal">
-     <div class="auth-card">
-         <h2><i class="fa-solid fa-lock"></i> Лицензен Вход</h2>
-         <p>Въведете вашия персонален PIN код за абонамент:</p>
-         <input type="password" id="pinInput" class="auth-input" placeholder="Въведете PIN..." autofocus maxlength="20">
-         <button type="button" class="btn btn-primary" style="width: 100%; opacity: 1;" onclick="validatePin()">
-             <i class="fa-solid fa-key"></i> Влез в системата
-         </button>
-         <div id="authError" class="auth-error"></div>
-     </div>
- </div>  
-
- <!-- МОДАЛЕН ЕКРАН ЗА QR КОД НА АРТИКУЛ / ЛИНК -->
- <div id="qrModal" onclick="closeQrModal(event)">
-     <div class="qr-card" onclick="event.stopPropagation()">
-         <h3 id="qrModalTitle" style="font-size: 15px; margin-bottom: 8px; color: var(--primary);">QR Код</h3>
-         <div id="qrcode"></div>
-         <p id="qrModalCode" style="font-size: 12px; font-weight: bold; color: var(--text);"></p>
-         <button type="button" class="btn btn-outline" onclick="closeQrModal()" style="margin-top: 15px; width: 100%;">Затвори</button>
-     </div>
- </div>
-
+  
  <header>  
  <div class="brand">  
  <img src="favicon.png" alt="Иконка">  
  <div>  
- <h1>БАРКОД-СКЕНЕР</h1>  
- <p style="font-size: 11px; opacity: 0.9;">HITSHOP BG LTD | hitshop.bg</p>  
+ <h1>Инструкции за работа</h1>  
+ <p style="font-size: 12px; opacity: 0.9;">БАРКОД-СКЕНЕР | HITSHOP BG LTD</p>  
  </div>  
  </div>  
- <div style="display: flex; gap: 6px;">
-     <button class="btn-help" onclick="showAppQrCode()" title="Покажи QR за бърз достъп">
-         <i class="fa-solid fa-qrcode"></i> QR Приложение
-     </button>
-     <a href="instructions.html" class="btn-help" title="Виж ръководството">  
-         <i class="fa-solid fa-book"></i> Инструкции  
-     </a>  
- </div>
+ <a href="index.html" class="btn-back">
+     <i class="fa-solid fa-arrow-left"></i> Към Скенера
+ </a>  
  </header>  
   
- <div class="grid">  
- <div>  
  <div class="card">  
- <div class="card-title">  
- <i class="fa-solid fa-cart-plus"></i> Избор на режим & Сканиране  
- </div>  
+ <h2><i class="fa-solid fa-rocket"></i> 1. Бърз старт и инсталация</h2>  
    
- <button type="button" class="btn btn-outline" id="cameraBtn" onclick="toggleCamera()" style="width: 100%; margin-bottom: 12px; border-color: var(--primary); color: var(--primary);">  
- <i class="fa-solid fa-camera"></i> Пусни Камерата  
- </button>  
-  
- <div id="cameraContainer">  
- <video id="webcamVideo" playsinline autoplay muted></video>  
- <div class="scan-overlay" id="scanOverlay"></div>  
+ <h3>📱 За мобилен телефон (Android / iOS):</h3>  
+ <ol>  
+ <li><strong>Отворете сайта през телефона:</strong> Заредете адреса в Google Chrome или Safari.</li>  
+ <li><strong>Добавете към началния екран:</strong> Натиснете бутона за меню на браузъра (трите точки или бутона "Сподели") и изберете <strong>"Добавяне към началния екран"</strong> (или <em>"Инсталиране на приложението"</em>).</li>  
+ <li>Приложението ще се появи като самостоятелна иконка на телефона ви без адресна лента.</li>  
+ </ol>  
+
+ <h3>💻 За компютър (Десктоп):</h3>  
+ <p>Можете да отворите уеб приложението през всеки модерен браузър (Chrome, Edge, Firefox, Safari) и да сканирате с физически USB/Bluetooth баркод скенер или през уеб камерата.</p>  
  </div>  
-  
- <div class="btn-group" style="margin-bottom: 12px; margin-top: 0;">  
- <button type="button" id="btnAddMode" class="btn btn-success active-mode" onclick="setMode('ADD')">  
- <i class="fa-solid fa-plus"></i> ПРИБАВИ <span id="checkAdd">✓</span>  
- </button>  
- <button type="button" id="btnSubMode" class="btn btn-danger" onclick="setMode('SUB')">  
- <i class="fa-solid fa-minus"></i> ИЗВАДИ <span id="checkSub" style="display:none;">✓</span>  
- </button>  
- </div>  
-  
- <form id="scanForm" onsubmit="handleFormSubmit(event)">  
- <div class="form-group">  
- <label for="barcodeInput">Баркод / QR Код / Код на артикул</label>  
- <input type="text" id="barcodeInput" class="input-control" placeholder="Сканирайте или въведете..." autofocus required>  
- </div>  
-  
- <div class="form-group">  
- <label for="itemNameInput">Наименование (незадължително)</label>  
- <input type="text" id="itemNameInput" class="input-control" placeholder="Име на продукта...">  
- </div>  
-  
- <div class="form-group">  
- <label for="qtyInput">Количество</label>  
- <input type="number" id="qtyInput" class="input-control" value="1" min="1" required>  
- <div class="quick-qty">  
- <button type="button" class="btn-sm-qty" onclick="setQty(1)">1</button>  
- <button type="button" class="btn-sm-qty" onclick="setQty(5)">5</button>  
- <button type="button" class="btn-sm-qty" onclick="setQty(10)">10</button>  
- <button type="button" class="btn-sm-qty" onclick="setQty(50)">50</button>  
- </div>  
- </div>  
-  
- <button type="submit" class="btn btn-primary" style="width: 100%;">  
- <i class="fa-solid fa-check"></i> Потвърди операцията  
- </button>  
- </form>  
+
+ <div class="card">  
+ <h2><i class="fa-solid fa-key"></i> 2. Достъп и Вход с PIN Код</h2>  
+ <p>Приложението изисква персонален PIN код за абонаментен достъп:</p>  
+ <ul>  
+ <li>При първоначално отваряне въведете вашия 4-цифрен или индивидуален PIN код.</li>  
+ <li>Системата проверява статуса и валидността на абонамента в реално време.</li>  
+ <li>Ако искате да смените PIN кода или да излезете, натиснете бутона <strong>"Изход / Смяна на PIN"</strong> в долната част на панела "Архивиране и облак".</li>  
+ </ul>  
  </div>  
   
  <div class="card">  
- <div class="card-title">  
- <i class="fa-solid fa-box-archive"></i> Архивиране и облак  
- </div>  
-  
- <button type="button" id="driveConnectBtn" class="btn btn-primary" onclick="handleDriveButtonClick()" style="width: 100%; margin-bottom: 6px;">  
- <i class="fa-brands fa-google-drive"></i> Свържи с Google Drive  
- </button>  
- <p id="driveStatusText" style="font-size: 11px; color: var(--text-light); text-align: center; margin-bottom: 10px;">  
- Автоматичен бекъп: изключен  
- </p>  
+ <h2><i class="fa-solid fa-barcode"></i> 3. Сканиране и инвентаризация</h2>  
+ <p>Приложението поддържа два основни режима на работа:</p>  
+ <ul>  
+ <li><span class="badge badge-success"><i class="fa-solid fa-plus"></i> ПРИБАВИ</span> — Всички сканирани или ръчно въведени артикули се добавят към наличността.</li>  
+ <li><span class="badge badge-danger"><i class="fa-solid fa-minus"></i> ИЗВАДИ</span> — Количествата на сканираните артикули се намаляват от текущата наличност.</li>  
+ </ul>  
 
- <button type="button" id="downloadDriveBtn" class="btn btn-outline" onclick="downloadFromDriveManual()" style="width: 100%; margin-bottom: 12px; border-color: var(--primary); color: var(--primary); display: none;">  
- <i class="fa-solid fa-cloud-arrow-down"></i> Зареди от Облака  
- </button>  
-  
- <button type="button" class="btn btn-primary" onclick="exportToExcel()" style="width: 100%; margin-bottom: 10px;">  
- <i class="fa-solid fa-file-excel"></i> Експорт в Excel (.csv)  
- </button>  
-  
- <div class="btn-group" style="margin-top:0;">  
- <button type="button" class="btn btn-outline" onclick="exportBackupJSON()">  
- <i class="fa-solid fa-download"></i> Ръчен Архив  
- </button>  
- <button type="button" class="btn btn-outline" onclick="importBackupJSON()">  
- <i class="fa-solid fa-upload"></i> Възстанови  
- </button>  
- </div>  
- <input type="file" id="jsonFileInput" accept=".json" style="display:none;" onchange="handleFileSelect(event)">  
-  
- <button type="button" class="btn btn-outline" onclick="switchGoogleAccount()" style="width: 100%; margin-top: 12px; color: var(--primary); border-color: var(--primary);">  
- <i class="fa-solid fa-user-gear"></i> Смяна на Google Акаунт  
- </button>
-
- <button type="button" class="btn btn-outline" onclick="logoutPin()" style="width: 100%; margin-top: 8px; color: var(--text-light); border-color: var(--border);">  
- <i class="fa-solid fa-arrow-right-from-bracket"></i> Изход / Смяна на PIN  
- </button>
-
- <button type="button" class="btn btn-outline" onclick="clearAllData()" style="width: 100%; margin-top: 8px; color: var(--danger); border-color: #fca5a5;">  
- <i class="fa-solid fa-trash"></i> Занули всички данни  
- </button>  
- </div>  
- </div>  
-  
- <div>  
- <div class="stats-grid">  
- <div class="stat-card">  
- <div class="stat-value" id="statUnique">0</div>  
- <div class="stat-label">Уникални кода</div>  
- </div>  
- <div class="stat-card">  
- <div class="stat-value" id="statTotalQty">0</div>  
- <div class="stat-label">Общо количество</div>  
- </div>  
- <div class="stat-card">  
- <div class="stat-value" id="statLogs">0</div>  
- <div class="stat-label">Движения</div>  
- </div>  
+ <h3>Методи за въвеждане:</h3>  
+ <ol>  
+ <li><strong>Вградена камера:</strong> Натиснете бутона <em>"Пусни Камерата"</em>, насочете я към баркода или QR кода и системата автоматично ще го отчете със звуков сигнал.</li>  
+ <li><strong>Физически баркод скенер:</strong> Включете вашия USB/Bluetooth скенер към компютъра или телефона. Той директно ще въвежда кодовете в полето.</li>  
+ <li><strong>Ръчно въвеждане:</strong> Напишете кода или името на артикула в полетата и натиснете <em>"Потвърди операцията"</em>.</li>  
+ </ol>  
  </div>  
   
  <div class="card">  
- <div class="card-title">  
- <i class="fa-solid fa-list-check"></i> Текущ инвентар  
- </div>  
- <div class="form-group" style="margin-bottom: 8px;">  
- <input type="text" id="searchInput" class="input-control" placeholder="Търсене по код или име..." onkeyup="renderProducts()">  
- </div>  
- <div class="table-wrapper">  
- <table>  
- <colgroup>  
-   <col style="width: 30%;">  
-   <col style="width: 35%;">  
-   <col style="width: 15%;">  
-   <col style="width: 20%;">  
- </colgroup>  
- <thead>  
- <tr>  
- <th>Код</th>  
- <th>Име</th>  
- <th>Бр.</th>  
- <th class="col-date">Промяна</th>  
- <th style="text-align: right;">Действия</th>  
- </tr>  
- </thead>  
- <tbody id="productsTable"></tbody>  
- </table>  
- </div>  
- </div>  
+ <h2><i class="fa-cloud-arrow-up fa-solid"></i> 4. Облачен бекъп и управление на Google акаунти</h2>  
+ <p>За гарантиране безопасността на вашите данни, приложението разполага с директна интеграция с Google Drive:</p>  
   
+ <h3>Свързване и автоматичен бекъп:</h3>  
+ <ul>  
+ <li>Натиснете бутона <strong>"Свържи с Google Drive"</strong> и изберете вашия Google акаунт.</li>  
+ <li>След успешно свързване бутонът ще стане зелен и ще показва вашия имейл (напр. <code>Свързано: email@gmail.com</code>).</li>  
+ <li>Всяко сканиране, корекция на наличност или изтриване <strong>автоматично записва промените във вашия Google Drive</strong> под формата на файл <code>barcode_backup.json</code>.</li>  
+ </ul>  
+
+ <h3>Изолация на данните по акаунти:</h3>  
+ <ul>  
+ <li><strong>Независими бекъпи:</strong> Всеки Google акаунт поддържа собствен отделен файл за инвентар в облака.</li>  
+ <li><strong>Автоматично зареждане:</strong> Когато превключите към друг Google акаунт през бутона <strong>"Смяна на Google Акаунт"</strong>, приложението автоматично зарежда инвентара на съответния акаунт от облака.</li>  
+ <li><strong>Безопасност:</strong> Данните на един акаунт няма да се презапишат или смесят с данните на друг акаунт.</li>  
+ </ul>  
+
+ <div class="note-box">  
+ <i class="fa-solid fa-circle-info"></i> <strong>Ръчен архив и възстановяване:</strong> Можете да изтегляте локален архив на устройството си чрез бутона <strong>"Ръчен Архив"</strong> (.json) или да експортирате таблицата с наличности в Excel формат чрез <strong>"Експорт в Excel (.csv)"</strong>.  
+ </div>  
+ </div>  
+
  <div class="card">  
- <div class="card-title">  
- <i class="fa-solid fa-clock-rotate-left"></i> Последна история  
+ <h2><i class="fa-solid fa-clock-rotate-left"></i> 5. История на движенията и редакция</h2>  
+ <ul>  
+ <li><strong>Таблица "Текущ инвентар":</strong> Показва всички налични артикули, общото количество и датата/часа на последната промяна. Позволява генериране на QR код за всеки артикул или бързо добавяне/изваждане с бутоните <code>+</code> и <code>-</code>.</li>  
+ <li><strong>Таблица "Последна история":</strong> Пази пълен дневник на последните 100 извършени операции (прибавяне/изваждане) с точен час и дата.</li>  
+ </ul>  
  </div>  
- <div class="table-wrapper">  
- <table>  
- <thead>  
- <tr>  
- <th>Дата и Час</th>  
- <th>Код</th>  
- <th>Действие</th>  
- <th style="text-align: right;">Количество</th>  
- </tr>  
- </thead>  
- <tbody id="historyTable"></tbody>  
- </table>  
- </div>  
- </div>  
- </div>  
+
+ <div class="footer-text">  
+ &copy; HITSHOP BG LTD — Всички права запазени.  
  </div>  
   
- <!-- Библиотеки за Камера, QR Код и Google Drive -->  
- <script src="https://unpkg.com/@zxing/library@latest"></script>  
- <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
- <script src="https://accounts.google.com/gsi/client" async defer></script>  
- <script src="https://apis.google.com/js/api.js" async defer></script>  
-  
- <script>  
- const APP_DOMAIN = 'https://hitshopbg.github.io/barcode-scanner/';
- const CLIENT_ID = '461455643326-n6p2g7vj0rpe7ega8v2kjgq1gkld1r57.apps.googleusercontent.com';  
- const SCOPES = 'https://www.googleapis.com/auth/drive.file';  
- const BACKUP_FILE_NAME = 'barcode_backup.json';  
-  
- let tokenClient;  
- let gapiInited = false;  
- let gsisInited = false;  
- let driveConnected = false;  
- let qrCodeObj = null;
-  
- let currentMode = 'ADD';  
- let products = JSON.parse(localStorage.getItem('barcode_products')) || [];  
- let historyLogs = JSON.parse(localStorage.getItem('barcode_history')) || [];  
- let audioCtx = null;  
-
- function getFormattedDateTime() {
-     const now = new Date();
-     const date = now.toLocaleDateString('bg-BG');
-     const time = now.toLocaleTimeString('bg-BG', { hour: '2-digit', minute: '2-digit' });
-     return `${date} г., ${time} ч.`;
- }
-
- async function validatePin() {
-     const pin = document.getElementById('pinInput').value.trim();
-     const errorDiv = document.getElementById('authError');
-     errorDiv.style.display = 'none';
-
-     if (!pin) {
-         errorDiv.innerText = 'Моля, въведете PIN код!';
-         errorDiv.style.display = 'block';
-         return;
-     }
-
-     try {
-         const response = await fetch('keys.json?v=' + new Date().getTime());
-         if (!response.ok) throw new Error("Не може да се зареди keys.json");
-         const data = await response.json();
-         
-         const keyObj = data.keys.find(k => String(k.code) === String(pin));
-
-         if (!keyObj) {
-             errorDiv.innerText = 'Невалиден PIN код!';
-             errorDiv.style.display = 'block';
-             return;
-         }
-
-         if (!keyObj.active) {
-             errorDiv.innerText = 'Този лиценз е деактивиран!';
-             errorDiv.style.display = 'block';
-             return;
-         }
-
-         const today = new Date().toISOString().slice(0, 10);
-         if (keyObj.valid_until && keyObj.valid_until < today) {
-             errorDiv.innerText = `Абонаментът е изтекъл на ${keyObj.valid_until}!`;
-             errorDiv.style.display = 'block';
-             return;
-         }
-
-         localStorage.setItem('saved_pin', pin);
-         document.getElementById('authModal').style.display = 'none';
-
-     } catch (err) {
-         console.error("Грешка при проверка на лиценза:", err);
-         errorDiv.innerText = 'Грешка при проверка на абонамента! Проверете интернет връзката.';
-         errorDiv.style.display = 'block';
-     }
- }
-
- function checkSavedPin() {
-     const savedPin = localStorage.getItem('saved_pin');
-     if (savedPin) {
-         document.getElementById('pinInput').value = savedPin;
-         validatePin();
-     } else {
-         document.getElementById('authModal').style.display = 'flex';
-     }
- }
-
- function logoutPin() {
-     if (confirm('Желаете ли да излезете от текущия лиценз?')) {
-         localStorage.removeItem('saved_pin');
-         location.reload();
-     }
- }
-
- function showAppQrCode() {
-     showQrModal(APP_DOMAIN, 'Сканирай за бърз достъп');
- }
-
- function showQrModal(text, title = 'QR Код') {
-     document.getElementById('qrModalTitle').innerText = title;
-     document.getElementById('qrModalCode').innerText = text;
-     const qrContainer = document.getElementById('qrcode');
-     qrContainer.innerHTML = '';
-     
-     qrCodeObj = new QRCode(qrContainer, {
-         text: text,
-         width: 180,
-         height: 180,
-         colorDark : "#000000",
-         colorLight : "#ffffff",
-         correctLevel : QRCode.CorrectLevel.H
-     });
-     document.getElementById('qrModal').style.display = 'flex';
- }
-
- function closeQrModal() {
-     document.getElementById('qrModal').style.display = 'none';
- }
-
- function gapiLoaded() {  
-     if (typeof gapi !== 'undefined') {  
-         gapi.load('client', async () => {  
-             try {  
-                 await gapi.client.init({});  
-                 await gapi.client.load('https://www.googleapis.com/discovery/v1/apis/drive/v3/rest');  
-                 gapiInited = true;  
-             } catch(e) { console.error("GAPI Init error:", e); }  
-         });  
-     }  
- }  
-  
- function gsiLoaded() {  
-     if (typeof google !== 'undefined' && google.accounts) {  
-         tokenClient = google.accounts.oauth2.initTokenClient({  
-             client_id: CLIENT_ID,  
-             scope: SCOPES,  
-             callback: async (resp) => {  
-                 if (resp.error !== undefined) {  
-                     driveConnected = false;  
-                     updateDriveUI('Сесията изтече! Натиснете за вход', '#ef4444');  
-                     throw (resp);  
-                 }  
-                 
-                 driveConnected = true;  
-                 await fetchGoogleUserInfo();
-                 await syncOnAccountSwitch();
-             }  
-         });  
-         gsisInited = true;  
-     }  
- }  
-
- async function fetchGoogleUserInfo() {
-     try {
-         const res = await gapi.client.drive.about.get({ fields: 'user' });
-         if (res.result && res.result.user) {
-             const userEmail = res.result.user.emailAddress;
-             updateDriveUI(`Свързано: ${userEmail}`, '#10b981');
-         } else {
-             updateDriveUI('Свързано с Google Drive', '#10b981');
-         }
-     } catch (e) {
-         console.error("Грешка при вземане на информация за потребителя:", e);
-         updateDriveUI('Свързано с Google Drive', '#10b981');
-     }
- }
-
- async function syncOnAccountSwitch() {
-     try {
-         const fileId = await findBackupFileId();
-         if (fileId) {
-             const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });
-             let cloudData = res.result;
-             if (typeof cloudData === 'string') cloudData = JSON.parse(cloudData);
-             
-             if (cloudData && Array.isArray(cloudData.products)) {
-                 products = cloudData.products;
-                 historyLogs = cloudData.history || [];
-                 localStorage.setItem('barcode_products', JSON.stringify(products));
-                 localStorage.setItem('barcode_history', JSON.stringify(historyLogs));
-                 renderProducts();
-                 renderHistory();
-                 updateStats();
-             }
-         } else {
-             if (confirm("В този Google акаунт няма намерен бекъп файл. Желаете ли да започнете с празен инвентар за този акаунт?")) {
-                 products = [];
-                 historyLogs = [];
-                 localStorage.setItem('barcode_products', JSON.stringify(products));
-                 localStorage.setItem('barcode_history', JSON.stringify(historyLogs));
-                 renderProducts();
-                 renderHistory();
-                 updateStats();
-             }
-         }
-     } catch (err) {
-         console.error("Грешка при синхронизация на акаунта:", err);
-     }
- }
-  
- window.onload = () => {  
-     checkSavedPin();
-     gapiLoaded();  
-     gsiLoaded();  
-     renderProducts();  
-     renderHistory();  
-     updateStats();  
- };  
-  
- function handleDriveButtonClick() {  
-     if (!tokenClient) {  
-         alert('Google API библиотеките все още зареждат. Моля, опитайте след секунда.');  
-         return;  
-     }  
-     tokenClient.requestAccessToken({ prompt: 'select_account' });  
- }  
-
- function switchGoogleAccount() {
-     if (confirm("Искате ли да излезете от текущия Google профил и да изберете друг?")) {
-         const token = gapi.client.getToken();
-         if (token && token.access_token) {
-             google.accounts.oauth2.revoke(token.access_token, () => {
-                 gapi.client.setToken('');
-                 driveConnected = false;
-                 updateDriveUI('Излязохте от акаунта. Свържете нов.', 'var(--primary)');
-             });
-         } else {
-             driveConnected = false;
-             updateDriveUI('Няма активен Google акаунт.', 'var(--primary)');
-         }
-     }
- }
-  
- function updateDriveUI(statusText, color = '#10b981') {  
-     const btn = document.getElementById('driveConnectBtn');  
-     const status = document.getElementById('driveStatusText');  
-     const dlBtn = document.getElementById('downloadDriveBtn');  
-  
-     if (btn) {  
-         if (driveConnected) {  
-             btn.style.background = color;  
-             btn.innerHTML = `<i class="fa-solid fa-cloud-check"></i> ${statusText.startsWith('Свързано:') ? statusText : 'Google Drive е свързан'}`;  
-             if (dlBtn) dlBtn.style.display = 'block';  
-         } else {  
-             btn.style.background = 'var(--primary)';  
-             btn.innerHTML = `<i class="fa-brands fa-google-drive"></i> Свържи с Google Drive`;  
-             if (dlBtn) dlBtn.style.display = 'none';  
-         }  
-     }  
-     if (status) status.innerText = statusText.startsWith('Свързано:') ? 'Автоматичен бекъп: активен' : statusText;  
- }  
-  
- async function findBackupFileId() {  
-     try {  
-         const response = await gapi.client.drive.files.list({  
-             q: `name='${BACKUP_FILE_NAME}' and trashed=false`,  
-             fields: 'files(id, name)',  
-             spaces: 'drive'  
-         });  
-         const files = response.result.files;  
-         if (files && files.length > 0) {  
-             return files[0].id;  
-         }  
-     } catch (e) {  
-         console.error("Грешка при търсене на файл:", e);  
-         if (e.status === 401 || e.status === 403) {  
-             driveConnected = false;  
-             updateDriveUI('Сесията изтече! Натиснете за вход', '#ef4444');  
-         }  
-     }  
-     return null;  
- }  
-  
- async function downloadFromDriveManual() {  
-     if (!driveConnected) return;  
-     if (confirm("ВНИМАНИЕ: Това ще зареди данните от облака и ще презапише текущите наличности на това устройство. Продължавате ли?")) {  
-         try {  
-             const fileId = await findBackupFileId();  
-             if (fileId) {  
-                 const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });  
-                 let cloudData = res.result;  
-                 if (typeof cloudData === 'string') {
-                     cloudData = JSON.parse(cloudData);
-                 }
-                 if (cloudData && Array.isArray(cloudData.products)) {  
-                     products = cloudData.products;  
-                     historyLogs = cloudData.history || [];  
-                     localStorage.setItem('barcode_products', JSON.stringify(products));  
-                     localStorage.setItem('barcode_history', JSON.stringify(historyLogs));  
-                     renderProducts();  
-                     renderHistory();  
-                     updateStats();  
-                     alert("Данните са заредени успешно!");  
-                 } else {
-                     alert("Файлът в облака е празен или с невалиден формат!");
-                 } 
-             } else {  
-                 alert("Няма намерен бекъп файл в Google Drive!");  
-             }  
-         } catch (err) {  
-             console.error("Грешка при изтегляне от облака:", err);  
-             alert("Грешка при изтегляне на данните!");  
-         }  
-     }  
- }  
-  
- async function uploadToDrive() {  
-     if (!driveConnected) return;  
-     try {  
-         const fileId = await findBackupFileId();  
-         if (!driveConnected) return;  
-  
-         const backupData = { products: products, history: historyLogs };
-         const backupContent = JSON.stringify(backupData, null, 2);  
-  
-         if (fileId) {  
-             await gapi.client.request({  
-                 path: `/upload/drive/v3/files/${fileId}`,  
-                 method: 'PATCH',  
-                 params: { uploadType: 'media' },  
-                 headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-                 body: backupContent  
-             });  
-         } else {  
-             const metadata = {
-                 name: BACKUP_FILE_NAME,
-                 mimeType: 'application/json'
-             };
-             const boundary = '-------314159265358979323846';
-             const delimiter = "\r\n--" + boundary + "\r\n";
-             const close_delim = "\r\n--" + boundary + "--";
-
-             const multipartRequestBody =
-                 delimiter +
-                 'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-                 JSON.stringify(metadata) +
-                 delimiter +
-                 'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-                 backupContent +
-                 close_delim;
-
-             await gapi.client.request({
-                 path: '/upload/drive/v3/files',
-                 method: 'POST',
-                 params: { uploadType: 'multipart' },
-                 headers: {
-                     'Content-Type': 'multipart/related; boundary="' + boundary + '"'
-                 },
-                 body: multipartRequestBody
-             });
-         }  
-     } catch (err) {  
-         console.error("Грешка при качване в облака:", err);  
-         if (err.status === 401 || err.status === 403) {  
-             driveConnected = false;  
-             updateDriveUI('Сесията изтече! Натиснете за вход', '#ef4444');  
-         }  
-     }  
- }  
-  
- function setMode(mode) {  
-     currentMode = mode;  
-     const btnAdd = document.getElementById('btnAddMode');  
-     const btnSub = document.getElementById('btnSubMode');  
-     const chkAdd = document.getElementById('checkAdd');  
-     const chkSub = document.getElementById('checkSub');  
-  
-     if (mode === 'ADD') {  
-         btnAdd.classList.add('active-mode');  
-         btnSub.classList.remove('active-mode');  
-         chkAdd.style.display = 'inline';  
-         chkSub.style.display = 'none';  
-     } else {  
-         btnSub.classList.add('active-mode');  
-         btnAdd.classList.remove('active-mode');  
-         chkSub.style.display = 'inline';  
-         chkAdd.style.display = 'none';  
-     }  
- }  
-  
- function setQty(val) {  
-     document.getElementById('qtyInput').value = val;  
- }  
-  
- function handleFormSubmit(e) {  
-     e.preventDefault();  
-     const code = document.getElementById('barcodeInput').value.trim();  
-     const name = document.getElementById('itemNameInput').value.trim();  
-     const qty = parseInt(document.getElementById('qtyInput').value) || 1;  
-  
-     if (!code) return;  
-  
-     processScan(code, name, qty, currentMode);  
-  
-     document.getElementById('barcodeInput').value = '';  
-     document.getElementById('itemNameInput').value = '';  
-     document.getElementById('qtyInput').value = 1;  
-     document.getElementById('barcodeInput').focus();  
- }  
-  
- function processScan(code, name, qty, mode) {  
-     let prodIndex = products.findIndex(p => p.code === code);  
-     const nowStr = getFormattedDateTime();
-
-     if (mode === 'SUB') {  
-         if (prodIndex === -1 || products[prodIndex].qty <= 0) {  
-             alert('Грешка: Продуктът липсва или е с нулева наличност!');  
-             return;  
-         }  
-         const actualSub = Math.min(products[prodIndex].qty, qty);  
-         products[prodIndex].qty -= actualSub;  
-         products[prodIndex].lastUpdated = nowStr;
-         logAction(code, 'Извадено', actualSub, nowStr);  
-     } else {  
-         if (prodIndex > -1) {  
-             products[prodIndex].qty += qty;  
-             if (name) products[prodIndex].name = name;  
-             products[prodIndex].lastUpdated = nowStr;
-         } else {  
-             products.push({ code: code, name: name || `Артикул ${code}`, qty: qty, lastUpdated: nowStr });  
-         }  
-         logAction(code, 'Прибавено', qty, nowStr);  
-     }  
-  
-     saveAndRender();  
- }  
-  
- function logAction(code, action, qty, timeStr) {  
-     const timestamp = timeStr || getFormattedDateTime();  
-     historyLogs.unshift({ time: timestamp, code: code, action: action, qty: qty });  
-     if (historyLogs.length > 100) historyLogs.pop();  
- }  
-  
- function saveAndRender() {  
-     localStorage.setItem('barcode_products', JSON.stringify(products));  
-     localStorage.setItem('barcode_history', JSON.stringify(historyLogs));  
-     renderProducts();  
-     renderHistory();  
-     updateStats();  
-     uploadToDrive();  
- }  
-  
- function adjustQty(code, delta) {  
-     let prodIndex = products.findIndex(p => p.code === code);  
-     if (prodIndex > -1) {  
-         if (delta < 0 && products[prodIndex].qty <= 0) return;  
-         products[prodIndex].qty += delta;  
-         const nowStr = getFormattedDateTime();
-         products[prodIndex].lastUpdated = nowStr;
-         logAction(code, delta > 0 ? 'Прибавено' : 'Извадено', Math.abs(delta), nowStr);  
-         saveAndRender();  
-     }  
- }  
-  
- function deleteProduct(code) {  
-     if (confirm(`Сигурни ли сте, че искате да изтриете продукт с код ${code}?`)) {  
-         products = products.filter(p => p.code !== code);  
-         saveAndRender();  
-     }  
- }  
-  
- function renderProducts() {  
-     const filter = document.getElementById('searchInput').value.toLowerCase();  
-     const tbody = document.getElementById('productsTable');  
-     tbody.innerHTML = '';  
-  
-     const filtered = products.filter(p => p.code.toLowerCase().includes(filter) || p.name.toLowerCase().includes(filter));  
-  
-     filtered.forEach(p => {  
-         const tr = document.createElement('tr');  
-         tr.innerHTML = `  
-             <td><strong>${p.code}</strong></td>  
-             <td>${p.name}</td>  
-             <td><strong>${p.qty}</strong></td>  
-             <td class="col-date" style="font-size: 10px; color: var(--text-light);">${p.lastUpdated || '-'}</td>  
-             <td class="actions-cell">  
-                 <button class="action-icon" onclick="showQrModal('${p.code}', '${p.name}')" title="Генерирай QR код"><i class="fa-solid fa-qrcode" style="color: var(--primary);"></i></button>
-                 <button class="action-icon" onclick="adjustQty('${p.code}', 1)"><i class="fa-solid fa-circle-plus" style="color: var(--success);"></i></button>  
-                 <button class="action-icon" onclick="adjustQty('${p.code}', -1)"><i class="fa-solid fa-circle-minus" style="color: var(--danger);"></i></button>  
-                 <button class="action-icon delete" onclick="deleteProduct('${p.code}')"><i class="fa-solid fa-trash"></i></button>  
-             </td>  
-         `;  
-         tbody.appendChild(tr);  
-     });  
- }  
-  
- function renderHistory() {  
-     const tbody = document.getElementById('historyTable');  
-     tbody.innerHTML = '';  
-  
-     historyLogs.forEach(h => {  
-         const tr = document.createElement('tr');  
-         const isAdd = h.action === 'Прибавено';  
-         tr.innerHTML = `  
-             <td style="font-size: 10px; color: var(--text-light);">${h.time}</td>  
-             <td><strong>${h.code}</strong></td>  
-             <td><span class="badge ${isAdd ? 'badge-add' : 'badge-sub'}">${h.action}</span></td>  
-             <td style="text-align: right;"><strong>${h.qty} бр.</strong></td>  
-         `;  
-         tbody.appendChild(tr);  
-     });  
- }  
-  
- function updateStats() {  
-     document.getElementById('statUnique').innerText = products.length;  
-     const totalQty = products.reduce((acc, p) => acc + p.qty, 0);  
-     document.getElementById('statTotalQty').innerText = totalQty;  
-     document.getElementById('statLogs').innerText = historyLogs.length;  
- }  
-  
- function exportToExcel() {  
-     if (products.length === 0) { alert('Няма данни за експорт!'); return; }  
-     let csv = '\uFEFFКод;Наименование;Наличност;Последна промяна\n';  
-     products.forEach(p => { csv += `"${p.code}";"${p.name}";"${p.qty}";"${p.lastUpdated || ''}"\n`; });  
-     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });  
-     const link = document.createElement('a');  
-     link.href = URL.createObjectURL(blob);  
-     link.download = `inventory_${new Date().toISOString().slice(0,10)}.csv`;  
-     link.click();  
- }  
-  
- function exportBackupJSON() {  
-     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ products: products, history: historyLogs }));  
-     const dlAnchor = document.createElement('a');  
-     dlAnchor.setAttribute("href", dataStr);  
-     dlAnchor.setAttribute("download", `barcode_backup_${new Date().toISOString().slice(0,10)}.json`);  
-     dlAnchor.click();  
- }  
-  
- function importBackupJSON() { document.getElementById('jsonFileInput').click(); }  
-  
- function handleFileSelect(evt) {  
-     const file = evt.target.files[0];  
-     if (!file) return;  
-     const reader = new FileReader();  
-     reader.onload = (e) => {  
-         try {  
-             const imported = JSON.parse(e.target.result);  
-             if (imported.products) {  
-                 products = imported.products;  
-                 historyLogs = imported.history || [];  
-                 saveAndRender();  
-                 alert('Данните са успешно възстановени!');  
-             }  
-         } catch (err) { alert('Грешка при четене на JSON файла!'); }  
-     };  
-     reader.readAsText(file);  
- }  
-  
- function clearAllData() {  
-     if (confirm('ВНИМАНИЕ: Това ще изтрие всички локални данни! Сигурни ли сте?')) {  
-         products = [];  
-         historyLogs = [];  
-         saveAndRender();  
-     }  
- }  
-  
- let codeReader;  
- let cameraActive = false;  
- let isScanning = false;  
-  
- function initAudio() {  
-     if (!audioCtx) {  
-         audioCtx = new (window.AudioContext || window.webkitAudioContext)();  
-     }  
-     if (audioCtx.state === 'suspended') {  
-         audioCtx.resume();  
-     }  
- }  
-  
- function playBeep() {  
-     try {  
-         initAudio();  
-         const osc = audioCtx.createOscillator();  
-         const gain = audioCtx.createGain();  
-         osc.connect(gain);  
-         gain.connect(audioCtx.destination);  
-         osc.type = "sine";  
-         osc.frequency.value = 1200;  
-         gain.gain.value = 0.2;  
-         osc.start();  
-         setTimeout(() => { osc.stop(); }, 90);  
-     } catch (e) { console.error("Audio error:", e); }  
- }  
-  
- function toggleCamera() {  
-     initAudio();  
-     if (cameraActive) { stopCamera(); } else { startCamera(); }  
- }  
-  
- async function startCamera() {  
-     const hints = new Map();  
-     const formats = [  
-         ZXing.BarcodeFormat.EAN_13,  
-         ZXing.BarcodeFormat.EAN_8,  
-         ZXing.BarcodeFormat.CODE_128,  
-         ZXing.BarcodeFormat.CODE_39,
-         ZXing.BarcodeFormat.QR_CODE
-     ];  
-     hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, formats);  
-  
-     codeReader = new ZXing.BrowserMultiFormatReader(hints);  
-     const container = document.getElementById('cameraContainer');  
-     container.style.display = 'block';  
-     document.getElementById('cameraBtn').innerHTML = `<i class="fa-solid fa-stop"></i> Спри Камерата`;  
-     cameraActive = true;  
-  
-     try {  
-         const videoInputDevices = await codeReader.listVideoInputDevices();  
-         let selectedDeviceId = videoInputDevices[0]?.deviceId;  
-  
-         for (const device of videoInputDevices) {  
-             const label = device.label.toLowerCase();  
-             if (label.includes('back') || label.includes('rear') || label.includes('environment')) {  
-                 selectedDeviceId = device.deviceId;  
-                 break;  
-             }  
-         }  
-         if (!selectedDeviceId && videoInputDevices.length > 1) {  
-             selectedDeviceId = videoInputDevices[videoInputDevices.length - 1].deviceId;  
-         }  
-  
-         codeReader.decodeFromVideoDevice(selectedDeviceId, 'webcamVideo', (result, err) => {  
-             if (result && !isScanning) {  
-                 isScanning = true;  
-                 playBeep();  
-                   
-                 const overlay = document.getElementById('scanOverlay');  
-                 if (overlay) overlay.classList.add('success');  
-  
-                 const qty = parseInt(document.getElementById('qtyInput').value) || 1;  
-                 const name = document.getElementById('itemNameInput').value.trim();  
-  
-                 processScan(result.text, name, qty, currentMode);  
-                   
-                 document.getElementById('barcodeInput').value = '';  
-                 document.getElementById('itemNameInput').value = '';  
-                   
-                 setTimeout(() => {  
-                     if (overlay) overlay.classList.remove('success');  
-                     isScanning = false;  
-                 }, 1000);  
-             }  
-         });  
-     } catch (err) {  
-         console.error("Грешка при пускане на камерата:", err);  
-         alert("Грешка при пускане на камерата! Уверете се, че сте дали разрешение в браузъра.");  
-         stopCamera();  
-     }  
- }  
-  
- function stopCamera() {  
-     if (codeReader) codeReader.reset();  
-     document.getElementById('cameraContainer').style.display = 'none';  
-     document.getElementById('cameraBtn').innerHTML = `<i class="fa-solid fa-camera"></i> Пусни Камерата`;  
-     cameraActive = false;  
-     isScanning = false;  
- }  
- </script>  
 </body>  
 </html>
