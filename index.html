@@ -28,53 +28,26 @@
  --border: #e5e7eb;  
  }  
   
-* { 
-  box-sizing: border-box; 
-  margin: 0; 
-  padding: 0; 
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-}  
+ * { 
+ box-sizing: border-box; 
+ margin: 0; 
+ padding: 0; 
+ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+ }  
 
-html, body { 
-  width: 100%; 
-  overflow-x: hidden; 
-  -webkit-text-size-adjust: 100%;
-  -moz-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-  background-color: var(--bg); 
-  color: var(--text); 
-  padding: 8px; 
-  max-width: 100vw; 
-  margin: 0 auto; 
-}  
-
-/* Принудително намаляване на текста в таблицата за телефони */
-table { 
-  width: 100%; 
-  border-collapse: collapse; 
-  text-align: left; 
-  font-size: 11px !important; /* !important гарантира, че браузърът няма да го уголеми */
-  table-layout: fixed; 
-}  
-th { 
-  background: #f9fafb; 
-  padding: 6px 3px !important; 
-  font-weight: 600; 
-  font-size: 11px !important;
-  color: var(--text-light); 
-  border-bottom: 2px solid var(--border); 
-  position: sticky; 
-  top: 0; 
-  z-index: 5; 
-}  
-td { 
-  padding: 6px 3px !important; 
-  font-size: 11px !important;
-  border-bottom: 1px solid var(--border); 
-  word-break: break-word; 
-}
- body { background-color: var(--bg); color: var(--text); padding: 10px; max-width: 100vw; margin: 0 auto; }  
+ html, body { 
+ width: 100%; 
+ overflow-x: hidden; 
+ -webkit-text-size-adjust: 100%;
+ -moz-text-size-adjust: 100%;
+ -ms-text-size-adjust: 100%;
+ text-size-adjust: 100%;
+ background-color: var(--bg); 
+ color: var(--text); 
+ padding: 8px; 
+ max-width: 100vw; 
+ margin: 0 auto; 
+ }  
 
  /* ЕКРАН ЗА ВХОД C PIN / ЛИЦЕНЗ */
  #authModal {
@@ -116,72 +89,72 @@ td {
  header {  
  background: linear-gradient(135deg, #4f46e5, #3b82f6);  
  color: white;  
- padding: 15px;  
+ padding: 12px;  
  border-radius: 12px;  
  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);  
- margin-bottom: 15px;  
+ margin-bottom: 12px;  
  display: flex;  
  align-items: center;  
  justify-content: space-between;  
  flex-wrap: wrap;  
- gap: 10px;  
+ gap: 8px;  
  width: 100%;  
  }  
   
  .brand { display: flex; align-items: center; gap: 10px; }  
  .brand img { width: 32px; height: 32px; border-radius: 8px; }  
- .brand h1 { font-size: 20px; font-weight: 700; }  
+ .brand h1 { font-size: 18px; font-weight: 700; }  
 
  .btn-help {  
  background: rgba(255, 255, 255, 0.2);  
  color: white;  
- padding: 6px 12px;  
+ padding: 6px 10px;  
  border-radius: 8px;  
  text-decoration: none;  
  font-weight: 600;  
- font-size: 13px;  
+ font-size: 12px;  
  display: inline-flex;  
  align-items: center;  
- gap: 6px;  
+ gap: 5px;  
  transition: all 0.2s;  
  border: 1px solid rgba(255, 255, 255, 0.3);  
  }  
  .btn-help:hover { background: rgba(255, 255, 255, 0.35); }  
   
- .grid { display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%; }  
+ .grid { display: grid; grid-template-columns: 1fr; gap: 12px; width: 100%; }  
  @media (min-width: 850px) { .grid { grid-template-columns: 360px 1fr; } }  
   
  .card {  
  background: var(--card-bg);  
- padding: 15px;  
+ padding: 12px;  
  border-radius: 12px;  
  box-shadow: 0 1px 3px rgba(0,0,0,0.1);  
  border: 1px solid var(--border);  
- margin-bottom: 15px;  
+ margin-bottom: 12px;  
  width: 100%;  
  }  
   
  .card-title {  
- font-size: 15px;  
+ font-size: 14px;  
  font-weight: 600;  
- margin-bottom: 12px;  
+ margin-bottom: 10px;  
  display: flex;  
  align-items: center;  
  gap: 8px;  
  color: var(--text);  
  border-bottom: 1px solid var(--border);  
- padding-bottom: 8px;  
+ padding-bottom: 6px;  
  }  
   
- .form-group { margin-bottom: 12px; }  
- .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: var(--text-light); }  
+ .form-group { margin-bottom: 10px; }  
+ .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: var(--text-light); }  
   
  .input-control {  
  width: 100%;  
- padding: 10px 12px;  
+ padding: 8px 10px;  
  border: 1px solid var(--border);  
  border-radius: 8px;  
- font-size: 16px;  
+ font-size: 15px;  
  outline: none;  
  transition: all 0.2s;  
  }  
@@ -191,19 +164,19 @@ td {
  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);  
  }  
   
- .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }  
+ .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }  
   
  .btn {  
- padding: 12px 14px;  
+ padding: 10px 12px;  
  border: none;  
  border-radius: 8px;  
- font-size: 14px;  
+ font-size: 13px;  
  font-weight: 600;  
  cursor: pointer;  
  display: inline-flex;  
  align-items: center;  
  justify-content: center;  
- gap: 8px;  
+ gap: 6px;  
  transition: all 0.2s;  
  opacity: 0.55;  
  }  
@@ -226,11 +199,11 @@ td {
  .btn-outline { background: white; border: 1px solid var(--border); color: var(--text); opacity: 1; }  
  .btn-outline:hover { background: #f9fafb; }  
   
- .quick-qty { display: flex; gap: 6px; margin-top: 8px; }  
+ .quick-qty { display: flex; gap: 4px; margin-top: 6px; }  
  .btn-sm-qty {  
  flex: 1;  
- padding: 8px;  
- font-size: 13px;  
+ padding: 6px;  
+ font-size: 12px;  
  background: #f3f4f6;  
  border: 1px solid var(--border);  
  border-radius: 6px;  
@@ -239,24 +212,53 @@ td {
  }  
  .btn-sm-qty:hover { background: #e5e7eb; }  
   
- .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }  
- .stat-card { background: white; padding: 10px; border-radius: 10px; border: 1px solid var(--border); text-align: center; }  
- .stat-value { font-size: 18px; font-weight: 700; color: var(--primary); }  
- .stat-label { font-size: 11px; color: var(--text-light); margin-top: 2px; }  
+ .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }  
+ .stat-card { background: white; padding: 8px; border-radius: 8px; border: 1px solid var(--border); text-align: center; }  
+ .stat-value { font-size: 16px; font-weight: 700; color: var(--primary); }  
+ .stat-label { font-size: 10px; color: var(--text-light); margin-top: 2px; }  
   
- .table-wrapper { width: 100%; overflow-x: auto; max-height: 350px; overflow-y: auto; }  
- table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; table-layout: auto; }  
- th { background: #f9fafb; padding: 8px 10px; font-weight: 600; color: var(--text-light); border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 5; }  
- td { padding: 8px 10px; border-bottom: 1px solid var(--border); word-break: break-word; }  
+ .table-wrapper { width: 100%; overflow-x: hidden; max-height: 350px; overflow-y: auto; }  
+ table { 
+ width: 100%; 
+ border-collapse: collapse; 
+ text-align: left; 
+ font-size: 11px !important; 
+ table-layout: fixed; 
+ }  
+ th { 
+ background: #f9fafb; 
+ padding: 6px 3px !important; 
+ font-weight: 600; 
+ font-size: 11px !important; 
+ color: var(--text-light); 
+ border-bottom: 2px solid var(--border); 
+ position: sticky; 
+ top: 0; 
+ z-index: 5; 
+ }  
+ td { 
+ padding: 6px 3px !important; 
+ font-size: 11px !important; 
+ border-bottom: 1px solid var(--border); 
+ word-break: break-word; 
+ }  
  tr:hover { background: #f9fafb; }  
   
- .badge { padding: 3px 6px; border-radius: 10px; font-size: 10px; font-weight: 600; }  
+ .badge { padding: 2px 5px; border-radius: 8px; font-size: 9px; font-weight: 600; }  
  .badge-add { background: #d1fae5; color: #065f46; }  
  .badge-sub { background: #fee2e2; color: #991b1b; }  
   
- .action-icon { cursor: pointer; padding: 4px; color: var(--text-light); border: none; background: none; font-size: 15px; }  
+ .action-icon { cursor: pointer; padding: 2px 3px; color: var(--text-light); border: none; background: none; font-size: 14px; }  
  .action-icon:hover { color: var(--primary); }  
  .action-icon.delete:hover { color: var(--danger); }  
+
+ .actions-cell { white-space: nowrap; text-align: right; width: 75px; }
+
+ .col-date { display: none; }
+ @media (min-width: 600px) {
+   .col-date { display: table-cell; }
+   .table-wrapper { overflow-x: auto; }
+ }
   
  #cameraContainer {  
  display: none;  
@@ -264,12 +266,12 @@ td {
  width: 100%;  
  border-radius: 10px;  
  overflow: hidden;  
- margin-bottom: 15px;  
+ margin-bottom: 12px;  
  background: #000;  
  }  
  #webcamVideo {  
  width: 100%;  
- height: 280px;  
+ height: 260px;  
  object-fit: cover;  
  }  
  .scan-overlay {  
@@ -326,7 +328,7 @@ td {
  <i class="fa-solid fa-cart-plus"></i> Избор на режим & Сканиране  
  </div>  
    
- <button type="button" class="btn btn-outline" id="cameraBtn" onclick="toggleCamera()" style="width: 100%; margin-bottom: 15px; border-color: var(--primary); color: var(--primary);">  
+ <button type="button" class="btn btn-outline" id="cameraBtn" onclick="toggleCamera()" style="width: 100%; margin-bottom: 12px; border-color: var(--primary); color: var(--primary);">  
  <i class="fa-solid fa-camera"></i> Пусни Камерата  
  </button>  
   
@@ -335,7 +337,7 @@ td {
  <div class="scan-overlay" id="scanOverlay"></div>  
  </div>  
   
- <div class="btn-group" style="margin-bottom: 15px; margin-top: 0;">  
+ <div class="btn-group" style="margin-bottom: 12px; margin-top: 0;">  
  <button type="button" id="btnAddMode" class="btn btn-success active-mode" onclick="setMode('ADD')">  
  <i class="fa-solid fa-plus"></i> ПРИБАВИ <span id="checkAdd">✓</span>  
  </button>  
@@ -402,7 +404,11 @@ td {
  </div>  
  <input type="file" id="jsonFileInput" accept=".json" style="display:none;" onchange="handleFileSelect(event)">  
   
- <button type="button" class="btn btn-outline" onclick="logoutPin()" style="width: 100%; margin-top: 15px; color: var(--text-light); border-color: var(--border);">  
+ <button type="button" class="btn btn-outline" onclick="switchGoogleAccount()" style="width: 100%; margin-top: 12px; color: var(--primary); border-color: var(--primary);">  
+ <i class="fa-solid fa-user-gear"></i> Смяна на Google Акаунт  
+ </button>
+
+ <button type="button" class="btn btn-outline" onclick="logoutPin()" style="width: 100%; margin-top: 8px; color: var(--text-light); border-color: var(--border);">  
  <i class="fa-solid fa-arrow-right-from-bracket"></i> Изход / Смяна на PIN  
  </button>
 
@@ -432,17 +438,23 @@ td {
  <div class="card-title">  
  <i class="fa-solid fa-list-check"></i> Текущ инвентар  
  </div>  
- <div class="form-group" style="margin-bottom: 10px;">  
+ <div class="form-group" style="margin-bottom: 8px;">  
  <input type="text" id="searchInput" class="input-control" placeholder="Търсене по код или име..." onkeyup="renderProducts()">  
  </div>  
  <div class="table-wrapper">  
  <table>  
+ <colgroup>  
+   <col style="width: 30%;">  
+   <col style="width: 35%;">  
+   <col style="width: 15%;">  
+   <col style="width: 20%;">  
+ </colgroup>  
  <thead>  
  <tr>  
  <th>Код</th>  
- <th>Наименование</th>  
- <th>Наличност</th>  
- <th>Последна промяна</th>  
+ <th>Име</th>  
+ <th>Бр.</th>  
+ <th class="col-date">Промяна</th>  
  <th style="text-align: right;">Действия</th>  
  </tr>  
  </thead>  
@@ -492,7 +504,6 @@ td {
  let historyLogs = JSON.parse(localStorage.getItem('barcode_history')) || [];  
  let audioCtx = null;  
 
- // Помощна функция за форматиране на текуща Дата и Час
  function getFormattedDateTime() {
      const now = new Date();
      const date = now.toLocaleDateString('bg-BG');
@@ -500,7 +511,6 @@ td {
      return `${date} г., ${time} ч.`;
  }
 
- // ПРОВЕРКА НА PIN / ЛИЦЕНЗ
  async function validatePin() {
      const pin = document.getElementById('pinInput').value.trim();
      const errorDiv = document.getElementById('authError');
@@ -538,7 +548,6 @@ td {
              return;
          }
 
-         // Успешен вход
          localStorage.setItem('saved_pin', pin);
          document.getElementById('authModal').style.display = 'none';
 
@@ -592,6 +601,7 @@ td {
                  
                  driveConnected = true;  
                  updateDriveUI('Свързано с Google Drive', '#10b981');  
+                 uploadToDrive(); // Автоматичен бекъп веднага след успешно свързване
              }  
          });  
          gsisInited = true;  
@@ -607,31 +617,29 @@ td {
      updateStats();  
  };  
   
-function handleDriveButtonClick() {  
-    if (!tokenClient) {  
-        alert('Google API библиотеките все още зареждат. Моля, опитайте след секунда.');  
-        return;  
-    }  
-    // Принудително отваря екран за избор на профил
-    tokenClient.requestAccessToken({ prompt: 'select_account' });  
-}
-function switchGoogleAccount() {
-    if (confirm("Искате ли да се отпишете от текущия Google акаунт и да изберете нов?")) {
-        const token = gapi.client.getToken();
-        if (token !== null) {
-            google.accounts.oauth2.revoke(token.access_token, () => {
-                gapi.client.setToken('');
-                driveConnected = false;
-                updateDriveUI('Сесията е прекратена. Свържете нов акаунт.', 'var(--primary)');
-                alert("Успешно се отписахте от Google Drive. Сега натиснете 'Свържи с Google Drive', за да изберете друг имейл.");
-            });
-        } else {
-            driveConnected = false;
-            updateDriveUI('Няма активна Google сесия.', 'var(--primary)');
-        }
-    }
-}
-  
+ function handleDriveButtonClick() {  
+     if (!tokenClient) {  
+         alert('Google API библиотеките все още зареждат. Моля, опитайте след секунда.');  
+         return;  
+     }  
+     tokenClient.requestAccessToken({ prompt: 'select_account' });  
+ }  
+
+ function switchGoogleAccount() {
+     if (confirm("Искате ли да излезете от текущия Google профил и да изберете друг?")) {
+         const token = gapi.client.getToken();
+         if (token && token.access_token) {
+             google.accounts.oauth2.revoke(token.access_token, () => {
+                 gapi.client.setToken('');
+                 driveConnected = false;
+                 updateDriveUI('Излязохте от акаунта. Свържете нов.', 'var(--primary)');
+             });
+         } else {
+             driveConnected = false;
+             updateDriveUI('Няма активен Google акаунт.', 'var(--primary)');
+         }
+     }
+ }
   
  function updateDriveUI(statusText, color = '#10b981') {  
      const btn = document.getElementById('driveConnectBtn');  
@@ -680,7 +688,10 @@ function switchGoogleAccount() {
              const fileId = await findBackupFileId();  
              if (fileId) {  
                  const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });  
-                 const cloudData = res.result;  
+                 let cloudData = res.result;  
+                 if (typeof cloudData === 'string') {
+                     cloudData = JSON.parse(cloudData);
+                 }
                  if (cloudData && Array.isArray(cloudData.products)) {  
                      products = cloudData.products;  
                      historyLogs = cloudData.history || [];  
@@ -692,7 +703,9 @@ function switchGoogleAccount() {
                      const nowStr = getFormattedDateTime();  
                      updateDriveUI(`Заредено от облака: ${nowStr}`);  
                      alert("Данните са заредени успешно!");  
-                 }  
+                 } else {
+                     alert("Файлът в облака е празен или с невалиден формат!");
+                 } 
              } else {  
                  alert("Няма намерен бекъп файл в Google Drive!");  
              }  
@@ -709,21 +722,46 @@ function switchGoogleAccount() {
          const fileId = await findBackupFileId();  
          if (!driveConnected) return;  
   
-         const backupContent = JSON.stringify({ products: products, history: historyLogs }, null, 2);  
+         const backupData = { products: products, history: historyLogs };
+         const backupContent = JSON.stringify(backupData, null, 2);  
   
          if (fileId) {  
+             // Обновяване на съществуващ файл
              await gapi.client.request({  
                  path: `/upload/drive/v3/files/${fileId}`,  
                  method: 'PATCH',  
                  params: { uploadType: 'media' },  
+                 headers: { 'Content-Type': 'application/json; charset=UTF-8' },
                  body: backupContent  
              });  
          } else {  
-             await gapi.client.drive.files.create({  
-                 resource: { name: BACKUP_FILE_NAME, mimeType: 'application/json' },  
-                 media: { mimeType: 'application/json', body: backupContent },  
-                 fields: 'id'  
-             });  
+             // Създаване на нов файл с заглавие чрез multipart заявка
+             const metadata = {
+                 name: BACKUP_FILE_NAME,
+                 mimeType: 'application/json'
+             };
+             const boundary = '-------314159265358979323846';
+             const delimiter = "\r\n--" + boundary + "\r\n";
+             const close_delim = "\r\n--" + boundary + "--";
+
+             const multipartRequestBody =
+                 delimiter +
+                 'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+                 JSON.stringify(metadata) +
+                 delimiter +
+                 'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+                 backupContent +
+                 close_delim;
+
+             await gapi.client.request({
+                 path: '/upload/drive/v3/files',
+                 method: 'POST',
+                 params: { uploadType: 'multipart' },
+                 headers: {
+                     'Content-Type': 'multipart/related; boundary="' + boundary + '"'
+                 },
+                 body: multipartRequestBody
+             });
          }  
   
          const nowStr = getFormattedDateTime();  
@@ -851,8 +889,8 @@ function switchGoogleAccount() {
              <td><strong>${p.code}</strong></td>  
              <td>${p.name}</td>  
              <td><strong>${p.qty}</strong></td>  
-             <td style="font-size: 11px; color: var(--text-light);">${p.lastUpdated || '-'}</td>  
-             <td style="text-align: right;">  
+             <td class="col-date" style="font-size: 10px; color: var(--text-light);">${p.lastUpdated || '-'}</td>  
+             <td class="actions-cell">  
                  <button class="action-icon" onclick="adjustQty('${p.code}', 1)"><i class="fa-solid fa-circle-plus" style="color: var(--success);"></i></button>  
                  <button class="action-icon" onclick="adjustQty('${p.code}', -1)"><i class="fa-solid fa-circle-minus" style="color: var(--danger);"></i></button>  
                  <button class="action-icon delete" onclick="deleteProduct('${p.code}')"><i class="fa-solid fa-trash"></i></button>  
@@ -870,7 +908,7 @@ function switchGoogleAccount() {
          const tr = document.createElement('tr');  
          const isAdd = h.action === 'Прибавено';  
          tr.innerHTML = `  
-             <td style="font-size: 11px; color: var(--text-light);">${h.time}</td>  
+             <td style="font-size: 10px; color: var(--text-light);">${h.time}</td>  
              <td><strong>${h.code}</strong></td>  
              <td><span class="badge ${isAdd ? 'badge-add' : 'badge-sub'}">${h.action}</span></td>  
              <td style="text-align: right;"><strong>${h.qty} бр.</strong></td>  
@@ -1016,7 +1054,7 @@ function switchGoogleAccount() {
                  setTimeout(() => {  
                      if (overlay) overlay.classList.remove('success');  
                      isScanning = false;  
-                 }, 1000); // 1.0 секунда пауза между сканиранията
+                 }, 1000);  
              }  
          });  
      } catch (err) {  
