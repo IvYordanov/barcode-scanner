@@ -179,6 +179,7 @@
  gap: 6px;  
  transition: all 0.2s;  
  opacity: 0.55;  
+ word-break: break-all;
  }  
   
  .btn.active-mode {  
@@ -600,13 +601,28 @@
                  }  
                  
                  driveConnected = true;  
-                 updateDriveUI('Свързано с Google Drive', '#10b981');  
-                 uploadToDrive(); // Автоматичен бекъп веднага след успешно свързване
+                 await fetchGoogleUserInfo();
+                 uploadToDrive();  
              }  
          });  
          gsisInited = true;  
      }  
  }  
+
+ async function fetchGoogleUserInfo() {
+     try {
+         const res = await gapi.client.drive.about.get({ fields: 'user' });
+         if (res.result && res.result.user) {
+             const userEmail = res.result.user.emailAddress;
+             updateDriveUI(`Свързано: ${userEmail}`, '#10b981');
+         } else {
+             updateDriveUI('Свързано с Google Drive', '#10b981');
+         }
+     } catch (e) {
+         console.error("Грешка при вземане на информация за потребителя:", e);
+         updateDriveUI('Свързано с Google Drive', '#10b981');
+     }
+ }
   
  window.onload = () => {  
      checkSavedPin();
@@ -649,7 +665,7 @@
      if (btn) {  
          if (driveConnected) {  
              btn.style.background = color;  
-             btn.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Google Drive е свързан`;  
+             btn.innerHTML = `<i class="fa-solid fa-cloud-check"></i> ${statusText.startsWith('Свързано:') ? statusText : 'Google Drive е свързан'}`;  
              if (dlBtn) dlBtn.style.display = 'block';  
          } else {  
              btn.style.background = 'var(--primary)';  
@@ -657,7 +673,7 @@
              if (dlBtn) dlBtn.style.display = 'none';  
          }  
      }  
-     if (status) status.innerText = statusText;  
+     if (status) status.innerText = statusText.startsWith('Свързано:') ? 'Автоматичен бекъп: активен' : statusText;  
  }  
   
  async function findBackupFileId() {  
@@ -701,7 +717,6 @@
                      renderHistory();  
                      updateStats();  
                      const nowStr = getFormattedDateTime();  
-                     updateDriveUI(`Заредено от облака: ${nowStr}`);  
                      alert("Данните са заредени успешно!");  
                  } else {
                      alert("Файлът в облака е празен или с невалиден формат!");
@@ -726,7 +741,6 @@
          const backupContent = JSON.stringify(backupData, null, 2);  
   
          if (fileId) {  
-             // Обновяване на съществуващ файл
              await gapi.client.request({  
                  path: `/upload/drive/v3/files/${fileId}`,  
                  method: 'PATCH',  
@@ -735,7 +749,6 @@
                  body: backupContent  
              });  
          } else {  
-             // Създаване на нов файл с заглавие чрез multipart заявка
              const metadata = {
                  name: BACKUP_FILE_NAME,
                  mimeType: 'application/json'
@@ -763,9 +776,6 @@
                  body: multipartRequestBody
              });
          }  
-  
-         const nowStr = getFormattedDateTime();  
-         updateDriveUI(`Автоматичен бекъп: ${nowStr}`);  
      } catch (err) {  
          console.error("Грешка при качване в облака:", err);  
          if (err.status === 401 || err.status === 403) {  
