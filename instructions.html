@@ -1,296 +1,180 @@
-<!DOCTYPE html>
-<html lang="bg">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ръководство и Инструкции - Баркод Скенер</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --bg: #f3f4f6;
-            --card-bg: #ffffff;
-            --text: #1f2937;
-            --text-light: #6b7280;
-            --border: #e5e7eb;
-            --success: #10b981;
-            --danger: #ef4444;
-        }
+<!DOCTYPE html>  
+<html lang="bg">  
+<head>  
+ <meta charset="UTF-8">  
+ <meta name="robots" content="noindex, nofollow">  
+ <link rel="icon" type="image/png" href="favicon.png">  
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+ <title>Инструкции за работа — БАРКОД-СКЕНЕР</title>  
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">  
+ <style>  
+ :root {  
+ --primary: #4f46e5;  
+ --primary-hover: #4338ca;  
+ --success: #10b981;  
+ --danger: #ef4444;  
+ --bg: #f3f4f6;  
+ --card-bg: #ffffff;  
+ --text: #1f2937;  
+ --text-light: #6b7280;  
+ --border: #e5e7eb;  
+ }  
+  
+ * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }  
+ body { background-color: var(--bg); color: var(--text); padding: 15px; max-width: 900px; margin: 0 auto; line-height: 1.6; }  
+  
+ header {  
+ background: linear-gradient(135deg, #4f46e5, #3b82f6);  
+ color: white;  
+ padding: 20px;  
+ border-radius: 12px;  
+ box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);  
+ margin-bottom: 25px;  
+ display: flex;  
+ align-items: center;  
+ justify-content: space-between;  
+ flex-wrap: wrap;
+ gap: 10px;
+ }  
+  
+ .brand { display: flex; align-items: center; gap: 12px; }  
+ .brand img { width: 38px; height: 38px; border-radius: 8px; }  
+ .brand h1 { font-size: 22px; font-weight: 700; }  
+  
+ .btn-back {  
+ background: rgba(255, 255, 255, 0.2);  
+ color: white;  
+ padding: 8px 14px;  
+ border-radius: 8px;  
+ text-decoration: none;  
+ font-weight: 600;  
+ font-size: 14px;  
+ display: inline-flex;  
+ align-items: center;  
+ gap: 6px;  
+ transition: background 0.2s;  
+ }  
+ .btn-back:hover { background: rgba(255, 255, 255, 0.3); }  
+  
+ .card {  
+ background: var(--card-bg);  
+ padding: 25px;  
+ border-radius: 12px;  
+ box-shadow: 0 1px 3px rgba(0,0,0,0.1);  
+ border: 1px solid var(--border);  
+ margin-bottom: 20px;  
+ }  
+  
+ h2 { font-size: 18px; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #eef2ff; padding-bottom: 6px; }  
+ h3 { font-size: 15px; color: var(--text); margin: 12px 0 6px 0; }  
+ p { font-size: 14px; color: var(--text); margin-bottom: 10px; }  
+ ul, ol { margin-left: 20px; margin-bottom: 15px; font-size: 14px; }  
+ li { margin-bottom: 6px; }  
+  
+ .badge { padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; color: white; display: inline-block; }  
+ .badge-success { background: var(--success); }  
+ .badge-danger { background: var(--danger); }  
+  
+ .note-box {  
+ background: #eff6ff;  
+ border-left: 4px solid var(--primary);  
+ padding: 12px 15px;  
+ border-radius: 6px;  
+ font-size: 13px;  
+ margin: 15px 0;  
+ color: #1e40af;  
+ }  
+  
+ .footer-text { text-align: center; font-size: 12px; color: var(--text-light); margin-top: 30px; padding-bottom: 20px; }  
+ </style>  
+</head>  
+<body>  
+  
+ <header>  
+ <div class="brand">  
+ <img src="favicon.png" alt="Иконка">  
+ <div>  
+ <h1>Инструкции за работа</h1>  
+ <p style="font-size: 12px; opacity: 0.9;">БАРКОД-СКЕНЕР | HITSHOP BG LTD</p>  
+ </div>  
+ </div>  
+ <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Към Скенера</a>  
+ </header>  
+  
+ <div class="card">  
+ <h2><i class="fa-solid fa-rocket"></i> 1. Бърз старт и инсталация</h2>  
+   
+ <h3>📱 За мобилен телефон (Android / iOS):</h3>  
+ <ol>  
+ <li><strong>Отворете сайта през телефона:</strong> Заредете адреса в Google Chrome или Safari.</li>  
+ <li><strong>Добавете към началния екран:</strong> Натиснете бутона за меню на браузъра (трите точки или бутона "Сподели") и изберете <strong>"Добавяне към началния екран"</strong> (или <em>"Инсталиране на приложението"</em>).</li>  
+ <li>Приложението ще се появи като самостоятелна иконка на телефона ви без адресна лента.</li>  
+ </ol>  
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); padding: 15px; max-width: 900px; margin: 0 auto; line-height: 1.6; }
+ <h3>💻 За компютър (Десктоп):</h3>  
+ <p>Можете да отворите уеб приложението през всеки модерен браузър (Chrome, Edge, Firefox, Safari) и да сканирате с физически USB/Bluetooth баркод скенер или през уеб камерата.</p>  
+ </div>  
 
-        header {
-            background: linear-gradient(135deg, #4f46e5, #3b82f6);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+ <div class="card">  
+ <h2><i class="fa-solid fa-key"></i> 2. Достъп и Вход с PIN Код</h2>  
+ <p>Приложението изисква персонален PIN код за абонаментен достъп:</p>  
+ <ul>  
+ <li>При първоначално отваряне въведете вашия 4-цифрен или индивидуален PIN код.</li>  
+ <li>Системата проверява статуса и валидността на абонамента в реално време.</li>  
+ <li>Ако искате да смените PIN кода или да излезете, натиснете бутона <strong>"Изход / Смяна на PIN"</strong> в долната част на панела "Архивиране и облак".</li>  
+ </ul>  
+ </div>  
+  
+ <div class="card">  
+ <h2><i class="fa-solid fa-barcode"></i> 3. Сканиране и инвентаризация</h2>  
+ <p>Приложението поддържа два основни режима на работа:</p>  
+ <ul>  
+ <li><span class="badge badge-success"><i class="fa-solid fa-plus"></i> ПРИБАВИ</span> — Всички сканирани или ръчно въведени артикули се добавят към наличността.</li>  
+ <li><span class="badge badge-danger"><i class="fa-solid fa-minus"></i> ИЗВАДИ</span> — Количествата на сканираните артикули се намаляват от текущата наличност.</li>  
+ </ul>  
 
-        .brand { display: flex; align-items: center; gap: 12px; }  
-        .brand img { width: 36px; height: 36px; border-radius: 8px; }  
-        .brand h1 { font-size: 20px; font-weight: 700; }  
+ <h3>Методи за въвеждане:</h3>  
+ <ol>  
+ <li><strong>Вградена камера:</strong> Натиснете бутона <em>"Пусни Камерата"</em>, насочете я към баркода и системата автоматично ще го отчете със звуков сигнал.</li>  
+ <li><strong>Физически баркод скенер:</strong> Включете вашия USB/Bluetooth скенер към компютъра или телефона. Той директно ще въвежда кодовете в полето.</li>  
+ <li><strong>Ръчно въвеждане:</strong> Напишете кода или името на артикула в полетата и натиснете <em>"Потвърди операцията"</em>.</li>  
+ </ol>  
+ </div>  
+  
+ <div class="card">  
+ <h2><i class="fa-cloud-arrow-up fa-solid"></i> 4. Облачен бекъп и управление на Google акаунти</h2>  
+ <p>За гарантиране безопасността на вашите данни, приложението разполага с директна интеграция с Google Drive:</p>  
+  
+ <h3>Свързване и автоматичен бекъп:</h3>  
+ <ul>  
+ <li>Натиснете бутона <strong>"Свържи с Google Drive"</strong> и изберете вашия Google акаунт.</li>  
+ <li>След успешно свързване бутонът ще стане зелен и ще показва вашия имейл (напр. <code>Свързано: email@gmail.com</code>).</li>  
+ <li>Всяко сканиране, корекция на наличност или изтриване <strong>автоматично записва промените във вашия Google Drive</strong> под формата на файл <code>barcode_backup.json</code>.</li>  
+ </ul>  
 
-        .btn-back {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        .btn-back:hover { background: rgba(255, 255, 255, 0.35); }
+ <h3>Изолация на данните по акаунти (За работа с различни фирми/магазини):</h3>  
+ <ul>  
+ <li><strong>Независими бекъпи:</strong> Всеки Google акаунт поддържа собствен отделен файл за инвентар в облака.</li>  
+ <li><strong>Автоматично зареждане:</strong> Когато превключите към друг Google акаунт през бутона <strong>"Смяна на Google Акаунт"</strong>, приложението автоматично зарежда инвентара на съответния акаунт от облака.</li>  
+ <li><strong>Безопасност:</strong> Данните на един акаунт няма да презапишат или смеси с данните на друг акаунт.</li>  
+ </ul>  
 
-        .card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid var(--border);
-            margin-bottom: 20px;
-        }
+ <div class="note-box">  
+ <i class="fa-solid fa-circle-info"></i> <strong>Ръчен архив и възстановяване:</strong> Можете да изтегляте локален архив на устройството си чрез бутона <strong>"Ръчен Архив"</strong> (.json) или да експортирате таблицата с наличности в Excel формат чрез <strong>"Експорт в Excel (.csv)"</strong>.  
+ </div>  
+ </div>  
 
-        h2 { font-size: 18px; color: var(--primary); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid var(--bg); padding-bottom: 8px; }
-        h3 { font-size: 15px; color: var(--text); margin-top: 15px; margin-bottom: 8px; font-weight: 700; }
-        p { font-size: 14px; color: var(--text); margin-bottom: 10px; }
-        ul, ol { padding-left: 22px; font-size: 14px; color: var(--text); margin-bottom: 12px; }
-        li { margin-bottom: 8px; }
+ <div class="card">  
+ <h2><i class="fa-solid fa-clock-rotate-left"></i> 5. История на движенията и редакция</h2>  
+ <ul>  
+ <li><strong>Таблица "Текущ инвентар":</strong> Показва всички на налични артикули, общото количество и датата/часа на последната промяна. Позволява бързо бързо добавяне/изваждане с бутоните <code>+</code> и <code>-</code>.</li>  
+ <li><strong>Таблица "Последна история":</strong> Пази пълен дневник на последните 100 извършени операции (прибавяне/изваждане) с точен час и дата.</li>  
+ </ul>  
+ </div>  
 
-        .highlight-box {
-            background: #eff6ff;
-            border-left: 4px solid var(--primary);
-            padding: 12px 15px;
-            border-radius: 6px;
-            font-size: 13px;
-            margin: 12px 0;
-            color: #1e40af;
-        }
-
-        .alert-box {
-            background: #fef2f2;
-            border-left: 4px solid var(--danger);
-            padding: 12px 15px;
-            border-radius: 6px;
-            font-size: 13px;
-            margin: 12px 0;
-            color: #991b1b;
-        }
-
-        .qr-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 15px;
-            background: #f9fafb;
-            border: 1px dashed var(--primary);
-            border-radius: 10px;
-            margin-top: 10px;
-        }
-
-        #qrcode {
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border: 1px solid var(--border);
-            margin-bottom: 12px;
-        }
-
-        .domain-link {
-            font-size: 15px;
-            font-weight: bold;
-            color: var(--primary);
-            word-break: break-all;
-            background: #eef2ff;
-            padding: 8px 14px;
-            border-radius: 6px;
-            border: 1px solid #c7d2fe;
-            display: inline-block;
-            text-decoration: none;
-            margin-top: 5px;
-        }
-
-        .badge-demo {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 700;
-            color: white;
-        }
-        .bg-add { background: var(--success); }
-        .bg-sub { background: var(--danger); }
-        
-        .icon-demo {
-            font-size: 16px;
-            vertical-align: middle;
-            margin: 0 2px;
-        }
-    </style>
-</head>
-<body>
-
-    <header>
-        <div class="brand">
-            <img src="favicon.png" alt="Иконка">
-            <div>
-                <h1>ПОДРОБНО РЪКОВОДСТВО</h1>
-                <p style="font-size: 11px; opacity: 0.9;">HITSHOP BG LTD</p>
-            </div>
-        </div>
-        <a href="index.html" class="btn-back">
-            <i class="fa-solid fa-arrow-left"></i> Назад към скенера
-        </a>
-    </header>
-
-    <!-- ВХОД И ЛИЦЕНЗЕН ДОСТЪП -->
-    <div class="card">
-        <h2><i class="fa-solid fa-key"></i> Лицензен Вход с PIN Код</h2>
-        <p>Приложението функционира с лицензен абонаментен режим. При първоначално отваряне системата ще ви поиска персонален <strong>PIN код</strong> за достъп.</p>
-        <ul>
-            <li><strong>Активация:</strong> Въведете предоставения ви 6-цифрен PIN код и натиснете <i>"Влез в системата"</i>.</li>
-            <li><strong>Автоматично запомняне:</strong> След успешен вход кодът се запаметява локално на вашето устройство и не е нужно да го въвеждате при всяко отваряне.</li>
-            <li><strong>Изтекъл абонамент / Смяна на PIN:</strong> В случай че абонаментът е изтекъл, системата ще ви уведоми. Можете да излезете от профила или да смените PIN кода чрез бутона <strong>"Изход / Смяна на PIN"</strong> в панела <i>"Архивиране и облак"</i>.</li>
-        </ul>
-    </div>
-
-    <!-- QR КОД И ДОМЕЙН ЗА СПОДЕЛЯНЕ -->
-    <div class="card">
-        <h2><i class="fa-solid fa-qrcode"></i> Връзка и Достъп до Приложението</h2>
-        <p>Сканирайте QR кода с камерата на вашия телефон за незабавен достъп до баркод скенера, или въведете интернет адреса директно в браузъра:</p>
-        
-        <div class="qr-section">
-            <div id="qrcode"></div>
-            <p style="font-size: 12px; color: var(--text-light); margin-bottom: 4px;">Интернет адрес за ръчно въвеждане:</p>
-            <a href="https://hitshopbg.github.io/barcode-scanner/" target="_blank" class="domain-link">
-                https://hitshopbg.github.io/barcode-scanner/
-            </a>
-        </div>
-    </div>
-
-    <!-- ИНСТАЛАЦИЯ -->
-    <div class="card">
-        <h2><i class="fa-solid fa-mobile-screen-button"></i> Инсталиране като Приложение (PWA)</h2>
-        <p>Приложението може да се инсталира директно на вашия телефон или компютър без нужда от Google Play Store или App Store. Така то работи като самостоятелно мобилно приложение с пряк път от началния екран.</p>
-        
-        <h3><i class="fa-brands fa-android" style="color: #3ddc84;"></i> За Android (Google Chrome):</h3>
-        <ol>
-            <li>Отворете адреса през браузъра <strong>Chrome</strong> на телефона.</li>
-            <li>Натиснете бутона с <strong>трите точки (⋮)</strong> в горния десен ъгъл.</li>
-            <li>Изберете <strong>"Добавяне към началния екран"</strong> (или <i>"Инсталиране на приложението"</i>).</li>
-            <li>Потвърдете с <strong>"Добавяне"</strong>. Иконката ще се появи на началния ви екран.</li>
-        </ol>
-
-        <h3><i class="fa-brands fa-apple" style="color: #000;"></i> За iPhone / iPad (Safari):</h3>
-        <ol>
-            <li>Отворете адреса през браузъра <strong>Safari</strong>.</li>
-            <li>Натиснете бутона <strong>"Споделяне"</strong> (квадратчето със стрелка сочеща нагоре).</li>
-            <li>Превъртете надолу и изберете <strong>"Добавяне към началния екран"</strong> (Add to Home Screen).</li>
-            <li>Натиснете <strong>"Добавяне"</strong> горе вдясно.</li>
-        </ol>
-
-        <h3><i class="fa-solid fa-desktop"></i> За Компютър (Chrome / Edge):</h3>
-        <p>В адресната лента горе вдясно натиснете иконката за инсталиране <i class="fa-solid fa-download"></i> или от менюто изберете <i>"Запазване и споделяне" -> "Инсталиране на страницата като приложение"</i>.</p>
-    </div>
-
-    <!-- РАБОТА С КАМЕРАТА -->
-    <div class="card">
-        <h2><i class="fa-solid fa-camera"></i> Сканиране на Баркодове</h2>
-        <ol>
-            <li>Натиснете бутона <strong>"Пусни Камерата"</strong>. При първоначално пускане потвърдете с <strong>"Разрешавам" (Allow)</strong> за достъп до камерата.</li>
-            <li>Насочете камерата към баркода. Скенерът разпознава както <strong>хоризонтално разположени</strong>, така и <strong>вертикално завъртени баркодове</strong>.</li>
-            <li>При успешно прочитане системата издава <strong>звуков сигнал (бип)</strong>, рамката на камерата светва в синьо и количеството се отчита веднага.</li>
-            <li>Полето за въвеждане се изчиства автоматично за бързо сканиране на следващия артикул.</li>
-        </ol>
-        <div class="highlight-box">
-            <strong>Съвет:</strong> Дръжте баркода на разстояние около 10-20 см от камерата. Камерата работи с автоматичен непрекъснат фокус.
-        </div>
-    </div>
-
-    <!-- РЕЖИМИ И РЪЧНО ВЪВЕЖДАНЕ -->
-    <div class="card">
-        <h2><i class="fa-solid fa-boxes-stacked"></i> Избор на Режими и Количества</h2>
-        <ul>
-            <li><span class="badge-demo bg-add">ПРИБАВИ</span> — Всяко сканиране или потвърждение увеличава количеството на артикула. Ако кодът се сканира за първи път, той автоматично се добавя в инвентара.</li>
-            <li><span class="badge-demo bg-sub">ИЗВАДИ</span> — Всяко сканиране намалява наличността. Ако продуктът липсва или е с 0 бр., системата ще ви предупреди и няма да позволи отрицателно количество.</li>
-            <li><strong>Бутони за бързо количество (1, 5, 10, 50):</strong> Изберете желаното количество преди сканиране, за да заведете или изпишете наведнъж цяла опаковка или кашон.</li>
-            <li><strong>Ръчно въвеждане / Външен скенер:</strong> Можете да въвеждате кодове ръчно в полето за текст или да ползвате външен USB/Bluetooth баркод скенер.</li>
-        </ul>
-    </div>
-
-    <!-- УПРАВЛЕНИЕ НА ТАБЛИЦАТА И ДЕЙСТВИЯ С АРТИКУЛИ -->
-    <div class="card">
-        <h2><i class="fa-solid fa-list-check"></i> Бързи действия в таблицата с Инвентар</h2>
-        <p>В таблицата <strong>"Текущ инвентар"</strong> можете да управлявате всеки артикул директно с бутоните в колона <i>"Действия"</i>:</p>
-        <ul>
-            <li><i class="fa-solid fa-circle-plus icon-demo" style="color: var(--success);"></i> <strong>Зелен плюс (+):</strong> Увеличава наличността на избрания продукт с 1 бройка с едно натискане.</li>
-            <li><i class="fa-solid fa-circle-minus icon-demo" style="color: var(--danger);"></i> <strong>Червен минус (-):</strong> Намалява наличността на избрания продукт с 1 бройка. Наличността не може да стане отрицателна.</li>
-            <li><i class="fa-solid fa-trash icon-demo" style="color: var(--text-light);"></i> <strong>Кошче (Изтриване):</strong> Премахва напълно избрания артикул от базата данни след потвърждение.</li>
-            <li><strong>Търсене:</strong> Използвайте полето за търсене над таблицата, за да филтрирате мигновено продуктите по баркод или по име.</li>
-        </ul>
-    </div>
-
-    <!-- ОБЛАК, СИНХРОНИЗАЦИЯ И EXCEL -->
-    <div class="card">
-        <h2><i class="fa-solid fa-cloud-arrow-up"></i> Работа с Google Drive и Синхронизация</h2>
-        <ul>
-            <li><strong>Свързване с Google Drive:</strong> Натиснете бутона <i>"Свържи с Google Drive"</i>. Приложението ще поддържа активна връзка с личния ви облак.</li>
-            <li><strong>Автоматичен бекъп при промяна:</strong> За пълна безопасност, качването към облака се извършва <strong>само когато извършите реално действие</strong> (сканирате артикул, добавите/извадите бройка или изтриете продукт).</li>
-            <li><i class="fa-solid fa-cloud-arrow-down icon-demo" style="color: var(--primary);"></i> <strong>Бутон "Зареди от Облака":</strong> Когато отворите приложението на второ устройство (например телефон) и искате да изтеглите промените, направени на компютъра, натиснете този бутон.</li>
-            <li><strong>Експорт в Excel (.csv):</strong> Изтеглете файла с наличните стоки за счетоводство или справка. Той е съвместим с Microsoft Excel, LibreOffice Calc и Google Sheets.</li>
-        </ul>
-    </div>
-
-    <!-- РЪЧЕН АРХИВ, ВЪЗСТАНОВЯВАНЕ И ЗАНУЛЯВАНЕ -->
-    <div class="card">
-        <h2><i class="fa-solid fa-box-archive"></i> Ръчен Архив, Възстановяване и Занули</h2>
-        <ul>
-            <li><i class="fa-solid fa-download icon-demo" style="color: var(--primary);"></i> <strong>Ръчен Архив:</strong> Изтегля пълен <code>.json</code> файл с наличните артикули и историята на движенията.</li>
-            <li><i class="fa-solid fa-upload icon-demo" style="color: var(--primary);"></i> <strong>Възстанови (Вмъкване):</strong> Зарежда предварително запазен <code>.json</code> архив.</li>
-            <li><i class="fa-solid fa-trash icon-demo" style="color: var(--danger);"></i> <strong>Занули всички данни:</strong> Изтрива цялата налична база от продукти и историята на сканиранията от текущото устройство.</li>
-        </ul>
-    </div>
-
-    <div style="text-align: center; margin-top: 25px; margin-bottom: 35px;">
-        <a href="index.html" class="btn-back" style="background: var(--primary); padding: 12px 28px; font-size: 16px;">
-            <i class="fa-solid fa-check"></i> Към Скенера
-        </a>
-    </div>
-
-    <!-- Скрипт за автоматично генериране на QR кода -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script>
-        window.onload = function() {
-            var qrUrl = "https://hitshopbg.github.io/barcode-scanner/";
-            var qrcodeContainer = document.getElementById("qrcode");
-            if (qrcodeContainer) {
-                new QRCode(qrcodeContainer, {
-                    text: qrUrl,
-                    width: 160,
-                    height: 160,
-                    colorDark : "#1f2937",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.H
-                });
-            }
-        };
-    </script>
-</body>
+ <div class="footer-text">  
+ &copy; HITSHOP BG LTD — Всички права запазени.  
+ </div>  
+  
+</body>  
 </html>
