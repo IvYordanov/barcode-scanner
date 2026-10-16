@@ -602,7 +602,7 @@
                  
                  driveConnected = true;  
                  await fetchGoogleUserInfo();
-                 uploadToDrive();  
+                 await syncOnAccountSwitch(); // Зарежда инвентара за този конкретен акаунт
              }  
          });  
          gsisInited = true;  
@@ -621,6 +621,39 @@
      } catch (e) {
          console.error("Грешка при вземане на информация за потребителя:", e);
          updateDriveUI('Свързано с Google Drive', '#10b981');
+     }
+ }
+
+ async function syncOnAccountSwitch() {
+     try {
+         const fileId = await findBackupFileId();
+         if (fileId) {
+             const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });
+             let cloudData = res.result;
+             if (typeof cloudData === 'string') cloudData = JSON.parse(cloudData);
+             
+             if (cloudData && Array.isArray(cloudData.products)) {
+                 products = cloudData.products;
+                 historyLogs = cloudData.history || [];
+                 localStorage.setItem('barcode_products', JSON.stringify(products));
+                 localStorage.setItem('barcode_history', JSON.stringify(historyLogs));
+                 renderProducts();
+                 renderHistory();
+                 updateStats();
+             }
+         } else {
+             if (confirm("В този Google акаунт няма намерен бекъп файл. Желаете ли да започнете с празен инвентар за този акаунт?")) {
+                 products = [];
+                 historyLogs = [];
+                 localStorage.setItem('barcode_products', JSON.stringify(products));
+                 localStorage.setItem('barcode_history', JSON.stringify(historyLogs));
+                 renderProducts();
+                 renderHistory();
+                 updateStats();
+             }
+         }
+     } catch (err) {
+         console.error("Грешка при синхронизация на акаунта:", err);
      }
  }
   
@@ -716,7 +749,6 @@
                      renderProducts();  
                      renderHistory();  
                      updateStats();  
-                     const nowStr = getFormattedDateTime();  
                      alert("Данните са заредени успешно!");  
                  } else {
                      alert("Файлът в облака е празен или с невалиден формат!");
