@@ -14,28 +14,6 @@
  <title>БАРКОД-СКЕНЕР | hitshopbg.github.io</title>  
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">  
  <style>  
-/* 1. Накарва съдържанието да се побира в екрана без да излиза извън него */
-.inventory-container, table {
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box;
-  table-layout: fixed; /* Принуждава таблицата да спазва ширината на екрана */
-}
-
-/* 2. Разпределяне на ширината на колоните */
-th, td {
-  word-wrap: break-word; /* Пречупва дълги имена на продукти на нов ред */
-  overflow-wrap: break-word;
-  padding: 6px 4px; /* Малко по-компактен разряд за мобилни устройства */
-}
-
-/* 3. Компактни бутони за +, - и редакция */
-.action-btn, .qty-btn {
-  white-space: nowrap; /* Не позволява на бутона да се счупи на два реда */
-  padding: 4px 8px;
-  font-size: 14px;
-}
-  
  :root {  
  --primary: #4f46e5;  
  --primary-hover: #4338ca;  
@@ -240,47 +218,50 @@ th, td {
  .stat-value { font-size: 16px; font-weight: 700; color: var(--primary); }  
  .stat-label { font-size: 10px; color: var(--text-light); margin-top: 2px; }  
   
- .table-wrapper { width: 100%; overflow-x: hidden; max-height: 350px; overflow-y: auto; }  
+ .table-wrapper { width: 100%; overflow-x: auto; max-height: 350px; overflow-y: auto; }  
+ 
+ /* АДАПТИВНИ СТИЛОВЕ ЗА ТАБЛИЦИ */
  table { 
  width: 100%; 
  border-collapse: collapse; 
  text-align: left; 
- font-size: 11px !important; 
- table-layout: fixed; 
+ font-size: 12px; 
+ table-layout: auto !important; 
  }  
  th { 
  background: #f9fafb; 
- padding: 6px 3px !important; 
+ padding: 8px 6px !important; 
  font-weight: 600; 
- font-size: 11px !important; 
+ font-size: 12px !important; 
  color: var(--text-light); 
  border-bottom: 2px solid var(--border); 
  position: sticky; 
  top: 0; 
  z-index: 5; 
+ white-space: nowrap !important;
  }  
  td { 
- padding: 6px 3px !important; 
- font-size: 11px !important; 
+ padding: 8px 6px !important; 
+ font-size: 12px !important; 
  border-bottom: 1px solid var(--border); 
  word-break: break-word; 
+ vertical-align: middle;
  }  
  tr:hover { background: #f9fafb; }  
   
- .badge { padding: 2px 5px; border-radius: 8px; font-size: 9px; font-weight: 600; }  
+ .badge { padding: 2px 5px; border-radius: 8px; font-size: 10px; font-weight: 600; }  
  .badge-add { background: #d1fae5; color: #065f46; }  
  .badge-sub { background: #fee2e2; color: #991b1b; }  
   
- .action-icon { cursor: pointer; padding: 2px 3px; color: var(--text-light); border: none; background: none; font-size: 14px; }  
+ .action-icon { cursor: pointer; padding: 4px 5px; color: var(--text-light); border: none; background: none; font-size: 15px; display: inline-block; }  
  .action-icon:hover { color: var(--primary); }  
  .action-icon.delete:hover { color: var(--danger); }  
 
- .actions-cell { white-space: nowrap; text-align: right; width: 75px; }
+ .actions-cell { white-space: nowrap !important; text-align: right; width: 1%; }
 
  .col-date { display: none; }
  @media (min-width: 600px) {
    .col-date { display: table-cell; }
-   .table-wrapper { overflow-x: auto; }
  }
   
  #cameraContainer {  
@@ -502,12 +483,6 @@ th, td {
  </div>  
  <div class="table-wrapper">  
  <table>  
- <colgroup>  
-   <col style="width: 30%;">  
-   <col style="width: 35%;">  
-   <col style="width: 15%;">  
-   <col style="width: 20%;">  
- </colgroup>  
  <thead>  
  <tr>  
  <th>Код</th>  
