@@ -14,6 +14,28 @@
  <title>БАРКОД-СКЕНЕР | hitshopbg.github.io</title>  
  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">  
  <style>  
+/* 1. Накарва съдържанието да се побира в екрана без да излиза извън него */
+.inventory-container, table {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box;
+  table-layout: fixed; /* Принуждава таблицата да спазва ширината на екрана */
+}
+
+/* 2. Разпределяне на ширината на колоните */
+th, td {
+  word-wrap: break-word; /* Пречупва дълги имена на продукти на нов ред */
+  overflow-wrap: break-word;
+  padding: 6px 4px; /* Малко по-компактен разряд за мобилни устройства */
+}
+
+/* 3. Компактни бутони за +, - и редакция */
+.action-btn, .qty-btn {
+  white-space: nowrap; /* Не позволява на бутона да се счупи на два реда */
+  padding: 4px 8px;
+  font-size: 14px;
+}
+  
  :root {  
  --primary: #4f46e5;  
  --primary-hover: #4338ca;  
