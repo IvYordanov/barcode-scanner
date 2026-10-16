@@ -607,13 +607,31 @@ td {
      updateStats();  
  };  
   
- function handleDriveButtonClick() {  
-     if (!tokenClient) {  
-         alert('Google API библиотеките все още зареждат. Моля, опитайте след секунда.');  
-         return;  
-     }  
-     tokenClient.requestAccessToken({ prompt: driveConnected ? '' : 'select_account' });  
- }  
+function handleDriveButtonClick() {  
+    if (!tokenClient) {  
+        alert('Google API библиотеките все още зареждат. Моля, опитайте след секунда.');  
+        return;  
+    }  
+    // Принудително отваря екран за избор на профил
+    tokenClient.requestAccessToken({ prompt: 'select_account' });  
+}
+function switchGoogleAccount() {
+    if (confirm("Искате ли да се отпишете от текущия Google акаунт и да изберете нов?")) {
+        const token = gapi.client.getToken();
+        if (token !== null) {
+            google.accounts.oauth2.revoke(token.access_token, () => {
+                gapi.client.setToken('');
+                driveConnected = false;
+                updateDriveUI('Сесията е прекратена. Свържете нов акаунт.', 'var(--primary)');
+                alert("Успешно се отписахте от Google Drive. Сега натиснете 'Свържи с Google Drive', за да изберете друг имейл.");
+            });
+        } else {
+            driveConnected = false;
+            updateDriveUI('Няма активна Google сесия.', 'var(--primary)');
+        }
+    }
+}
+  
   
  function updateDriveUI(statusText, color = '#10b981') {  
      const btn = document.getElementById('driveConnectBtn');  
