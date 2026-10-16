@@ -218,47 +218,50 @@
  .stat-value { font-size: 16px; font-weight: 700; color: var(--primary); }  
  .stat-label { font-size: 10px; color: var(--text-light); margin-top: 2px; }  
   
- .table-wrapper { width: 100%; overflow-x: hidden; max-height: 350px; overflow-y: auto; }  
+ .table-wrapper { width: 100%; overflow-x: auto; max-height: 350px; overflow-y: auto; }  
+ 
+ /* АДАПТИВНИ СТИЛОВЕ ЗА ТАБЛИЦИ */
  table { 
  width: 100%; 
  border-collapse: collapse; 
  text-align: left; 
- font-size: 11px !important; 
- table-layout: fixed; 
+ font-size: 12px; 
+ table-layout: auto !important; 
  }  
  th { 
  background: #f9fafb; 
- padding: 6px 3px !important; 
+ padding: 8px 6px !important; 
  font-weight: 600; 
- font-size: 11px !important; 
+ font-size: 12px !important; 
  color: var(--text-light); 
  border-bottom: 2px solid var(--border); 
  position: sticky; 
  top: 0; 
  z-index: 5; 
+ white-space: nowrap !important;
  }  
  td { 
- padding: 6px 3px !important; 
- font-size: 11px !important; 
+ padding: 8px 6px !important; 
+ font-size: 12px !important; 
  border-bottom: 1px solid var(--border); 
  word-break: break-word; 
+ vertical-align: middle;
  }  
  tr:hover { background: #f9fafb; }  
   
- .badge { padding: 2px 5px; border-radius: 8px; font-size: 9px; font-weight: 600; }  
+ .badge { padding: 2px 5px; border-radius: 8px; font-size: 10px; font-weight: 600; }  
  .badge-add { background: #d1fae5; color: #065f46; }  
  .badge-sub { background: #fee2e2; color: #991b1b; }  
   
- .action-icon { cursor: pointer; padding: 2px 3px; color: var(--text-light); border: none; background: none; font-size: 14px; }  
+ .action-icon { cursor: pointer; padding: 4px 5px; color: var(--text-light); border: none; background: none; font-size: 15px; display: inline-block; }  
  .action-icon:hover { color: var(--primary); }  
  .action-icon.delete:hover { color: var(--danger); }  
 
- .actions-cell { white-space: nowrap; text-align: right; width: 75px; }
+ .actions-cell { white-space: nowrap !important; text-align: right; width: 1%; }
 
  .col-date { display: none; }
  @media (min-width: 600px) {
    .col-date { display: table-cell; }
-   .table-wrapper { overflow-x: auto; }
  }
   
  #cameraContainer {  
@@ -480,12 +483,6 @@
  </div>  
  <div class="table-wrapper">  
  <table>  
- <colgroup>  
-   <col style="width: 30%;">  
-   <col style="width: 35%;">  
-   <col style="width: 15%;">  
-   <col style="width: 20%;">  
- </colgroup>  
  <thead>  
  <tr>  
  <th>Код</th>  
@@ -531,7 +528,7 @@
  const APP_DOMAIN = 'https://hitshopbg.github.io/barcode-scanner/';
  const CLIENT_ID = '461455643326-n6p2g7vj0rpe7ega8v2kjgq1gkld1r57.apps.googleusercontent.com';  
  const SCOPES = 'https://www.googleapis.com/auth/drive.file';  
- const BACKUP_FILE_NAME = 'barcode_backup.json';  
+ const BACKUP_FILE_NAME = 'barcode_backup_TEST.json';  
   
  let tokenClient;  
  let gapiInited = false;  
