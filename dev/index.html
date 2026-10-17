@@ -323,49 +323,56 @@
      size: 50mm 40mm;
      margin: 0;
    }
+   
    html, body {
-     width: 50mm;
-     height: 40mm;
-     margin: 0 !important;
-     padding: 0 !important;
-     overflow: hidden !important;
-   }
-   body * { 
-     visibility: hidden; 
-   }
-   #qrModal, #qrModal * { 
-     visibility: visible; 
-   }
-   #qrModal {
-     position: absolute;
-     left: 0; 
-     top: 0;
      width: 50mm !important;
      height: 40mm !important;
      margin: 0 !important;
      padding: 0 !important;
      background: white !important;
+     overflow: hidden !important;
+   }
+
+   /* Скрива всичко на страницата освен контейнера за печат */
+   body > * { 
+     display: none !important; 
+   }
+   
+   #qrModal {
      display: flex !important;
+     position: fixed !important;
+     top: 0 !important;
+     left: 0 !important;
+     width: 50mm !important;
+     height: 40mm !important;
+     margin: 0 !important;
+     padding: 0 !important;
+     background: white !important;
      align-items: center !important;
      justify-content: center !important;
+     box-shadow: none !important;
    }
+
    .qr-card {
      box-shadow: none !important;
      border: none !important;
      width: 50mm !important;
      height: 40mm !important;
-     padding: 2mm !important;
+     padding: 1mm 2mm !important;
      margin: 0 !important;
      display: flex !important;
      flex-direction: column !important;
      align-items: center !important;
      justify-content: center !important;
      text-align: center !important;
+     background: white !important;
    }
+
    #qrModalName {
      font-size: 11px !important;
-     font-weight: bold !important;
-     margin: 0 0 2mm 0 !important;
+     font-weight: 700 !important;
+     color: #000 !important;
+     margin: 0 0 1mm 0 !important;
      padding: 0 !important;
      width: 100% !important;
      text-align: center !important;
@@ -373,14 +380,24 @@
      overflow: hidden !important;
      text-overflow: ellipsis !important;
    }
+
    #barcodeSvg {
-     max-width: 46mm !important;
+     width: 46mm !important;
      height: auto !important;
+     max-height: 28mm !important;
      display: block !important;
      margin: 0 auto !important;
    }
-   #qrModal button, #qrcode { 
-     display: none !important; 
+
+   #qrModal button, #qrcode, .qr-card > div:first-of-type { 
+     border: none !important;
+     padding: 0 !important;
+     margin: 0 !important;
+     background: transparent !important;
+   }
+
+   #qrModal button {
+     display: none !important;
    }
  }
  </style>  
