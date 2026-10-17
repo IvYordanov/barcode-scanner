@@ -369,22 +369,24 @@
    }
 
    #qrModalName {
-     font-size: 11px !important;
+     font-size: 10px !important;
      font-weight: 700 !important;
      color: #000 !important;
      margin: 0 0 1mm 0 !important;
-     padding: 0 !important;
+     padding: 0 1mm !important;
      width: 100% !important;
      text-align: center !important;
-     white-space: nowrap !important;
+     white-space: normal !important; /* Пренасяне на втори/трети ред */
+     word-break: break-word !important;
+     line-height: 1.15 !important;
+     max-height: 12mm !important;
      overflow: hidden !important;
-     text-overflow: ellipsis !important;
    }
 
    #barcodeSvg {
      width: 46mm !important;
      height: auto !important;
-     max-height: 28mm !important;
+     max-height: 24mm !important;
      display: block !important;
      margin: 0 auto !important;
    }
