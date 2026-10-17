@@ -791,38 +791,42 @@
      return null;  
  }  
   
- async function downloadFromDriveManual() {  
-     if (!driveConnected) return;  
-     if (confirm("ВНИМАНИЕ: Това ще зареди данните от облака и ще презапише текущите наличности на това устройство. Продължавате ли?")) {  
-         try {  
-             const fileId = await findBackupFileId();  
-             if (fileId) {  
-                 const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });  
-                 let cloudData = res.result;  
-                 if (typeof cloudData === 'string') {
-                     cloudData = JSON.parse(cloudData);
-                 }
-                 if (cloudData && Array.isArray(cloudData.products)) {  
-                     products = cloudData.products;  
-                     historyLogs = cloudData.history || [];  
-                     localStorage.setItem('barcode_products', JSON.stringify(products));  
-                     localStorage.setItem('barcode_history', JSON.stringify(historyLogs));  
-                     renderProducts();  
-                     renderHistory();  
-                     updateStats();  
-                     alert("Данните са заредени успешно!");  
-                 } else {
-                     alert("Файлът в облака е празен или с невалиден формат!");
-                 } 
-             } else {  
-                 alert("Няма намерен бекъп файл в Google Drive!");  
-             }  
-         } catch (err) {  
-             console.error("Грешка при изтегляне от облака:", err);  
-             alert("Грешка при изтегляне на данните!");  
-         }  
-     }  
- }  
+async function downloadFromDriveManual() {  
+    if (!driveConnected) return;  
+    if (confirm("ВНИМАНИЕ: Това ще зареди данните от облака и ще презапише текущите наличности на това устройство. Продължавате ли?")) {  
+        try {  
+            const fileId = await findBackupFileId();  
+            if (!fileId) {
+                alert("Няма намерен бекъп файл в Google Drive!");
+                return;
+            }
+
+            const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });  
+            
+            // Извличане на данните независимо от формата на отговора
+            let cloudData = res.result || res.body;  
+            if (typeof cloudData === 'string') {
+                cloudData = JSON.parse(cloudData);
+            }
+
+            if (cloudData && Array.isArray(cloudData.products)) {  
+                products = cloudData.products;  
+                historyLogs = cloudData.history || [];  
+                localStorage.setItem('barcode_products', JSON.stringify(products));  
+                localStorage.setItem('barcode_history', JSON.stringify(historyLogs));  
+                renderProducts();  
+                renderHistory();  
+                updateStats();  
+                alert("Данните са заредени успешно!");  
+            } else {
+                alert("Файлът в облака е празен или е с невалиден формат!");
+            } 
+        } catch (err) {  
+            console.error("Грешка при изтегляне от облака:", err);  
+            alert("Грешка при изтегляне на данните! Проверете дали имате интернет връзка и активна сесия.");  
+        }  
+    }  
+}
   
  async function uploadToDrive() {  
      if (!driveConnected) return;  
