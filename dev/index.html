@@ -330,16 +330,24 @@
      padding: 0 !important;
      overflow: hidden !important;
    }
-   body * { visibility: hidden; }
-   #qrModal, #qrModal * { visibility: visible; }
+   body * { 
+     visibility: hidden; 
+   }
+   #qrModal, #qrModal * { 
+     visibility: visible; 
+   }
    #qrModal {
      position: absolute;
-     left: 0; top: 0;
-     width: 50mm;
-     height: 40mm;
+     left: 0; 
+     top: 0;
+     width: 50mm !important;
+     height: 40mm !important;
      margin: 0 !important;
      padding: 0 !important;
      background: white !important;
+     display: flex !important;
+     align-items: center !important;
+     justify-content: center !important;
    }
    .qr-card {
      box-shadow: none !important;
@@ -347,12 +355,33 @@
      width: 50mm !important;
      height: 40mm !important;
      padding: 2mm !important;
+     margin: 0 !important;
      display: flex !important;
      flex-direction: column !important;
      align-items: center !important;
      justify-content: center !important;
+     text-align: center !important;
    }
-   #qrModal button { display: none !important; }
+   #qrModalName {
+     font-size: 11px !important;
+     font-weight: bold !important;
+     margin: 0 0 2mm 0 !important;
+     padding: 0 !important;
+     width: 100% !important;
+     text-align: center !important;
+     white-space: nowrap !important;
+     overflow: hidden !important;
+     text-overflow: ellipsis !important;
+   }
+   #barcodeSvg {
+     max-width: 46mm !important;
+     height: auto !important;
+     display: block !important;
+     margin: 0 auto !important;
+   }
+   #qrModal button, #qrcode { 
+     display: none !important; 
+   }
  }
  </style>  
 
@@ -696,18 +725,20 @@
              format: "EAN13",
              lineColor: "#000",
              width: 2,
-             height: 55,
+             height: 45,
              displayValue: true,
-             fontSize: 14
+             fontSize: 12,
+             margin: 0
          });
      } catch (e) {
          JsBarcode("#barcodeSvg", code, {
              format: "CODE128",
              lineColor: "#000",
              width: 2,
-             height: 55,
+             height: 45,
              displayValue: true,
-             fontSize: 14
+             fontSize: 12,
+             margin: 0
          });
      }
      
