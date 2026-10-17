@@ -296,7 +296,7 @@
  border-style: solid;  
  }  
 
- /* QR Код Секция */
+ /* МОДАЛЕН ЕКРАН */
  #qrModal {
  display: none;
  position: fixed;
@@ -316,7 +316,27 @@
  width: 100%;
  }
  #qrcode { margin: 15px auto; display: flex; justify-content: center; }
- </style> 
+
+ /* СТИЛОВЕ ЗА ПЕЧАТ НА БАРКОД */
+ @media print {
+   body * { visibility: hidden; }
+   #qrModal, #qrModal * { visibility: visible; }
+   #qrModal {
+     position: absolute;
+     left: 0; top: 0;
+     width: 100%;
+     background: white !important;
+   }
+   .qr-card {
+     box-shadow: none !important;
+     border: none !important;
+     width: 100% !important;
+     max-width: 100% !important;
+     padding: 0 !important;
+   }
+   #qrModal button { display: none !important; }
+ }
+ </style>  
 
 </head>  
 <body>  
@@ -334,27 +354,27 @@
      </div>
  </div>  
 
-<!-- МОДАЛЕН ЕКРАН ЗА ЕАН-13 БАРКОД И ПЕЧАТ -->
-<div id="qrModal" onclick="closeQrModal(event)">
-    <div class="qr-card" onclick="event.stopPropagation()">
-        <h3 id="qrModalTitle" style="font-size: 15px; margin-bottom: 8px; color: var(--primary);">Баркод за печат</h3>
-        <p id="qrModalName" style="font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px;"></p>
-        
-        <!-- Контейнер за генерирания баркод -->
-        <div style="background: white; padding: 10px; border-radius: 8px; border: 1px dashed var(--border);">
-            <svg id="barcodeSvg"></svg>
-        </div>
+ <!-- МОДАЛЕН ЕКРАН ЗА ЕАН-13 БАРКОД И ПЕЧАТ -->
+ <div id="qrModal" onclick="closeQrModal(event)">
+     <div class="qr-card" onclick="event.stopPropagation()">
+         <h3 id="qrModalTitle" style="font-size: 15px; margin-bottom: 8px; color: var(--primary);">Баркод за печат</h3>
+         <p id="qrModalName" style="font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px;"></p>
+         
+         <div style="background: white; padding: 10px; border-radius: 8px; border: 1px dashed var(--border);">
+             <svg id="barcodeSvg"></svg>
+             <div id="qrcode"></div>
+         </div>
 
-        <div style="display: flex; gap: 8px; margin-top: 15px;">
-            <button type="button" class="btn btn-primary" onclick="printBarcode()" style="flex: 1;">
-                <i class="fa-solid fa-print"></i> Печат
-            </button>
-            <button type="button" class="btn btn-outline" onclick="closeQrModal()" style="flex: 1;">
-                Затвори
-            </button>
-        </div>
-    </div>
-</div>
+         <div style="display: flex; gap: 8px; margin-top: 15px;">
+             <button type="button" id="btnPrintModal" class="btn btn-primary" onclick="printBarcode()" style="flex: 1;">
+                 <i class="fa-solid fa-print"></i> Печат
+             </button>
+             <button type="button" class="btn btn-outline" onclick="closeQrModal()" style="flex: 1;">
+                 Затвори
+             </button>
+         </div>
+     </div>
+ </div>
 
  <header>  
  <div class="brand">  
@@ -531,12 +551,12 @@
  </div>  
  </div>  
   
- <!-- Библиотеки за Камера, QR Код и Google Drive -->  
+ <!-- Библиотеки за Камера, QR Код, Баркод и Google Drive -->  
  <script src="https://unpkg.com/@zxing/library@latest"></script>  
  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
- <script src="https://accounts.google.com/gsi/client" async defer></script>  
- <script src="https://apis.google.com/js/api.js" async defer></script> 
  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+ <script src="https://accounts.google.com/gsi/client" async defer></script>  
+ <script src="https://apis.google.com/js/api.js" async defer></script>  
   
  <script>  
  const APP_DOMAIN = 'https://hitshopbg.github.io/barcode-scanner/';
@@ -627,17 +647,17 @@
  }
 
  function showAppQrCode() {
-     showQrModal(APP_DOMAIN, 'Сканирай за бърз достъп');
- }
-
- function showQrModal(text, title = 'QR Код') {
-     document.getElementById('qrModalTitle').innerText = title;
-     document.getElementById('qrModalCode').innerText = text;
+     document.getElementById('qrModalTitle').innerText = 'QR Код за достъп';
+     document.getElementById('qrModalName').innerText = 'Сканирайте за бърз достъп';
+     document.getElementById('barcodeSvg').style.display = 'none';
+     document.getElementById('btnPrintModal').style.display = 'none';
+     
      const qrContainer = document.getElementById('qrcode');
+     qrContainer.style.display = 'flex';
      qrContainer.innerHTML = '';
      
      qrCodeObj = new QRCode(qrContainer, {
-         text: text,
+         text: APP_DOMAIN,
          width: 180,
          height: 180,
          colorDark : "#000000",
@@ -645,6 +665,42 @@
          correctLevel : QRCode.CorrectLevel.H
      });
      document.getElementById('qrModal').style.display = 'flex';
+ }
+
+ function showBarcodeModal(code, name) {
+     document.getElementById('qrModalTitle').innerText = 'EAN-13 Баркод';
+     document.getElementById('qrModalName').innerText = name || `Артикул ${code}`;
+     document.getElementById('qrcode').style.display = 'none';
+     document.getElementById('btnPrintModal').style.display = 'inline-flex';
+     
+     const svgElem = document.getElementById('barcodeSvg');
+     svgElem.style.display = 'block';
+
+     try {
+         JsBarcode("#barcodeSvg", code, {
+             format: "EAN13",
+             lineColor: "#000",
+             width: 2,
+             height: 60,
+             displayValue: true,
+             fontSize: 14
+         });
+     } catch (e) {
+         JsBarcode("#barcodeSvg", code, {
+             format: "CODE128",
+             lineColor: "#000",
+             width: 2,
+             height: 60,
+             displayValue: true,
+             fontSize: 14
+         });
+     }
+     
+     document.getElementById('qrModal').style.display = 'flex';
+ }
+
+ function printBarcode() {
+     window.print();
  }
 
  function closeQrModal() {
@@ -805,42 +861,41 @@
      return null;  
  }  
   
-async function downloadFromDriveManual() {  
-    if (!driveConnected) return;  
-    if (confirm("ВНИМАНИЕ: Това ще зареди данните от облака и ще презапише текущите наличности на това устройство. Продължавате ли?")) {  
-        try {  
-            const fileId = await findBackupFileId();  
-            if (!fileId) {
-                alert("Няма намерен бекъп файл в Google Drive!");
-                return;
-            }
+ async function downloadFromDriveManual() {  
+     if (!driveConnected) return;  
+     if (confirm("ВНИМАНИЕ: Това ще зареди данните от облака и ще презапише текущите наличности на това устройство. Продължавате ли?")) {  
+         try {  
+             const fileId = await findBackupFileId();  
+             if (!fileId) {
+                 alert("Няма намерен бекъп файл в Google Drive!");
+                 return;
+             }
 
-            const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });  
-            
-            // Извличане на данните независимо от формата на отговора
-            let cloudData = res.result || res.body;  
-            if (typeof cloudData === 'string') {
-                cloudData = JSON.parse(cloudData);
-            }
+             const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });  
+             
+             let cloudData = res.result || res.body;  
+             if (typeof cloudData === 'string') {
+                 cloudData = JSON.parse(cloudData);
+             }
 
-            if (cloudData && Array.isArray(cloudData.products)) {  
-                products = cloudData.products;  
-                historyLogs = cloudData.history || [];  
-                localStorage.setItem('barcode_products', JSON.stringify(products));  
-                localStorage.setItem('barcode_history', JSON.stringify(historyLogs));  
-                renderProducts();  
-                renderHistory();  
-                updateStats();  
-                alert("Данните са заредени успешно!");  
-            } else {
-                alert("Файлът в облака е празен или е с невалиден формат!");
-            } 
-        } catch (err) {  
-            console.error("Грешка при изтегляне от облака:", err);  
-            alert("Грешка при изтегляне на данните! Проверете дали имате интернет връзка и активна сесия.");  
-        }  
-    }  
-}
+             if (cloudData && Array.isArray(cloudData.products)) {  
+                 products = cloudData.products;  
+                 historyLogs = cloudData.history || [];  
+                 localStorage.setItem('barcode_products', JSON.stringify(products));  
+                 localStorage.setItem('barcode_history', JSON.stringify(historyLogs));  
+                 renderProducts();  
+                 renderHistory();  
+                 updateStats();  
+                 alert("Данните са заредени успешно!");  
+             } else {
+                 alert("Файлът в облака е празен или е с невалиден формат!");
+             }  
+         } catch (err) {  
+             console.error("Грешка при изтегляне от облака:", err);  
+             alert("Грешка при изтегляне на данните! Проверете дали имате интернет връзка и активна сесия.");  
+         }  
+     }  
+ }
   
  async function uploadToDrive() {  
      if (!driveConnected) return;  
@@ -1012,7 +1067,7 @@ async function downloadFromDriveManual() {
              <td><strong>${p.qty}</strong></td>  
              <td class="col-date" style="font-size: 10px; color: var(--text-light);">${p.lastUpdated || '-'}</td>  
              <td class="actions-cell">  
-                 <button class="action-icon" onclick="showQrModal('${p.code}', '${p.name}')" title="Генерирай QR код"><i class="fa-solid fa-qrcode" style="color: var(--primary);"></i></button>
+                 <button class="action-icon" onclick="showBarcodeModal('${p.code}', '${p.name}')" title="Генерирай и принтирай Баркод"><i class="fa-solid fa-barcode" style="color: var(--primary);"></i></button>
                  <button class="action-icon" onclick="adjustQty('${p.code}', 1)"><i class="fa-solid fa-circle-plus" style="color: var(--success);"></i></button>  
                  <button class="action-icon" onclick="adjustQty('${p.code}', -1)"><i class="fa-solid fa-circle-minus" style="color: var(--danger);"></i></button>  
                  <button class="action-icon delete" onclick="deleteProduct('${p.code}')"><i class="fa-solid fa-trash"></i></button>  
