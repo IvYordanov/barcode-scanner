@@ -765,7 +765,10 @@
  }
 
  function printBarcode() {
-     window.print();
+     // Забавяне от 150ms за сигурно отпечатване на SVG баркода в прозореца за печат
+     setTimeout(() => {
+         window.print();
+     }, 150);
  }
 
  function closeQrModal() {
